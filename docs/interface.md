@@ -18,8 +18,6 @@ Além disso, cada elemento da interface foi pensado para responder às história
 
 ![UserFlow](img/surfbook.png)
 
-Fluxo de usuário (User Flow) é uma técnica que permite ao desenvolvedor mapear todo fluxo de telas do site ou app. Essa técnica funciona para alinhar os caminhos e as possíveis ações que o usuário pode fazer junto com os membros de sua equipe.
-
 ## Wireframes
 
 O wireframe do SurfBook é uma representação visual que ilustra a estrutura inicial da página, destacando a organização dos principais componentes, como menus de navegação, botões, imagens e seções de conteúdo. Ele funciona como um esboço funcional que orienta a construção da interface, permitindo visualizar como as informações serão distribuídas e acessadas no site.
