@@ -11,9 +11,7 @@ O layout padrão do site foi construído com as linguagens de marcação HTML e 
 - Font-family: Poppins. 
 - Font size: 6, 8, 10, 12, 14, 16, 20, 24, 40.
 
-![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.005.png)![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.006.png)![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.007.png)![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.008.png)
-
-![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aaa71ad1.009.png)![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.010.png)![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.011.png)![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.012.png)
+![](img/surfbook-colors.png)
 
 - RGB:  #145AF1,  #2B2D31,  #BDBDBD,  #F5F5F5,  #FF2B2B,  #00D018,  #FFFFFF,  #FDFDFD.
 
