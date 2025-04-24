@@ -54,3 +54,5 @@ Os ícones utilizados no sistema foram extraídos da biblioteca Iconify
 ![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.019.png)
 
 A logo do sistema foi criada pelos próprios membros da equipe.
+
+[Projeto de interface no FIGMA](https://www.figma.com/design/a19wJCdWpouCZO9xG20Gga/SurfBook-V2?node-id=0-1&m=dev&t=VHI75c5sTqeKY4eP-1)
