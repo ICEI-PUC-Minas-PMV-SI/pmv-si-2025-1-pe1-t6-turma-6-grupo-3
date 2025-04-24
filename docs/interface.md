@@ -23,3 +23,5 @@ Além disso, cada elemento da interface foi pensado para responder às história
 O wireframe do SurfBook é uma representação visual que ilustra a estrutura inicial da página, destacando a organização dos principais componentes, como menus de navegação, botões, imagens e seções de conteúdo. Ele funciona como um esboço funcional que orienta a construção da interface, permitindo visualizar como as informações serão distribuídas e acessadas no site.
 
 ![Wireframe](img/home.png)
+
+[Projeto de interface no FIGMA](https://www.figma.com/design/a19wJCdWpouCZO9xG20Gga/SurfBook-V2?node-id=0-1&m=dev&t=VHI75c5sTqeKY4eP-1)
