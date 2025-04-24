@@ -13,8 +13,6 @@ O layout padrão do site foi construído com as linguagens de marcação HTML e 
 
 ![](img/surfbook-colors.png)
 
-- RGB:  #145AF1,  #2B2D31,  #BDBDBD,  #F5F5F5,  #FF2B2B,  #00D018,  #FFFFFF,  #FDFDFD.
-
  ## **Layout Padrão Tela de Login** 
 
    ![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.013.jpeg)
