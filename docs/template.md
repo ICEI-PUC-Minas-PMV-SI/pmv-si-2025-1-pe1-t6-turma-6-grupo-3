@@ -10,11 +10,8 @@ Template Padrão de Aplicação ![ref1]**
 
 **4.   LAYOUT PADRÃO                                                                                                                  5** 
 
-1. **Sobre o Documento![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.003.png)**
 
 Este documento tem como objetivo passar as informações básicas sobre como será desenvolvido o sistema surfbook. Apresentando o Template padrão de aplicação, paleta de cores, Layout Padrão, Tela de validação de código, Tipografia, Iconografia e Logo. 
-
-2. **Template padrão de aplicação ![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.004.png)**
 
 O layout padrão do site foi construído com as linguagens de marcação HTML e CSS. 
 
