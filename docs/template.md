@@ -1,36 +1,75 @@
-# Template padrão do site
+![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.001.png)
 
-Layout padrão do site (HTML e CSS) que será utilizado em todas as páginas com a definição de identidade visual, aspectos de responsividade e iconografia.
+**Projeto SurfBook 
+Template Padrão de Aplicação ![ref1]**
 
-Explique as guias de estilo utilizadas no seu projeto.
+**Product:  SurfBook Object:  Version *1.0*** 
 
-## Design
+1. **SOBRE O DOCUMENTO       3** ![ref1]
+1. **TEMPLATE PADRÃO DA APLICAÇÃO                                                                                           4** 
 
-Detalhe os layouts que serão utilizados. Apresente onde será colocado o logo do sistema. Defina os menus padrões, entre outras coisas.
+**4.   LAYOUT PADRÃO                                                                                                                  5** 
 
+1. **Sobre o Documento![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.003.png)**
 
-## Cores
+Este documento tem como objetivo passar as informações básicas sobre como será desenvolvido o sistema surfbook. Apresentando o Template padrão de aplicação, paleta de cores, Layout Padrão, Tela de validação de código, Tipografia, Iconografia e Logo. 
 
-Apresente a paleta de cores que será utilizada. Uma ferramenta interessante para a criação de palestas de cores é o *Adobe Color* ([https://color.adobe.com/pt/create/color-wheel](https://color.adobe.com/pt/create/color-wheel)).
+2. **Template padrão de aplicação ![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.004.png)**
 
+O layout padrão do site foi construído com as linguagens de marcação HTML e CSS. 
 
-## Tipografia
+- Cores: RGB:  #145AF1,  #2B2D31,  #BDBDBD,  #F5F5F5,  #FF2B2B,  #00D018,  #FFFFFF,  #FDFDFD. 
+- Font-family: Poppins. 
+- Font size: 6, 8, 10, 12, 14, 16, 20, 24, 40.
 
-Apresente as fontes que serão utilizadas e sua função no site. As principais funções são: Título de página, Título de Seção, Rótulos de componentes e Corpo de Texto.
+![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.005.png)![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.006.png)![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.007.png)![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.008.png)
 
+![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aaa71ad1.009.png)![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.010.png)![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.011.png)![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.012.png)
 
-## Iconografia
+- RGB:  #145AF1,  #2B2D31,  #BDBDBD,  #F5F5F5,  #FF2B2B,  #00D018,  #FFFFFF,  #FDFDFD. 
+3. **Layout Padrão Tela de Login** 
 
-Defina os ícones que serão utilizados e suas respectivas funções.
+   ![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.013.jpeg)
 
-Apresente os estilos CSS criados para cada um dos elementos apresentados.
-Outras seções podem ser adicionadas neste documento para apresentar padrões de componentes, de menus, etc.
+   Essa tela o usuário que estiver utilizando tem que utilizar o seu email para fazer login no sistema SurfBook.![ref1]
 
+   **Tela de validação de código** 
 
-> **Links Úteis**:
->
-> -  [Como criar um guia de estilo de design da Web](https://edrodrigues.com.br/blog/como-criar-um-guia-de-estilo-de-design-da-web/#)
-> - [CSS Website Layout (W3Schools)](https://www.w3schools.com/css/css_website_layout.asp)
-> - [Website Page Layouts](http://www.cellbiol.com/bioinformatics_web_development/chapter-3-your-first-web-page-learning-html-and-css/website-page-layouts/)
-> - [Perfect Liquid Layout](https://matthewjamestaylor.com/perfect-liquid-layouts)
-> - [How and Why Icons Improve Your Web Design](https://usabilla.com/blog/how-and-why-icons-improve-you-web-design/)
+   Essa tela o usuário que estiver utilizando tem que  colocar o código que será enviado ao e-mail do usuário após ele tentar fazer login.![ref1]
+
+   **Tela Principal** 
+
+   ![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.014.jpeg)Essa é a tela principal do sistema, onde temos menus laterais com opções como: Home, Cadernos, Tarefas, Notificações, Calculadora, Calendário, Configurações e Sair. Em que, ao clicar em cada opção o sistema apresentará uma nova funcionalidade dele ao usuário final. ![ref1]
+
+   Além disso, temos um painel de atividade, mostrando as ‘matérias’ cadastradas, as atividades  e estudos a serem realizados num futuro e um calendário para o acompanhamento das mesmas. 
+
+   **Modal de cadastro de caderno** 
+
+   ![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.015.jpeg)
+
+   Esse é o modal para criação de um novo caderno no sistema. ![ref1]
+
+   **Tipografia** 
+
+   ![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.016.jpeg)
+
+   Fontes que foram utilizadas para o design do sistema. 
+
+   **Iconografia ![ref1]**
+
+   ![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.017.jpeg)
+
+   Icones da biblioteca phosphor. ![ref1]
+
+   ![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.018.jpeg)
+
+   Ícones da biblioteca iconify.
+
+   **Logo ![ref1]**
+
+![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.019.png)
+
+Logo desenvolvido pelos membros para o sistema. ![ref1]
+File : Template Padrão de Aplicação  Page 11** - 11** Last Update: **04/22/25 11:46:00 AM** 
+
+[ref1]: Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.002.png
