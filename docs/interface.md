@@ -1,37 +1,27 @@
 # Projeto de Interface
 
-Visão geral da interação do usuário pelas telas do sistema e protótipo interativo das telas com as funcionalidades que fazem parte do sistema (wireframes).
+O SurfBook foi desenvolvido com base em uma lógica de navegação simples, clara e centrada no usuário, refletida nos wireframes que representam as principais telas do sistema. Estes protótipos interativos oferecem uma visão geral da jornada do usuário pela plataforma, mapeando como ele interage com os recursos oferecidos e como esses recursos se organizam para atender às suas necessidades acadêmicas.
 
-Apresente as principais interfaces da plataforma. Discuta como ela foi elaborada de forma a atender os requisitos funcionais, não funcionais e histórias de usuário abordados nas <a href="2-Especificação do Projeto.md"> Documentação de Especificação</a>.
+As interfaces principais incluem:
+
+- Tela de Cadastro/Login: Primeiro ponto de contato do usuário com a plataforma, permitindo a criação de uma conta ou o acesso com credenciais previamente cadastradas, conforme o requisito funcional.
+- Dashboard Principal: Após o login, o usuário acessa um painel que resume seu progresso, conteúdos recentes, tarefas pendentes e um calendário integrado.
+- Gestão de Cursos e Conteúdos: Interfaces que permitem cadastrar, editar e visualizar cursos e conteúdos, organizados por disciplina e com possibilidade de classificação por tags e links entre conteúdos.
+- Histórico e Revisão de Estudos: Telas que fornecem acesso a um histórico detalhado de alterações e conteúdos estudados, alinhando-se às histórias de usuários que buscam revisar conhecimentos passados.
+- Compartilhamento e Colaboração: Funcionalidade para compartilhar cadernos com outros usuários, incentivando a troca de informações e estudos em grupo.
+
+Esses protótipos foram concebidos considerando os requisitos funcionais e não funcionais definidos na documentação, como a necessidade de responsividade para dispositivos móveis, acessibilidade para leitores de tela e compatibilidade com navegadores modernos.
+
+Além disso, cada elemento da interface foi pensado para responder às histórias de usuários, como o aluno que deseja organizar seus estudos para otimizar o tempo ou o ex-aluno que busca revisar conteúdos já estudados. A estrutura modular e visualmente limpa do SurfBook permite que essas ações sejam executadas com facilidade e autonomia.
 
 ## User Flow
 
-![Exemplo de UserFlow](img/surfbook.png)
+![UserFlow](img/surfbook.png)
 
 Fluxo de usuário (User Flow) é uma técnica que permite ao desenvolvedor mapear todo fluxo de telas do site ou app. Essa técnica funciona para alinhar os caminhos e as possíveis ações que o usuário pode fazer junto com os membros de sua equipe.
 
-> **Links Úteis**:
->
-> - [User Flow: O Quê É e Como Fazer?](https://medium.com/7bits/fluxo-de-usu%C3%A1rio-user-flow-o-que-%C3%A9-como-fazer-79d965872534)
-> - [User Flow vs Site Maps](http://designr.com.br/sitemap-e-user-flow-quais-as-diferencas-e-quando-usar-cada-um/)
-> - [Top 25 User Flow Tools & Templates for Smooth](https://www.mockplus.com/blog/post/user-flow-tools)
-
 ## Wireframes
 
-São protótipos usados em design de interface para sugerir a estrutura de um site web e seu relacionamentos entre suas páginas. Um wireframe web é uma ilustração semelhante do layout de elementos fundamentais na interface e é fundamental sempre relacionar cada wireframe com o(s) requisito(s) que ele atende.
+O wireframe do SurfBook é uma representação visual que ilustra a estrutura inicial da página, destacando a organização dos principais componentes, como menus de navegação, botões, imagens e seções de conteúdo. Ele funciona como um esboço funcional que orienta a construção da interface, permitindo visualizar como as informações serão distribuídas e acessadas no site.
 
-### Exemplo
-
-A tela inicial apresenta um menu lateral com as principais seções do portal, enquanto a navigation bar, ao topo, apresenta informações de envio de imagens ou navegação pela galeria de fotos. A área central apresenta a galeria de fotos na forma de uma grade. Nesta tela, são apresentados os seguintes requisitos
-
-![Exemplo de Wireframe](img/telainicial.png)
-
-> **Links Úteis**:
->
-> - [Protótipos vs Wireframes](https://www.nngroup.com/videos/prototypes-vs-wireframes-ux-projects/)
-> - [Ferramentas de Wireframes](https://rockcontent.com/blog/wireframes/)
-> - [MarvelApp](https://marvelapp.com/developers/documentation/tutorials/)
-> - [Figma](https://www.figma.com/)
-> - [Adobe XD](https://www.adobe.com/br/products/xd.html#scroll)
-> - [Axure](https://www.axure.com/edu) (Licença Educacional)
-> - [InvisionApp](https://www.invisionapp.com/) (Licença Educacional)
+![Wireframe](img/home.png)
