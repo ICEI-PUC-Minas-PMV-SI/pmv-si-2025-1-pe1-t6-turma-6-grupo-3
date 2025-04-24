@@ -21,43 +21,38 @@ O layout padrão do site foi construído com as linguagens de marcação HTML e 
 
    Essa tela o usuário que estiver utilizando tem que utilizar o seu email para fazer login no sistema SurfBook.
 
-   ## **Tela de validação de código** 
-
-   Essa tela o usuário que estiver utilizando tem que  colocar o código que será enviado ao e-mail do usuário após ele tentar fazer login.
-
    ## **Tela Principal** 
 
    ![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.014.jpeg)
    
-   Essa é a tela principal do sistema, onde temos menus laterais com opções como: Home, Cadernos, Tarefas, Notificações, Calculadora, Calendário, Configurações e Sair. Em que, ao clicar em cada opção o sistema apresentará uma nova funcionalidade dele ao usuário final. 
+   Esta é a tela principal do sistema, que conta com um menu lateral contendo as seguintes opções: Home, Cadernos, Tarefas, Notificações, Calculadora, Calendário, Configurações e Sair. Ao clicar em cada uma dessas opções, o sistema exibirá uma nova funcionalidade ao usuário final.
 
-   Além disso, temos um painel de atividade, mostrando as ‘matérias’ cadastradas, as atividades  e estudos a serem realizados num futuro e um calendário para o acompanhamento das mesmas. 
+Além disso, há um painel de atividades que apresenta as matérias cadastradas, as atividades e os estudos programados, bem como um calendário para acompanhar esses compromissos. 
 
    ## **Modal de cadastro de caderno** 
 
    ![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.015.jpeg)
 
-   Esse é o modal para criação de um novo caderno no sistema. 
+  Este modal permite ao usuário criar um novo caderno dentro do sistema, facilitando a organização de conteúdos e atividades.
 
    ## **Tipografia** 
 
    ![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.016.jpeg)
 
-   Fontes que foram utilizadas para o design do sistema. 
+   Estas são as fontes tipográficas utilizadas na criação do design do sistema.
 
    ## **Iconografia**
 
    ![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.017.jpeg)
 
-   Icones da biblioteca phosphor. 
+Os ícones utilizados no sistema foram retirados da biblioteca Phosphor Icons.
 
    ![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.018.jpeg)
 
-   Ícones da biblioteca iconify.
+Os ícones utilizados no sistema foram extraídos da biblioteca Iconify
 
    ## **Logo**
 
 ![](img/Aspose.Words.7ece94df-fa74-4fc2-8b36-b9a22aa71ad1.019.png)
 
-Logo desenvolvido pelos membros para o sistema. 
-
+A logo do sistema foi criada pelos próprios membros da equipe.
