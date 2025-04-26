@@ -1,260 +1,180 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Cadastro de Contatos</title>
+  <title>Cadastro de Notebooks</title>
+  <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body onload="init()">
-  <h1>Cadastro de Contatos (CRUD)</h1>
-
-  <div class="container">
+  <div class="container py-4">
+    <h1>Cadastro de Notebooks (CRUD)</h1>
     <div class="row">
-      <div id="msg" class="col-sm-10 offset-sm-1 ">
-        <!--<div class="alert alert-warning">Contato não encontrado.</div>-->
-      </div>
+      <div id="msg" class="col-sm-10 offset-sm-1"></div>
     </div>
 
-    <form id="form-contato">
+    <form id="form-notebook" class="mb-4">
       <div class="form-group row">
         <div class="col-sm-4">
-          <label for="inputId">Id</label>
+          <label for="inputId">ID</label>
           <input type="text" class="form-control" id="inputId" placeholder="ID" disabled>
         </div>
         <div class="col-sm-8">
-          <label for="inputNome">Nome (*)</label>
-          <input type="text" class="form-control" id="inputNome" required placeholder="Informe o nome do contato">
+          <label for="inputName">Nome (*)</label>
+          <input type="text" class="form-control" id="inputName" required placeholder="Nome do notebook">
         </div>
       </div>
-      <div class="form-group row">
-        <div class="col-sm-5">
-          <label for="inputTelefone">Telefone (*)</label>
-          <input type="text" class="form-control" id="inputTelefone" required placeholder="Telefone">
-        </div>
-        <div class="col-sm-7">
-          <label for="inputEmail">E-mail (*)</label>
-          <input type="email" class="form-control" id="inputEmail" required placeholder="Informe o e-mail">
-        </div>
+      <div class="form-group">
+        <label for="inputDescription">Descrição (*)</label>
+        <textarea class="form-control" id="inputDescription" rows="2" required placeholder="Descrição do notebook"></textarea>
       </div>
       <div class="form-group row">
         <div class="col-sm-6">
-          <label for="inputCidade">Cidade</label>
-          <input type="text" class="form-control" id="inputCidade" placeholder="Informe a cidade do contato">
+          <label for="inputIcon">Ícone (classe Bootstrap) *</label>
+          <input type="text" class="form-control" id="inputIcon" required placeholder="ex: bi-journal-code">
         </div>
         <div class="col-sm-6">
-          <label for="inputCategoria">Categoria</label>
-          <input type="text" class="form-control" id="inputCategoria" required placeholder="Informe a categoria do contato">
+          <label for="inputImage">URL da Imagem *</label>
+          <input type="url" class="form-control" id="inputImage" required placeholder="https://...">
         </div>
       </div>
       <div class="form-group row">
         <div class="col-sm-12">
-          <label for="inputSite">Web Site (*)</label>
-          <input type="text" class="form-control" id="inputSite" required placeholder="Web Site">
-        </div>
-      </div>
-      <div class="form-group row">
-        <div class="col-sm-4">
           <small>(*) Campos obrigatórios</small>
         </div>
       </div>
       <div class="form-group row">
         <div class="col-sm-12">
-          <input type="button" class="btn btn-success" id="btnInsert" value="Inserir">
-          <input type="button" class="btn btn-warning" id="btnUpdate" value="Alterar">
-          <input type="button" class="btn btn-danger" id="btnDelete" value="Excluir">
-          <input type="button" class="btn btn-secondary" id="btnClear" value="Limpar Form">
-          <a href="lista_contatos.html"><input type="button" class="btn btn-warning" id="btnClear" value="Pesquisar Contatos"></a>
+          <button type="button" class="btn btn-success" id="btnInsert">Inserir</button>
+          <button type="button" class="btn btn-warning" id="btnUpdate">Alterar</button>
+          <button type="button" class="btn btn-danger" id="btnDelete">Excluir</button>
+          <button type="reset" class="btn btn-secondary" id="btnClear">Limpar Form</button>
         </div>
       </div>
     </form>
 
-    <div class="row">
-      <div class="col-sm-12">
-        <table id="grid-contatos" class="table table-striped">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Nome</th>
-              <th scope="col">Telefone</th>
-              <th scope="col">E-mail</th>
-              <th scope="col">Cidade</th>
-              <th scope="col">Categoria</th>
-              <th scope="col">Site</th>
-            </tr>
-          </thead>
-          <tbody id="table-contatos">
-            <tr>
-              <td scope="row">1</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <table id="grid-notebooks" class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Descrição</th>
+          <th>Ícone</th>
+          <th>Imagem</th>
+          <th>Criado em</th>
+          <th>Atualizado em</th>
+        </tr>
+      </thead>
+      <tbody id="table-notebooks"></tbody>
+    </table>
   </div>
 
+  <!-- MockClient e StorageManager -->
+  <script src="api-client.js"></script>
+  <script src="storage-manager.js"></script>
   <script src="app.js"></script>
   <script>
-    function exibeContatos() {
-      tableContatos = document.getElementById("table-contatos");
+    // Funções CRUD usando notebookClient e storage
+    function readNotebooks(callback) {
+      callback(notebookClient.getAll());
+    }
+    function createNotebook(data, callback) {
+      notebookClient.insertItem(data);
+      storage.save();
+      callback();
+    }
+    function updateNotebook(id, data, callback) {
+      notebookClient.updateItem(id, data);
+      storage.save();
+      callback();
+    }
+    function deleteNotebook(id, callback) {
+      notebookClient.deleteItem(id);
+      storage.save();
+      callback();
+    }
 
-      // Remove todas as linhas do corpo da tabela
-      tableContatos.innerHTML = "";
+    function displayMessage(msg) {
+      const msgDiv = document.getElementById('msg');
+      msgDiv.innerHTML = `<div class="alert alert-warning" role="alert">${msg}</div>`;
+    }
 
-      readContato(dados => {
-        // Popula a tabela com os registros do banco de dados
-        for (i = 0; i < dados.length; i++) {
-          let contato = dados[i];
-          tableContatos.innerHTML += `<tr><td scope="row">${contato.id}</td>
-                                                    <td>${contato.nome}</td>
-                                                    <td>${contato.telefone}</td>
-                                                    <td>${contato.email}</td>
-                                                    <td>${contato.cidade}</td>
-                                                    <td>${contato.categoria}</td>
-                                                    <td>${contato.website}</td>
-                                                </tr>`;
-        }
-      })
+    function exibeNotebooks() {
+      const tbody = document.getElementById('table-notebooks');
+      tbody.innerHTML = '';
+      readNotebooks(list => {
+        list.forEach(nb => {
+          tbody.innerHTML += `
+            <tr>
+              <td>${nb.id}</td>
+              <td>${nb.name}</td>
+              <td>${nb.description}</td>
+              <td><i class="bi ${nb.icon}"></i> ${nb.icon}</td>
+              <td><img src="${nb.image}" alt="" width="40"></td>
+              <td>${nb.createdAt}</td>
+              <td>${nb.updatedAt}</td>
+            </tr>`;
+        });
+      });
     }
 
     function init() {
-      // Define uma variável para o formulário de contato
-      formContato = document.getElementById("form-contato");
+      storage.load();
+      const form = document.getElementById('form-notebook');
 
-      // Adiciona funções para tratar os eventos 
-      btnInsert = document.getElementById("btnInsert");
-      btnInsert.addEventListener('click', function () {
-        // Verifica se o formulário está preenchido corretamente
-        if (!formContato.checkValidity()) {
-          displayMessage("Preencha o formulário corretamente.");
-          return;
-        }
-
-        // Obtem os valores dos campos do formulário
-        let campoNome = document.getElementById('inputNome').value;
-        let campoTelefone = document.getElementById('inputTelefone').value;
-        let campoEmail = document.getElementById('inputEmail').value;
-        let campoCidade = document.getElementById('inputCidade').value;
-        let campoCategoria = document.getElementById('inputCategoria').value;
-        let campoSite = document.getElementById('inputSite').value;
-
-        // Cria um objeto com os dados do contato
-        let contato = {
-          nome: campoNome,
-          telefone: campoTelefone,
-          email: campoEmail,
-          cidade: campoCidade,
-          categoria: campoCategoria,
-          website: campoSite
+      document.getElementById('btnInsert').addEventListener('click', () => {
+        if (!form.checkValidity()) return displayMessage('Preencha todos os campos obrigatórios.');
+        const data = {
+          name: document.getElementById('inputName').value,
+          description: document.getElementById('inputDescription').value,
+          icon: document.getElementById('inputIcon').value,
+          image: document.getElementById('inputImage').value
         };
-
-        // Cria o contato no banco de dados
-        createContato(contato, exibeContatos);
-
-        // Limpa o formulario
-        formContato.reset()
+        createNotebook(data, () => {
+          exibeNotebooks(); form.reset();
+        });
       });
 
-      // Trata o click do botão Alterar
-      btnUpdate = document.getElementById("btnUpdate");
-      btnUpdate.addEventListener('click', function () {
-        // Obtem os valores dos campos do formulário
-        let campoId = document.getElementById("inputId").value;
-        if (campoId == "") {
-          displayMessage("Selecione antes um contato para ser alterado.");
-          return;
-        }
-
-        // Obtem os valores dos campos do formulário
-        let campoNome = document.getElementById('inputNome').value;
-        let campoTelefone = document.getElementById('inputTelefone').value;
-        let campoEmail = document.getElementById('inputEmail').value;
-        let campoCidade = document.getElementById('inputCidade').value;
-        let campoCategoria = document.getElementById('inputCategoria').value;
-        let campoSite = document.getElementById('inputSite').value;
-
-        // Cria um objeto com os dados do contato
-        let contato = {
-          nome: campoNome,
-          telefone: campoTelefone,
-          email: campoEmail,
-          cidade: campoCidade,
-          categoria: campoCategoria,
-          website: campoSite
+      document.getElementById('btnUpdate').addEventListener('click', () => {
+        const id = document.getElementById('inputId').value;
+        if (!id) return displayMessage('Selecione um notebook para alterar.');
+        const data = {
+          name: document.getElementById('inputName').value,
+          description: document.getElementById('inputDescription').value,
+          icon: document.getElementById('inputIcon').value,
+          image: document.getElementById('inputImage').value
         };
-
-        // Altera o contato no banco de dados
-        updateContato(parseInt(campoId), contato, exibeContatos);
-
-        // Limpa o formulario
-        formContato.reset()
+        updateNotebook(id, data, () => {
+          exibeNotebooks(); form.reset();
+        });
       });
 
-      // Trata o click do botão Excluir
-      btnDelete = document.getElementById('btnDelete');
-      btnDelete.addEventListener('click', function () {
-        let campoId = document.getElementById('inputId').value;
-        if (campoId == "") {
-          displayMessage("Selecione um contato a ser excluído.");
-          return;
-        }
-
-        // Exclui o contato no banco de dados
-        deleteContato(parseInt(campoId), exibeContatos);
-
-        // Limpa o formulario
-        formContato.reset()
+      document.getElementById('btnDelete').addEventListener('click', () => {
+        const id = document.getElementById('inputId').value;
+        if (!id) return displayMessage('Selecione um notebook para excluir.');
+        deleteNotebook(id, () => {
+          exibeNotebooks(); form.reset();
+        });
       });
 
-      // Trata o click do botão Listar Contatos
-      btnClear = document.getElementById('btnClear');
-      btnClear.addEventListener('click', function () {
-        formContato.reset()
-      });
-
-      // Oculta a mensagem de aviso após alguns 5 segundos
-      msg = document.getElementById('msg');
-      msg.addEventListener("DOMSubtreeModified", function (e) {
-        if (e.target.innerHTML == "") return;
-        setTimeout(function () {
-          alert = msg.getElementsByClassName("alert");
-          alert[0].remove();
-        }, 5000);
-      })
-
-      // Preenche o formulário quando o usuario clicar em uma linha da tabela 
-      gridContatos = document.getElementById("grid-contatos");
-      gridContatos.addEventListener('click', function (e) {
-        if (e.target.tagName == "TD") {
-
-          // Obtem as colunas da linha selecionada na tabela
-          let linhaContato = e.target.parentNode;
-          colunas = linhaContato.querySelectorAll("td");
-
-          // Preenche os campos do formulário com os dados da linha selecionada na tabela
-          document.getElementById('inputId').value = colunas[0].innerText;
-          document.getElementById('inputNome').value = colunas[1].innerText;
-          document.getElementById('inputTelefone').value = colunas[2].innerText;
-          document.getElementById('inputEmail').value = colunas[3].innerText;
-          document.getElementById('inputCidade').value = colunas[4].innerText;
-          document.getElementById('inputCategoria').value = colunas[5].innerText;
-          document.getElementById('inputSite').value = colunas[6].innerText;
+      document.getElementById('grid-notebooks').addEventListener('click', e => {
+        if (e.target.tagName === 'TD') {
+          const cols = e.target.parentNode.querySelectorAll('td');
+          document.getElementById('inputId').value = cols[0].innerText;
+          document.getElementById('inputName').value = cols[1].innerText;
+          document.getElementById('inputDescription').value = cols[2].innerText;
+          document.getElementById('inputIcon').value = cols[3].innerText.trim();
+          // Para imagem, pega a src do img
+          const img = cols[4].querySelector('img');
+          document.getElementById('inputImage').value = img ? img.src : '';
         }
       });
 
-      exibeContatos();
+      exibeNotebooks();
     }
   </script>
 </body>
-
 </html>
