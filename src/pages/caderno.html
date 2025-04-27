@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conteúdos do Caderno</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+</head>
+<body onload="init()">
+  <!-- Breadcrumb: usuário > caderno -->
+  <nav aria-label="breadcrumb" class="p-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="./cadernos.html">Cadernos</a></li>
+      <li class="breadcrumb-item active" id="breadcrumbNotebook" aria-current="page">...</li>
+    </ol>
+  </nav>
+
+  <div class="container">
+    <!-- Sessão de informações do caderno -->
+    <div id="notebook-info" class="card mb-4">
+      <div class="card-body">
+        <div><strong>de:</strong> <span id="info-user"></span></div>
+        <h3 id="info-title" class="card-title"></h3>
+        <p id="info-description" class="card-text"></p>
+        <p>
+          <i id="info-icon" class="bi"></i>
+          <span id="info-icon-text"></span>
+        </p>
+        <p>
+          <img id="info-image" src="" alt="Imagem do caderno" class="img-thumbnail" style="max-width: 120px;" />
+        </p>
+        <small class="text-muted">Criado em <span id="info-createdAt"></span> | Atualizado em <span id="info-updatedAt"></span></small>
+      </div>
+    </div>
+
+    <h2>Conteúdos</h2>
+
+    <!-- Formulário de conteúdo -->
+    <form id="form-content" class="mb-4">
+      <input type="hidden" id="inputContentId">
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="inputTitle">Título (*)</label>
+          <input type="text" class="form-control" id="inputTitle" required>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="inputTags">Tags (vírgula)</label>
+          <input type="text" class="form-control" id="inputTags" placeholder="tag1, tag2">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="inputDueDate">Data de Vencimento</label>
+          <input type="date" class="form-control" id="inputDueDate">
+        </div>
+        <div class="form-group col-md-6">
+          <label for="inputCompletedAt">Concluído em</label>
+          <input type="datetime-local" class="form-control" id="inputCompletedAt">
+        </div>
+      </div>
+      <button type="button" class="btn btn-success" id="btnInsert">Inserir</button>
+      <button type="button" class="btn btn-warning" id="btnUpdate">Alterar</button>
+      <button type="button" class="btn btn-danger" id="btnDelete">Excluir</button>
+      <button type="reset" class="btn btn-secondary">Limpar</button>
+    </form>
+
+    <!-- Lista de conteúdos -->
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Título</th>
+          <th>Tags</th>
+          <th></th>
+          <th>Vencimento</th>
+        </tr>
+      </thead>
+      <tbody id="table-contents"></tbody>
+    </table>
+  </div>
+
+  <!-- Scripts de serviços e app -->
+  <script src="../scripts/url-service.js"></script>
+  <script src="../scripts/user-client.js"></script>
+  <script src="../scripts/notebooks-client.js"></script>
+  <script src="../scripts/content-metadata-client.js"></script>
+  <script src="../scripts/storage.js"></script>
+  <script src="../scripts/app.js"></script>
+
+  <script>
+
+    function init() {
+      // Inicializa usuários e notbooks
+      // UserClient.init() e loadNotebooksForCurrentUser serão chamados via UserClient.onChange
+      const user = UserClient.getCurrentUser();
+      // Carrega notebooks e metadados
+    //   loadNotebooksForCurrentUser(user);
+        console.log("user: ", user)
+      // Lê caderno da URL
+      const notebookId = UrlService.getParam('notebookId');
+
+      // Exibe breadcrumb e infobox
+      const notebook = notebookClient.findItem(notebookId);
+      if (!notebook) return alert('Caderno não encontrado');
+      document.getElementById('breadcrumbNotebook').innerText = notebook.name;
+      document.getElementById('info-user').innerText        = user;
+      document.getElementById('info-title').innerText       = notebook.name;
+      document.getElementById('info-description').innerText = notebook.description;
+      document.getElementById('info-icon').classList.add(notebook.icon);
+      document.getElementById('info-icon-text').innerText   = notebook.icon;
+      document.getElementById('info-image').src             = notebook.image;
+      document.getElementById('info-createdAt').innerText   = notebook.createdAt;
+      document.getElementById('info-updatedAt').innerText   = notebook.updatedAt;
+    
+      const allMeta = contentMetaClient.getAll();
+      console.log(allMeta);
+      
+      // Inicializa ContentClient para metadados
+      // contentMetaClient.reset(allMeta);
+      // já carregado via storageMeta
+
+      // Renderiza e configura CRUD
+      renderContents();
+      setupForm();
+    }
+
+    function setupForm() {
+      const form = document.getElementById('form-content');
+      document.getElementById('btnInsert').onclick = () => {
+        if (!form.checkValidity()) return;
+        const data = {
+          title: document.getElementById('inputTitle').value,
+          tags: document.getElementById('inputTags').value,
+          due_date: document.getElementById('inputDueDate').value,
+          completed_at: document.getElementById('inputCompletedAt').value
+        };
+        contentMetaClient.insertItem(data);
+        storageMeta.save();
+        renderContents(); form.reset();
+      };
+      document.getElementById('btnUpdate').onclick = () => {
+        const id = document.getElementById('inputContentId').value;
+        if (!id) return;
+        const updates = {
+          title: document.getElementById('inputTitle').value,
+          tags: document.getElementById('inputTags').value,
+          due_date: document.getElementById('inputDueDate').value,
+          completed_at: document.getElementById('inputCompletedAt').value
+        };
+        contentMetaClient.updateItem(id, updates);
+        storageMeta.save();
+        renderContents(); form.reset();
+      };
+      document.getElementById('btnDelete').onclick = () => {
+        const id = document.getElementById('inputContentId').value;
+        if (!id) return;
+        contentMetaClient.deleteItem(id);
+        storageMeta.save();
+        renderContents(); form.reset();
+      };
+      document.getElementById('table-contents').onclick = e => {
+        if (e.target.tagName === 'TD') {
+          const cols = e.target.parentNode.children;
+          document.getElementById('inputContentId').value = cols[0].innerText;
+          document.getElementById('inputTitle').value     = cols[1].innerText;
+          document.getElementById('inputTags').value      = cols[2].innerText;
+          document.getElementById('inputDueDate').value   = cols[3].innerText;
+        }
+      };
+    }
+
+    function renderContents() {
+      const tbody = document.getElementById('table-contents');
+      tbody.innerHTML = '';
+      contentMetaClient.getAll().forEach(item => {
+        console.log("item: ", item)
+        tbody.innerHTML += `<tr>
+          <td class="text-center">
+            <input type="checkbox" class="complete-checkbox" data-id="${item.id}" ${!!item.completed_at && "checked"} title="Concluído em ${item.completed_at}">
+          </td>
+          <td>${item.id}</td>
+          <td>${item.title}</td>
+          <td>${item.tags}</td>
+          <td>${item.due_date}</td>
+        </tr>`;
+      });
+      // Event listeners for checkboxes
+      document.querySelectorAll('.complete-checkbox').forEach(cb => {
+        cb.addEventListener('change', e => {
+          const id = e.target.getAttribute('data-id');
+          const completedAt = e.target.checked ? new Date().toISOString() : '';
+          contentMetaClient.updateItem(id, { completed_at: completedAt });
+          storageMeta.save();
+          // update title and checkbox tooltip
+          e.target.title = completedAt;
+        });
+      });
+    }
+  </script>
+</body>
+</html>
