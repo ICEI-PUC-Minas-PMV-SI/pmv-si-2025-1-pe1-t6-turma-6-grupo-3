@@ -111,7 +111,7 @@
       document.getElementById('info-user').innerText        = user;
       document.getElementById('info-title').innerText       = notebook.name;
       document.getElementById('info-description').innerText = notebook.description;
-      document.getElementById('info-icon').classList.add(notebook.icon);
+      document.getElementById('info-icon').classList.add(`bi-${notebook.icon}`);
       // document.getElementById('info-icon-text').innerText   = notebook.icon;
       const imgEl = document.getElementById('info-image');
       if (notebook.image) {
