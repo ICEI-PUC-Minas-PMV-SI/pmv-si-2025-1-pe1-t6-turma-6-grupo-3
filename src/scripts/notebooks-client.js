@@ -4,8 +4,8 @@ const INITIAL_ITEMS = [
       id: '1',
       name: 'Introdução ao Desenvolvimento de Software',
       description: 'Visão geral dos conceitos fundamentais do desenvolvimento de software.',
-      icon: 'bi-code-square',
-      image: 'https://via.placeholder.com/150',
+      icon: 'code-square',
+      image: '',
       createdAt: '2025-04-01T09:00:00.000Z',
       updatedAt: '2025-04-01T09:00:00.000Z'
     },
@@ -13,8 +13,8 @@ const INITIAL_ITEMS = [
       id: '2',
       name: 'Lógica de Programação',
       description: 'Fundamentos de algoritmos, estruturas de controle e resolução de problemas.',
-      icon: 'bi-calculator',
-      image: 'https://via.placeholder.com/150',
+      icon: 'calculator',
+      image: '',
       createdAt: '2025-04-01T09:00:00.000Z',
       updatedAt: '2025-04-01T09:00:00.000Z'
     },
@@ -22,8 +22,8 @@ const INITIAL_ITEMS = [
       id: '3',
       name: 'Estruturas de Dados',
       description: 'Conceitos de arrays, listas, pilhas, filas e árvores.',
-      icon: 'bi-diagram-2',
-      image: 'https://via.placeholder.com/150',
+      icon: 'diagram-2',
+      image: '../../docs/img/wireframe-example.png',
       createdAt: '2025-04-01T09:00:00.000Z',
       updatedAt: '2025-04-01T09:00:00.000Z'
     },
@@ -31,8 +31,8 @@ const INITIAL_ITEMS = [
       id: '4',
       name: 'Algoritmos e Complexidade',
       description: 'Análise de algoritmos e notações de complexidade temporal e espacial.',
-      icon: 'bi-bar-chart-line',
-      image: 'https://via.placeholder.com/150',
+      icon: 'bar-chart-line',
+      image: '',
       createdAt: '2025-04-01T09:00:00.000Z',
       updatedAt: '2025-04-01T09:00:00.000Z'
     },
@@ -40,8 +40,8 @@ const INITIAL_ITEMS = [
       id: '5',
       name: 'Versionamento com Git',
       description: 'Controle de versão de código usando Git e GitHub.',
-      icon: 'bi-github',
-      image: 'https://via.placeholder.com/150',
+      icon: 'github',
+      image: '',
       createdAt: '2025-04-01T09:00:00.000Z',
       updatedAt: '2025-04-01T09:00:00.000Z'
     }

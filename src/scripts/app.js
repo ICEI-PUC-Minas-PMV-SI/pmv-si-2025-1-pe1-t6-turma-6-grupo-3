@@ -20,8 +20,8 @@
         if (global.storageNode) {
           global.storageNode.save();
         }
-
-        global.storageNB = new StorageManager(global.notebookClient, user);
+        const notebookKey = 'notebooks_of_' + user;
+        global.storageNB = new StorageManager(global.notebookClient, notebookKey);
         global.storageNB.load();
 
         const notebookID = UrlService.getParam("notebookId");
@@ -35,7 +35,7 @@
 
         const contentID = UrlService.getParam("contentId");
         if (notebookID & contentID) {
-          const nodeKey = 'contents_node_' 
+          const nodeKey = 'contents_nodes_' 
             + user 
             + '_' 
             + notebookID 
@@ -44,7 +44,6 @@
           global.storageNode = new StorageManager(global.contentNodesClient, nodeKey);
         } else {
           global.storageNode = new StorageManager(global.contentNodesClient, "");
-
         }
         global.storageNode.load()
     }

@@ -6,6 +6,10 @@
   <title>Conteúdos do Caderno</title>
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link rel="stylesheet" href="../styles/style.css">
+  <link rel="stylesheet" href="../styles/icons-selector.css">
 </head>
 <body onload="init()">
   <!-- Breadcrumb: usuário > caderno -->
@@ -21,12 +25,11 @@
     <div id="notebook-info" class="card mb-4">
       <div class="card-body">
         <div><strong>de:</strong> <span id="info-user"></span></div>
-        <h3 id="info-title" class="card-title"></h3>
-        <p id="info-description" class="card-text"></p>
-        <p>
+        <h3 class="card-title">
           <i id="info-icon" class="bi"></i>
-          <span id="info-icon-text"></span>
-        </p>
+          <span id="info-title" ></span>
+        </h3>
+        <p id="info-description" class="card-text"></p>
         <p>
           <img id="info-image" src="" alt="Imagem do caderno" class="img-thumbnail" style="max-width: 120px;" />
         </p>
@@ -109,8 +112,14 @@
       document.getElementById('info-title').innerText       = notebook.name;
       document.getElementById('info-description').innerText = notebook.description;
       document.getElementById('info-icon').classList.add(notebook.icon);
-      document.getElementById('info-icon-text').innerText   = notebook.icon;
-      document.getElementById('info-image').src             = notebook.image;
+      // document.getElementById('info-icon-text').innerText   = notebook.icon;
+      const imgEl = document.getElementById('info-image');
+      if (notebook.image) {
+        imgEl.src = notebook.image;
+        imgEl.style.display = '';       // garante que ele fique visível
+      } else {
+        imgEl.style.display = 'none';   // esconde a imagem
+      }
       document.getElementById('info-createdAt').innerText   = notebook.createdAt;
       document.getElementById('info-updatedAt').innerText   = notebook.updatedAt;
     

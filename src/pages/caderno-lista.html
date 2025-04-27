@@ -7,12 +7,11 @@
   <title>Cadastro de Notebooks</title>
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="../styles/style.css">
+  <link rel="stylesheet" href="../styles/icons-selector.css">
 </head>
 <body onload="init()">
-
- 
-
   <div class="container py-4">
      <!-- Seletor de Usuário -->
     <div id="user-selector-group" class="row mb-3">
@@ -36,9 +35,32 @@
 
     <form id="form-notebook" class="mb-4">
       <div class="form-group row">
-        <div class="col-sm-4">
+        <div class="col-sm-2">
           <label for="inputId">ID</label>
           <input type="text" class="form-control" id="inputId" placeholder="ID" disabled>
+        </div>
+        <div class="col-sm-2">
+          <div class="form-group icon-select" style="max-width: 300px; position: relative;">
+            <label for="iconSelector">Ícone:</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <!-- Aqui fica o ícone selecionado -->
+                <span class="input-group-text" id="iconPreview">
+                  <i class="bi bi-question-circle"></i>
+                </span>
+              </div>
+              <input type="text"
+                     class="form-control"
+                     id="iconSelector"
+                     placeholder="Selecione ou busque um ícone"
+                     aria-describedby="iconPreview">
+            </div>
+            <div id="iconOptions"
+                 class="list-group w-100"
+                 style="display:none; position:absolute; top:100%; left:0; right:0; z-index:1000; max-height:200px; overflow-y:auto;">
+              <!-- JS injeta as opções aqui -->
+            </div>
+          </div>
         </div>
         <div class="col-sm-8">
           <label for="inputName">Nome (*)</label>
@@ -50,11 +72,7 @@
         <textarea class="form-control" id="inputDescription" rows="2" required placeholder="Descrição do notebook"></textarea>
       </div>
       <div class="form-group row">
-        <div class="col-sm-6">
-          <label for="inputIcon">Ícone (classe Bootstrap) *</label>
-          <input type="text" class="form-control" id="inputIcon" required placeholder="ex: bi-journal-code">
-        </div>
-        <div class="col-sm-6">
+        <div class="col-sm-12">
           <label for="inputImage">URL da Imagem *</label>
           <input type="url" class="form-control" id="inputImage" required placeholder="https://...">
         </div>
@@ -80,10 +98,10 @@
           <th>ID</th>
           <th>Nome</th>
           <th>Descrição</th>
-          <th>Ícone</th>
           <th>Imagem</th>
           <th>Criado em</th>
           <th>Atualizado em</th>
+          <th></th>
         </tr>
       </thead>
       <tbody id="table-notebooks"></tbody>
@@ -95,6 +113,8 @@
   <script src="../scripts/content-metadata-client.js"></script>
   <script src="../scripts/content-nodes-client.js"></script>
   <script src="../scripts/user-client.js"></script>
+  <script src="../scripts/icons-selector/icons.js"></script>
+  <script src="../scripts/icons-selector/lib.js"></script>
   <script src="../scripts/storage.js"></script>
   <script src="../scripts/url-service.js"></script>
   <script src="../scripts/app.js"></script>
@@ -193,12 +213,12 @@
             <a href="caderno.html?notebookId=${nb.id}"> 
               <tr>
                 <td>${nb.id}</td>
-                <td>${nb.name}</td>
+                <td><i class="bi bi-${nb.icon}"></i> ${nb.name}</td>
                 <td>${nb.description}</td>
-                <td><i class="bi ${nb.icon}"></i> ${nb.icon}</td>
                 <td><img src="${nb.image}" alt="" width="40"></td>
                 <td>${nb.createdAt}</td>
                 <td>${nb.updatedAt}</td>
+                <td style="display: none;">${nb.icon}</td>
                 <td>
                   <a 
                     type="details"  
@@ -223,7 +243,7 @@
         const data = {
           name: document.getElementById('inputName').value,
           description: document.getElementById('inputDescription').value,
-          icon: document.getElementById('inputIcon').value,
+          icon: document.getElementById('iconSelector').value,
           image: document.getElementById('inputImage').value
         };
         createNotebook(data, () => {
@@ -259,9 +279,10 @@
           document.getElementById('inputId').value = cols[0].innerText;
           document.getElementById('inputName').value = cols[1].innerText;
           document.getElementById('inputDescription').value = cols[2].innerText;
-          document.getElementById('inputIcon').value = cols[3].innerText.trim();
+          // document.getElementById('iconSelector').value = cols[3].innerText.trim();
           // Para imagem, pega a src do img
-          const img = cols[4].querySelector('img');
+          const img = cols[3].querySelector('img');
+          selectIcon(cols[6].innerText.trim());
           document.getElementById('inputImage').value = img ? img.src : '';
         }
       });
