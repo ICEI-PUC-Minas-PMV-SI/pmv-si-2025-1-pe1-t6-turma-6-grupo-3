@@ -29,23 +29,30 @@ h1 {
 }
 
 div.card {
-  border-color: red !important;
+  border-color: #bdbdbd !important;
   border-radius: 20px;
   text-align: center;
 }
 
 .card button.btn {
   border-radius: 20px;
+  border-color: none;
 }
 
 .card-corner-btn button.btn {
-  border-color: transparent;
+  border-color: transparent !important;
 }
 
 .caderno-display {
   height: 22rem;
+  margin: 20px;
 }
 
-.row align-items-center {
-  background-color: red;
+.grup-cards {
+  background-color: rgb(255, 255, 255);
+  border-radius: 20px;
+  border-color: #bdbdbd;
+  border-style: solid;
+  padding: 40px;
+  border-width: 1px;
 }
