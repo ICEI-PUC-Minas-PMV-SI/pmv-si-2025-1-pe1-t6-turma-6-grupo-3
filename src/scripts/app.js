@@ -2,12 +2,10 @@
   (function(global, notebooks) {
     'use strict';
 
-    // expõe no escopo global
-    global.StorageManager = StorageManager;
 
     global.notebookClient = new MockNotebookClient(notebooks);
     global.contentMetaClient = new MockContentMetadataClient();
-    console.log("-----",   global.contentMetaClient.getAll())
+    global.contentNodesClient = new MockContentNodesClient();
     global.UserClient = MockUserApi;
 
     function loadNotebooksForCurrentUser(user) {
@@ -19,7 +17,11 @@
           global.storageMeta.save();
         }
 
-        global.storageNB = new global.StorageManager(global.notebookClient, user);
+        if (global.storageNode) {
+          global.storageNode.save();
+        }
+
+        global.storageNB = new StorageManager(global.notebookClient, user);
         global.storageNB.load();
 
         const notebookID = UrlService.getParam("notebookId");
@@ -30,6 +32,21 @@
           global.storageMeta = new StorageManager(global.contentMetaClient, "");
         }
         global.storageMeta.load();
+
+        const contentID = UrlService.getParam("contentId");
+        if (notebookID & contentID) {
+          const nodeKey = 'contents_node_' 
+            + user 
+            + '_' 
+            + notebookID 
+            +'_'
+            + contentID;
+          global.storageNode = new StorageManager(global.contentNodesClient, nodeKey);
+        } else {
+          global.storageNode = new StorageManager(global.contentNodesClient, "");
+
+        }
+        global.storageNode.load()
     }
 
     global.UserClient.onChange(loadNotebooksForCurrentUser);

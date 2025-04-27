@@ -81,11 +81,12 @@
   </div>
 
   <!-- Scripts de serviços e app -->
-  <script src="../scripts/url-service.js"></script>
-  <script src="../scripts/user-client.js"></script>
   <script src="../scripts/notebooks-client.js"></script>
   <script src="../scripts/content-metadata-client.js"></script>
+  <script src="../scripts/content-nodes-client.js"></script>
+  <script src="../scripts/user-client.js"></script>
   <script src="../scripts/storage.js"></script>
+  <script src="../scripts/url-service.js"></script>
   <script src="../scripts/app.js"></script>
 
   <script>
@@ -116,11 +117,6 @@
       const allMeta = contentMetaClient.getAll();
       console.log(allMeta);
       
-      // Inicializa ContentClient para metadados
-      // contentMetaClient.reset(allMeta);
-      // já carregado via storageMeta
-
-      // Renderiza e configura CRUD
       renderContents();
       setupForm();
     }
@@ -171,6 +167,7 @@
     }
 
     function renderContents() {
+      const notebookId = UrlService.getParam('notebookId');
       const tbody = document.getElementById('table-contents');
       tbody.innerHTML = '';
       contentMetaClient.getAll().forEach(item => {
@@ -183,6 +180,16 @@
           <td>${item.title}</td>
           <td>${item.tags}</td>
           <td>${item.due_date}</td>
+          <td>
+                  <a 
+                    type="details"  
+                    class="btn btn-info" 
+                    id="btnViewDetails-${item.id}"
+                    href="caderno-conteudo.html?notebookId=${notebookId}&contentId=${item.id}"
+                  >
+                    Ver Conteúdo
+                  </a>
+                </td>
         </tr>`;
       });
       // Event listeners for checkboxes
