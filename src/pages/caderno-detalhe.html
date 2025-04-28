@@ -42,23 +42,47 @@
     <!-- Formulário de conteúdo -->
     <form id="form-content" class="mb-4">
       <input type="hidden" id="inputContentId">
+   
       <div class="form-row">
-        <div class="form-group col-md-6">
+        <div class="col-sm-2">
+          <div class="form-group icon-select" style="max-width: 300px; position: relative;">
+            <label for="iconSelector">Ícone:</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <!-- Aqui fica o ícone selecionado -->
+                <span class="input-group-text" id="iconPreview">
+                  <i class="bi bi-question-circle"></i>
+                </span>
+              </div>
+              <input type="text"
+                     class="form-control"
+                     id="iconSelector"
+                     placeholder="Selecione ou busque um ícone"
+                     aria-describedby="iconPreview">
+            </div>
+            <div id="iconOptions"
+                 class="list-group w-100"
+                 style="display:none; position:absolute; top:100%; left:0; right:0; z-index:1000; max-height:200px; overflow-y:auto;">
+              <!-- JS injeta as opções aqui -->
+            </div>
+          </div>
+        </div>
+        <div class="form-group col-md-10">
           <label for="inputTitle">Título (*)</label>
           <input type="text" class="form-control" id="inputTitle" required>
         </div>
-        
+      </div>
+      <div class="form-row">
+
         <div class="form-group col-md-6">
           <label for="inputTitle">Tags</label>
           <div id="tags-input-container"></div>
         </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group col-md-6">
+        <div class="form-group col-md-3">
           <label for="inputDueDate">Data de Vencimento</label>
           <input type="date" class="form-control" id="inputDueDate">
         </div>
-        <div class="form-group col-md-6">
+        <div class="form-group col-md-3">
           <label for="inputCompletedAt">Concluído em</label>
           <input type="datetime-local" class="form-control" id="inputCompletedAt">
         </div>
@@ -90,6 +114,8 @@
   <script src="../scripts/content-metadata-client.js"></script>
   <script src="../scripts/content-nodes-client.js"></script>
   <script src="../scripts/tag/lib.js"></script>
+  <script src="../scripts/icons-selector/icons.js"></script>
+  <script src="../scripts/icons-selector/lib.js"></script>
   <script src="../scripts/user-client.js"></script>
   <script src="../scripts/storage.js"></script>
   <script src="../scripts/url-service.js"></script>
@@ -148,7 +174,8 @@
           title: document.getElementById('inputTitle').value,
           tags: window.ti.getTags().join(","),
           due_date: document.getElementById('inputDueDate').value,
-          completed_at: document.getElementById('inputCompletedAt').value
+          completed_at: document.getElementById('inputCompletedAt').value,
+          icon: document.getElementById('iconSelector').value,
         };
         contentMetaClient.insertItem(data);
         storageMeta.save();
@@ -161,7 +188,8 @@
           title: document.getElementById('inputTitle').value,
           tags:  window.ti.getTags().join(","),
           due_date: document.getElementById('inputDueDate').value,
-          completed_at: document.getElementById('inputCompletedAt').value
+          completed_at: document.getElementById('inputCompletedAt').value,
+          icon: document.getElementById('iconSelector').value,
         };
         contentMetaClient.updateItem(id, updates);
         storageMeta.save();
@@ -181,6 +209,10 @@
           document.getElementById('inputTitle').value     = cols[2].innerText;
           ti.setTags(cols[3].innerText.split(","));
           document.getElementById('inputDueDate').value   = cols[4].innerText;
+          if (cols[5].innerText) {
+            selectIcon(cols[5].innerText.trim());
+          }
+          
         }
       };
     }
@@ -196,9 +228,10 @@
             <input type="checkbox" class="complete-checkbox" data-id="${item.id}" ${!!item.completed_at && "checked"} title="Concluído em ${item.completed_at}">
           </td>
           <td>${item.id}</td>
-          <td>${item.title}</td>
+          <td> ${item.icon ? `<i class="bi bi-${item.icon}"></i>` : ""} ${item.title}</td>
           <td>${item.tags}</td>
           <td>${item.due_date}</td>
+          <td style="display: none;">${item.icon}</td>
           <td>
                   <a 
                     type="details"  
