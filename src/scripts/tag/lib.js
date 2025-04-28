@@ -147,3 +147,22 @@ function TagSelectorFactory(global) {
     global.TagsInput = TagsInput;
   
   }  
+
+function populateMetaTags(tagsString, container) {
+// limpa tudo antes
+container.innerHTML = '';
+    
+    // quebra em array, trim e remove vazios
+    const tags = tagsString
+      .split(',')
+      .map(t => t.trim())
+      .filter(t => t.length);
+  
+    tags.forEach(tag => {
+      const span = document.createElement('span');
+      // classes Bootstrap para badge pill
+      span.className = 'badge badge-pill badge-primary mr-1 mb-1';
+      span.textContent = tag;
+      container.appendChild(span);
+    });
+  }

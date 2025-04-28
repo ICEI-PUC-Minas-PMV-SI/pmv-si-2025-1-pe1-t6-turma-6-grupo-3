@@ -47,12 +47,12 @@
     <div class="card mb-4">
       <div class="card-body">
 
-        <h3class="card-title">
+        <h3 class="card-title">
           <i id="meta-icon" class="bi"></i>
           <span id="meta-title"  ></span>
 
         </h3>
-        <p><strong>Tags:</strong> <span id="meta-tags"></span></p>
+        <p id="meta-tags"></p>
         <p><strong>Prazo:</strong> <span id="meta-due"></span></p>
         <p><strong>Concluído em:</strong> <span id="meta-completed"></span></p>
       </div>
@@ -89,6 +89,7 @@
   <script src="../scripts/content-metadata-client.js"></script>
   <script src="../scripts/content-nodes-client.js"></script>
   <script src="../scripts/user-client.js"></script>
+  <script src="../scripts/tag/lib.js"></script>
   <script src="../scripts/storage.js"></script>
   <script src="../scripts/url-service.js"></script>
   <script src="../scripts/app.js"></script>
@@ -132,9 +133,8 @@
 
       
       const metaTagEl = document.getElementById('meta-tags');
-      
       if (meta.tags) {
-        metaTagEl.innerText      = meta.tags;
+        populateMetaTags(meta.tags, metaTagEl);
       } else{
         metaTagEl.parentNode.style = "display: none;"
       };
