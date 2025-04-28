@@ -46,7 +46,12 @@
     <!-- Metadata do Conteúdo -->
     <div class="card mb-4">
       <div class="card-body">
-        <h3 id="meta-title" class="card-title"></h3>
+
+        <h3class="card-title">
+          <i id="meta-icon" class="bi"></i>
+          <span id="meta-title"  ></span>
+
+        </h3>
         <p><strong>Tags:</strong> <span id="meta-tags"></span></p>
         <p><strong>Prazo:</strong> <span id="meta-due"></span></p>
         <p><strong>Concluído em:</strong> <span id="meta-completed"></span></p>
@@ -67,7 +72,7 @@
       </div>
       <div id="nodeInputContainer" class="mb-2"></div>
       <div id="nodeEditorActions">
-        <button id="btnSaveNode" class="btn btn-primary mr-2">Adicionar Nó</button>
+        <button id="btnSaveNode" class="btn btn-primary mr-2">adicionar Nó</button>
         <button id="btnUpdateNode" class="btn btn-warning mr-2">Atualizar Nó</button>
         <button id="btnDeleteNode" class="btn btn-danger mr-2">Excluir Nó</button>
         <button id="btnMoveUpNode" class="btn btn-secondary mr-2">Mover ↑</button>
@@ -122,7 +127,12 @@
       const meta = contentMetaClient.findItem(contentId);
       document.getElementById('breadcrumb-level-content').innerText = meta.title;
       document.getElementById('meta-title').innerText     = meta.title;
+
+      document.getElementById('meta-icon').classList.add(`bi-${notebook.icon}`);
+
+      
       const metaTagEl = document.getElementById('meta-tags');
+      
       if (meta.tags) {
         metaTagEl.innerText      = meta.tags;
       } else{
