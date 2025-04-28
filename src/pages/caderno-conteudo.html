@@ -9,6 +9,12 @@
 
   <link rel="stylesheet" href="../styles/style.css">
   <link rel="stylesheet" href="../styles/icons-selector.css">
+  <style>
+    body {
+      /* ou .container principal */
+      padding-bottom: 150px; /* quantidade >= altura do editor */
+    }
+  </style>
 </head>
 <body onload="init()">
   <!-- Breadcrumb: Cadernos > Notebook > Conteúdo -->
@@ -21,18 +27,34 @@
   </nav>
 
   <div class="container">
+    <!-- Sessão de informações do caderno -->
+    <div id="notebook-info" class="card mb-4">
+      <div class="card-body">
+        <div><strong>de:</strong> <span id="info-user"></span></div>
+        <h3 class="card-title">
+          <i id="info-icon" class="bi"></i>
+          <span id="info-title" ></span>
+        </h3>
+        <p id="info-description" class="card-text"></p>
+        <p>
+          <img id="info-image" src="" alt="Imagem do caderno" class="img-thumbnail" style="max-width: 120px;" />
+        </p>
+        <small class="text-muted">Criado em <span id="info-createdAt"></span> | Atualizado em <span id="info-updatedAt"></span></small>
+      </div>
+    </div>
+
     <!-- Metadata do Conteúdo -->
     <div class="card mb-4">
       <div class="card-body">
         <h3 id="meta-title" class="card-title"></h3>
         <p><strong>Tags:</strong> <span id="meta-tags"></span></p>
-        <p><strong>Vencimento:</strong> <span id="meta-due"></span></p>
+        <p><strong>Prazo:</strong> <span id="meta-due"></span></p>
         <p><strong>Concluído em:</strong> <span id="meta-completed"></span></p>
       </div>
     </div>
 
     <!-- Editor de nós -->
-    <div id="node-editor" class="mb-4">
+    <div id="node-editor" class="fixed-bottom bg-white border-top p-3">
       <div class="form-group">
         <label for="nodeType">Tipo de nó:</label>
         <select id="nodeType" class="form-control">
@@ -45,7 +67,7 @@
       </div>
       <div id="nodeInputContainer" class="mb-2"></div>
       <div id="nodeEditorActions">
-        <button id="btnSaveNode" class="btn btn-primary mr-2">Salvar Nó</button>
+        <button id="btnSaveNode" class="btn btn-primary mr-2">Adicionar Nó</button>
         <button id="btnUpdateNode" class="btn btn-warning mr-2">Atualizar Nó</button>
         <button id="btnDeleteNode" class="btn btn-danger mr-2">Excluir Nó</button>
         <button id="btnMoveUpNode" class="btn btn-secondary mr-2">Mover ↑</button>
@@ -74,6 +96,7 @@
       const notebookId = UrlService.getParam('notebookId');
       const contentId  = UrlService.getParam('contentId');
       const notebook = notebookClient.findItem(notebookId);
+      if (!notebook) return alert('Caderno não encontrado');
      
       // preencher breadcrumb do notebook
       const li = document.getElementById('breadcrumb-level-notebook');
@@ -81,14 +104,44 @@
         a.href   = `caderno-detalhe.html?notebookId=${notebookId}`;
         a.innerText = notebook.name;
 
+      document.getElementById('info-user').innerText        = user;
+      document.getElementById('info-title').innerText       = notebook.name;
+      document.getElementById('info-description').innerText = notebook.description;
+      document.getElementById('info-icon').classList.add(`bi-${notebook.icon}`);
+      const imgEl = document.getElementById('info-image');
+      if (notebook.image) {
+        imgEl.src = notebook.image;
+        imgEl.style.display = '';       // garante que ele fique visível
+      } else {
+        imgEl.style.display = 'none';   // esconde a imagem
+      }
+      document.getElementById('info-createdAt').innerText   = notebook.createdAt;
+      document.getElementById('info-updatedAt').innerText   = notebook.updatedAt;
+      
       // metadata
       const meta = contentMetaClient.findItem(contentId);
       document.getElementById('breadcrumb-level-content').innerText = meta.title;
       document.getElementById('meta-title').innerText     = meta.title;
-      document.getElementById('meta-tags').innerText      = meta.tags;
-      document.getElementById('meta-due').innerText       = meta.due_date;
-      document.getElementById('meta-completed').innerText = meta.completed_at;
+      const metaTagEl = document.getElementById('meta-tags');
+      if (meta.tags) {
+        metaTagEl.innerText      = meta.tags;
+      } else{
+        metaTagEl.parentNode.style = "display: none;"
+      };
 
+      const metaDueEl = document.getElementById('meta-due');
+      if (meta.due_date) {
+        metaDueEl.innerText      = meta.due_date;
+      } else{
+        metaDueEl.parentNode.style = "display: none;"
+      };
+
+      const metaCompletedEl = document.getElementById('meta-completed');
+      if (meta.completed_at) {
+        metaCompletedEl.innerText    = meta.completed_at;
+      } else{
+        metaCompletedEl.parentNode.style = "display: none;"
+      };
       // nodes
       nodesClient    = new MockContentNodesClient();
       storageNodes   = new StorageManager(nodesClient, `nodes_${user}_${notebookId}_${contentId}`);
