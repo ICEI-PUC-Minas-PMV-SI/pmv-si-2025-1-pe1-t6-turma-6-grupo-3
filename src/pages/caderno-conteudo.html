@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editar Conteúdo</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+</head>
+<body onload="init()">
+  <!-- Breadcrumb: Cadernos > Notebook > Conteúdo -->
+  <nav aria-label="breadcrumb" class="p-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="../index.html">Cadernos</a></li>
+      <li class="breadcrumb-item"  id="breadcrumb-level-notebook" ><a href="contents.html?caderno=" id="bc-notebook-link">Notebook</a></li>
+      <li class="breadcrumb-item active" id="breadcrumb-level-content" aria-current="page">Conteúdo</li>
+    </ol>
+  </nav>
+
+  <div class="container">
+    <!-- Metadata do Conteúdo -->
+    <div class="card mb-4">
+      <div class="card-body">
+        <h3 id="meta-title" class="card-title"></h3>
+        <p><strong>Tags:</strong> <span id="meta-tags"></span></p>
+        <p><strong>Vencimento:</strong> <span id="meta-due"></span></p>
+        <p><strong>Concluído em:</strong> <span id="meta-completed"></span></p>
+      </div>
+    </div>
+
+    <!-- Editor de nós -->
+    <div id="node-editor" class="mb-4">
+      <div class="form-group">
+        <label for="nodeType">Tipo de nó:</label>
+        <select id="nodeType" class="form-control">
+          <option value="">-- selecione --</option>
+          <option value="h1">Título (H1)</option>
+          <option value="p">Parágrafo</option>
+          <option value="img">Imagem (URL)</option>
+          <option value="link">Link</option>
+        </select>
+      </div>
+      <div id="nodeInputContainer" class="mb-2"></div>
+      <div id="nodeEditorActions">
+        <button id="btnSaveNode" class="btn btn-primary mr-2">Salvar Nó</button>
+        <button id="btnUpdateNode" class="btn btn-warning mr-2">Atualizar Nó</button>
+        <button id="btnDeleteNode" class="btn btn-danger mr-2">Excluir Nó</button>
+        <button id="btnMoveUpNode" class="btn btn-secondary mr-2">Mover ↑</button>
+        <button id="btnMoveDownNode" class="btn btn-secondary mr-2">Mover ↓</button>
+        <button id="btnCancelEdit" class="btn btn-light">Cancelar</button>
+      </div>
+    </div>
+
+    <!-- Lista de nós -->
+    <ul id="nodes-list" class="list-group"></ul>
+  </div>
+
+  <script src="../scripts/notebooks-client.js"></script>
+  <script src="../scripts/content-metadata-client.js"></script>
+  <script src="../scripts/content-nodes-client.js"></script>
+  <script src="../scripts/user-client.js"></script>
+  <script src="../scripts/storage.js"></script>
+  <script src="../scripts/url-service.js"></script>
+  <script src="../scripts/app.js"></script>
+  <script>
+    let nodesClient, storageNodes;
+    let editingNodeId = null;
+
+    function init() {
+      const user = UserClient.getCurrentUser();
+      const notebookId = UrlService.getParam('notebookId');
+      const contentId  = UrlService.getParam('contentId');
+      const notebook = notebookClient.findItem(notebookId);
+     
+      // preencher breadcrumb do notebook
+      const li = document.getElementById('breadcrumb-level-notebook');
+      const a  = li.querySelector('a');
+        a.href   = `caderno-detalhe.html?notebookId=${notebookId}`;
+        a.innerText = notebook.name;
+
+      // metadata
+      const meta = contentMetaClient.findItem(contentId);
+      document.getElementById('breadcrumb-level-content').innerText = meta.title;
+      document.getElementById('meta-title').innerText     = meta.title;
+      document.getElementById('meta-tags').innerText      = meta.tags;
+      document.getElementById('meta-due').innerText       = meta.due_date;
+      document.getElementById('meta-completed').innerText = meta.completed_at;
+
+      // nodes
+      nodesClient    = new MockContentNodesClient();
+      storageNodes   = new StorageManager(nodesClient, `nodes_${user}_${notebookId}_${contentId}`);
+      storageNodes.load();
+
+      setupNodeEditor();
+      renderNodesList();
+    }
+
+    function setupNodeEditor() {
+      const typeSelect = document.getElementById('nodeType');
+      const container  = document.getElementById('nodeInputContainer');
+      const actions    = document.getElementById('nodeEditorActions');
+      // inicial: só Salvar
+      toggleEditorButtons('add');
+
+      typeSelect.addEventListener('change', () => {
+        editingNodeId = null;
+        toggleEditorButtons('add');
+        renderNodeInput(typeSelect.value, '');
+      });
+
+      document.getElementById('btnSaveNode').onclick = () => {
+        const [type, value] = getNodeInputValues();
+        nodesClient.insertItem({ type, value });
+        storageNodes.save(); renderNodesList(); resetEditor();
+      };
+
+      document.getElementById('btnUpdateNode').onclick = () => {
+        const [type, value] = getNodeInputValues();
+        nodesClient.updateItem(editingNodeId, { type, value });
+        storageNodes.save(); renderNodesList(); resetEditor();
+      };
+      document.getElementById('btnDeleteNode').onclick = () => {
+        nodesClient.deleteItem(editingNodeId);
+        storageNodes.save(); renderNodesList(); resetEditor();
+      };
+      document.getElementById('btnMoveUpNode').onclick = () => { moveNode('up'); };
+      document.getElementById('btnMoveDownNode').onclick = () => { moveNode('down'); };
+      document.getElementById('btnCancelEdit').onclick = resetEditor;
+    }
+
+    function renderNodeInput(type, currentValue) {
+      const c = document.getElementById('nodeInputContainer');
+      c.innerHTML = '';
+      let input;
+      switch(type) {
+        case 'h1':
+        case 'link':
+        case 'img':
+          input = document.createElement('input');
+          input.type = (type==='img' || type==='link')?'url':'text';
+          input.className = 'form-control';
+          input.placeholder = type==='h1'? 'Texto do título': (type==='img'?'URL da imagem':'URL do link');
+          break;
+        case 'p':
+          input = document.createElement('textarea');
+          input.className = 'form-control';
+          input.rows = 3;
+          input.placeholder = 'Texto do parágrafo';
+          break;
+      }
+      if (input) { input.id='nodeValue'; input.value = currentValue||''; c.appendChild(input); }
+    }
+
+    function renderNodesList() {
+      const ul = document.getElementById('nodes-list'); ul.innerHTML='';
+      nodesClient.getAll().forEach(node=>{
+        const li = document.createElement('li');
+        li.className = 'list-group-item';
+        li.dataset.id = node.id;
+        let preview = '';
+        if (node.type==='h1') preview = `<h4>${node.value}</h4>`;
+        if (node.type==='p')  preview = `<p>${node.value}</p>`;
+        if (node.type==='img')preview = `<img src="${node.value}" alt="" style="max-width:100px;">`;
+        if (node.type==='link')preview = `<a href="${node.value}" target="_blank">${node.value}</a>`;
+        li.innerHTML = preview;
+        li.onclick = () => { enterEditMode(node); };
+        ul.appendChild(li);
+      });
+    }
+
+    function enterEditMode(node) {
+      editingNodeId = node.id;
+      document.getElementById('nodeType').value = node.type;
+      toggleEditorButtons('edit');
+      renderNodeInput(node.type, node.value);
+    }
+
+    function resetEditor() {
+      editingNodeId = null;
+      document.getElementById('nodeType').value = '';
+      document.getElementById('nodeInputContainer').innerHTML = '';
+      toggleEditorButtons('add');
+    }
+
+    function toggleEditorButtons(mode) {
+      document.getElementById('btnSaveNode').style.display   = mode==='add'?'inline-block':'none';
+      document.getElementById('btnUpdateNode').style.display = mode==='edit'?'inline-block':'none';
+      document.getElementById('btnDeleteNode').style.display = mode==='edit'?'inline-block':'none';
+      document.getElementById('btnMoveUpNode').style.display = mode==='edit'?'inline-block':'none';
+      document.getElementById('btnMoveDownNode').style.display = mode==='edit'?'inline-block':'none';
+      document.getElementById('btnCancelEdit').style.display = mode==='edit'?'inline-block':'none';
+    }
+
+    function getNodeInputValues() {
+      return [
+        document.getElementById('nodeType').value,
+        document.getElementById('nodeValue').value
+      ];
+    }
+
+    function moveNode(dir) {
+      const arr = nodesClient.getAll();
+      const idx = arr.findIndex(n=>n.id===editingNodeId);
+      const newIdx = dir==='up'? idx-1: idx+1;
+      if (newIdx<0||newIdx>=arr.length) return;
+      [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
+      nodesClient.reset(arr);
+      storageNodes.save(); renderNodesList();
+    }
+  </script>
+</body>
+</html>
