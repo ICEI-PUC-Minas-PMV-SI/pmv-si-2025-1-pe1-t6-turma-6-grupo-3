@@ -2,6 +2,9 @@
   (function(global, notebooks) {
     'use strict';
 
+    if (window.TagSelectorFactory) {
+      TagSelectorFactory(global);
+    }
 
     global.notebookClient = new MockNotebookClient(notebooks);
     global.contentMetaClient = new MockContentMetadataClient();
