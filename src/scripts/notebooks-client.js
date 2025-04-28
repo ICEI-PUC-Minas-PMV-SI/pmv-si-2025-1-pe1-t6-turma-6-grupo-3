@@ -56,7 +56,7 @@ const INITIAL_ITEMS = [
     // Restaura ao estado inicial
     reset(initialData) {
       this.items = new Map();
-      (initialData || []).forEach(item => this.items.set(item.id, { ...item }));
+      (initialData || []).forEach(item => this.items.set(String(item.id), { ...item }));
       this.nextId = this.items.size + 1;
     }
 
@@ -82,7 +82,7 @@ const INITIAL_ITEMS = [
         createdAt: now,
         updatedAt: now
       };
-      this.items.set(newItem.id, newItem);
+      this.items.set(String(newItem.id), newItem);
       return newItem;
     }
 

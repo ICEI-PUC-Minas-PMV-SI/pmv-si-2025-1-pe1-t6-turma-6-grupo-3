@@ -1,6 +1,7 @@
 /**
    * Gerencia persistência do MockClient em localStorage
    */
+// const _callbacks = [];
 class StorageManager {
     /**
      * @param {MockClient} clientInstance
@@ -39,4 +40,5 @@ class StorageManager {
       localStorage.removeItem(this.key);
       this.client.reset(initial);
     }
+
   }

@@ -7,10 +7,28 @@
   <title>Cadastro de Notebooks</title>
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="../styles/style.css">
 </head>
 <body onload="init()">
+
+ 
+
   <div class="container py-4">
+     <!-- Seletor de Usuário -->
+    <div id="user-selector-group" class="row mb-3">
+      <div class="col-sm-4">
+        <label for="selectUser">Usuário:</label>
+        <select id="selectUser" class="form-control"></select>
+      </div>
+    </div>
+    <div id="user-add-group" class="row mb-3" style="display:none;">
+      <div class="col-sm-8">
+        <input type="text" id="inputUserNew" class="form-control" placeholder="Nome do novo usuário">
+      </div>
+      <div class="col-sm-4 d-flex align-items-end">
+        <button id="btnSaveNewUser" class="btn btn-primary w-100">Salvar</button>
+      </div>
+    </div>
     <h1>Cadastro de Notebooks (CRUD)</h1>
     <div class="row">
       <div id="msg" class="col-sm-10 offset-sm-1"></div>
@@ -72,28 +90,91 @@
     </table>
   </div>
 
-  <!-- MockClient e StorageManager -->
-  <script src="api-client.js"></script>
-  <script src="storage-manager.js"></script>
-  <script src="app.js"></script>
+  <!-- MockClient e StorageNBManager -->
+  <script src="../scripts/notebooks-client.js"></script>
+  <script src="../scripts/content-metadata-client.js"></script>
+  <script src="../scripts/user-client.js"></script>
+  <script src="../scripts/storage.js"></script>
+  <script src="../scripts/url-service.js"></script>
+  <script src="../scripts/app.js"></script>
   <script>
+     // Popula seletor com opção de adicionar novo
+    function populateUserSelect() {
+      const select = document.getElementById('selectUser');
+      select.innerHTML = '';
+      UserClient.getUsers().forEach(u => {
+        const opt = document.createElement('option');
+        opt.value = u;
+        opt.text  = u;
+        select.appendChild(opt);
+      });
+      const addOpt = document.createElement('option');
+      addOpt.value = '__add_new';
+      addOpt.text  = '+ Novo usuário';
+      select.appendChild(addOpt);
+    }
+    
+    function displayMessage(msg) {
+      const msgDiv = document.getElementById('msg');
+      msgDiv.innerHTML = `<div class="alert alert-warning" role="alert">${msg}</div>`;
+    }
+
+    // init user service
+    populateUserSelect();
+    let select      = document.getElementById('selectUser');
+    let userGroup   = document.getElementById('user-selector-group');
+    let addGroup    = document.getElementById('user-add-group');
+    let inputNew    = document.getElementById('inputUserNew');
+    let btnSaveUser = document.getElementById('btnSaveNewUser');
+
+    select.addEventListener('change', e => {
+      if (e.target.value === '__add_new') {
+        userGroup.style.display = 'none';
+        addGroup.style.display  = 'flex';
+        inputNew.value          = '';
+        inputNew.focus();
+      } else {
+        console.log('TROCOU USER')
+        UserClient.setCurrentUser(e.target.value);
+        exibeNotebooks();
+      }
+    });
+
+    btnSaveUser.addEventListener('click', () => {
+      const name = inputNew.value.trim();
+      if (!name) return displayMessage('Informe o nome do usuário.');
+      UserClient.addUser(name);
+      populateUserSelect();
+      userGroup.style.display = 'flex';
+      addGroup.style.display  = 'none';
+      select.value            = name;
+      select.dispatchEvent(new Event('change'));
+    });
+
+    // Inicializa seleção para usuário atual
+    const current = UserClient.getCurrentUser();
+
+    populateUserSelect();
+    select.value = current;
+    select.dispatchEvent(new Event('change'));
+
     // Funções CRUD usando notebookClient e storage
     function readNotebooks(callback) {
       callback(notebookClient.getAll());
     }
     function createNotebook(data, callback) {
       notebookClient.insertItem(data);
-      storage.save();
+      storageNB.save();
       callback();
     }
     function updateNotebook(id, data, callback) {
       notebookClient.updateItem(id, data);
-      storage.save();
+      storageNB.save();
       callback();
     }
     function deleteNotebook(id, callback) {
       notebookClient.deleteItem(id);
-      storage.save();
+      storageNB.save();
       callback();
     }
 
@@ -108,21 +189,32 @@
       readNotebooks(list => {
         list.forEach(nb => {
           tbody.innerHTML += `
-            <tr>
-              <td>${nb.id}</td>
-              <td>${nb.name}</td>
-              <td>${nb.description}</td>
-              <td><i class="bi ${nb.icon}"></i> ${nb.icon}</td>
-              <td><img src="${nb.image}" alt="" width="40"></td>
-              <td>${nb.createdAt}</td>
-              <td>${nb.updatedAt}</td>
-            </tr>`;
+            <a href="caderno.html?notebookId=${nb.id}"> 
+              <tr>
+                <td>${nb.id}</td>
+                <td>${nb.name}</td>
+                <td>${nb.description}</td>
+                <td><i class="bi ${nb.icon}"></i> ${nb.icon}</td>
+                <td><img src="${nb.image}" alt="" width="40"></td>
+                <td>${nb.createdAt}</td>
+                <td>${nb.updatedAt}</td>
+                <td>
+                  <a 
+                    type="details"  
+                    class="btn btn-info" 
+                    id="btnViewDetails-${nb.id}"
+                    href="caderno-detalhe.html?notebookId=${nb.id}"
+                  >
+                      Ver Detalhes
+                  </a>
+                </td>
+              </tr>
+            </a>`;
         });
       });
     }
 
     function init() {
-      storage.load();
       const form = document.getElementById('form-notebook');
 
       document.getElementById('btnInsert').addEventListener('click', () => {
