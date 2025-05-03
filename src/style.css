@@ -18,9 +18,17 @@ label {
   color: lightskyblue !important;
   opacity: 3;
 }
-h1 {
-  text-align: center;
+
+.nav-item {
+  color: #2c2d31;
 }
+
+h2 {
+  text-align: left;
+  color: #145af1;
+  margin-top: 30px;
+}
+
 #msg {
   height: 60px;
 }
@@ -38,7 +46,6 @@ div.card {
   border-radius: 20px;
   border-color: none;
 }
-
 .card-corner-btn button.btn {
   border-color: transparent !important;
 }
@@ -55,4 +62,33 @@ div.card {
   border-style: solid;
   padding: 40px;
   border-width: 1px;
+}
+
+.btn-todos-cadernos {
+  margin: 30px;
+  border-radius: 20px;
+  width: 150px;
+}
+
+.btn-outline-secondary {
+  border-color: transparent;
+  background-color: transparent;
+  color: #2c2d31;
+}
+
+.btn-primary {
+  border-radius: 20px;
+}
+
+.breadcrumb-item {
+  color: #bdbdbd;
+  text-decoration: none;
+}
+
+.dropdown-toggle {
+  background-color: transparent;
+  color: #2c2d31;
+  border-color: transparent;
+  border-radius: 20px;
+  padding: 5px 50px 5px 50px;
 }
