@@ -118,10 +118,15 @@
   <script src="../scripts/icons-selector/lib.js"></script>
   <script src="../scripts/user-client.js"></script>
   <script src="../scripts/storage.js"></script>
+  <script src="../scripts/session-manager.js"></script>
   <script src="../scripts/url-service.js"></script>
   <script src="../scripts/app.js"></script>
 
   <script>
+
+    if (!session.isLogged()) {
+        window.location.href = LOGIN_URL;
+    }
 
     window.ti = new TagsInput(
       document.getElementById('tags-input-container'),
@@ -132,24 +137,20 @@
       }
     );
     function init() {
-      // Inicializa usuários e notbooks
-      // UserClient.init() e loadNotebooksForCurrentUser serão chamados via UserClient.onChange
-      const user = UserClient.getCurrentUser();
-      // Carrega notebooks e metadados
-    //   loadNotebooksForCurrentUser(user);
-        console.log("user: ", user)
-      // Lê caderno da URL
+    
+      const user = session.getCurrentUser();
+  
       const notebookId = UrlService.getParam('notebookId');
 
       // Exibe breadcrumb e infobox
       const notebook = notebookClient.findItem(notebookId);
       if (!notebook) return alert('Caderno não encontrado');
       document.getElementById('breadcrumbNotebook').innerText = notebook.name;
-      document.getElementById('info-user').innerText        = user;
+      document.getElementById('info-user').innerText        = user.name;
       document.getElementById('info-title').innerText       = notebook.name;
       document.getElementById('info-description').innerText = notebook.description;
       document.getElementById('info-icon').classList.add(`bi-${notebook.icon}`);
-      // document.getElementById('info-icon-text').innerText   = notebook.icon;
+
       const imgEl = document.getElementById('info-image');
       if (notebook.image) {
         imgEl.src = notebook.image;
@@ -157,6 +158,7 @@
       } else {
         imgEl.style.display = 'none';   // esconde a imagem
       }
+
       document.getElementById('info-createdAt').innerText   = notebook.createdAt;
       document.getElementById('info-updatedAt').innerText   = notebook.updatedAt;
     

@@ -16,11 +16,11 @@
 			<div id="login-row" class="row justify-content-center align-items-center">
 				<div id="login-column" class="col-md-6">
 					<div id="login-box" class="col-md-12">
-						<form id="login-form" class="form" method="post" onsubmit="loginUser (this)">
+						<form id="login-form" class="form" method="post" onsubmit="loginUser">
 							<h3 class="text-center text-info">Login</h3>
 							<div class="form-group">
-								<label for="username" class="text-info">Usuário</label><br>
-                                <input type="text" name="username" id="username" class="form-control">
+								<label for="email" class="text-info">Email</label><br>
+                                <input type="text" name="email" id="email" class="form-control">
                             </div>
                             <div class="form-group">
                                 <label for="password" class="text-info">Senha</label><br>
@@ -49,7 +49,7 @@
         </div>
         <div class="modal-body">
             <div id="login-box" class="col-md-12">
-                <form id="login-form" class="form" method="post" onsubmit="loginUser (this)">
+                <form id="login-form" class="form" method="post" onsubmit="signupUser">
                     <h3 class="text-center text-info">Novo usuário</h3>
                     <div class="form-group">
                         <label for="login" class="text-info">Usuário</label><br>
@@ -81,58 +81,59 @@
       </div>
     </div>
   </div>
-    <script src="../scripts/login.js"></script>
+    <script src="../scripts/notebooks-client.js"></script>
+    <script src="../scripts/content-metadata-client.js"></script>
+    <script src="../scripts/content-nodes-client.js"></script>
+    <script src="../scripts/user-client.js"></script>
+
+    <script src="../scripts/storage.js"></script>
+    <script src="../scripts/session-manager.js"></script>
+    <script src="../scripts/url-service.js"></script>
+    <script src="../scripts/app.js"></script>
     <script>
+
+        if (session.isLogged()) {
+            window.location.href = HOME_URL;
+        }
         
-        // Declara uma função para processar o formulário de login
-        function processaFormLogin (event) {                
-                // Cancela a submissão do formulário para tratar sem fazer refresh da tela
+        function loginUser(event) {                
                 event.preventDefault ();
 
-                // Obtem os dados de login e senha a partir do formulário de login
-                var username = document.getElementById('username').value;
+                var email = document.getElementById('email').value;
                 var password = document.getElementById('password').value;
 
-                // Valida login e se estiver ok, redireciona para tela inicial da aplicação
-                resultadoLogin = loginUser (username, password);
-                if (resultadoLogin) {
-                    window.location.href = HOME_PAGE;
+                const err = session.signin({email, password});
+                if (err) {
+                    alert (err.message);
+                    return;
                 }
-                else { // Se login falhou, avisa ao usuário
-                    alert ('Usuário ou senha incorretos');
-                }
+                window.location.href = HOME_URL;
+                
         }
 
-        function salvaLogin (event) {
-            // Cancela a submissão do formulário para tratar sem fazer refresh da tela
-            event.preventDefault ();
+        function signupUser (event) {
+            event.preventDefault();
 
-            // Obtem os dados do formulário
-            let login  = document.getElementById('txt_login').value;
-            let nome   = document.getElementById('txt_nome').value;
-            let email  = document.getElementById('txt_email').value;
-            let senha  = document.getElementById('txt_senha').value;
-            let senha2 = document.getElementById('txt_senha2').value;
-            if (senha != senha2) {
-                alert ('As senhas informadas não conferem.');
-                return
-            }
+            let name = document.getElementById('txt_login').value;
+            let fullName = document.getElementById('txt_nome').value;
+            let email = document.getElementById('txt_email').value;
+            let password = document.getElementById('txt_senha').value;
+            let passwordVerification = document.getElementById('txt_senha2').value;
 
             // Adiciona o usuário no banco de dados
-            addUser (nome, login, senha, email);
-            alert ('Usuário salvo com sucesso. Proceda com o login para ');
+            const err = session.signup({ fullName, name, password, passwordVerification, email});
+            if (err) {
+                alert(err.message);
+            }
 
-            // Oculta a div modal do login
-            //document.getElementById ('loginModal').style.display = 'none';
             $('#loginModal').modal('hide');
+            window.location.href = HOME_URL;
+
         }
 
-        // Associa a funçao processaFormLogin  formulário adicionado um manipulador do evento submit
-        document.getElementById ('login-form').addEventListener ('submit', processaFormLogin);
+        document.getElementById('login-form').addEventListener('submit', loginUser);
 
-
-        // Associar salvamento ao botao
-        document.getElementById ('btn_salvar').addEventListener ('click', salvaLogin);        
+        document.getElementById('btn_salvar').addEventListener ('click', signupUser);        
     </script>
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>

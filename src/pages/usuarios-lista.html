@@ -6,10 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minha aplicação</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src="../scripts/login.js"></script>
+    <script src="../scripts/notebooks-client.js"></script>
+    <script src="../scripts/content-metadata-client.js"></script>
+    <script src="../scripts/content-nodes-client.js"></script>
+    <script src="../scripts/user-client.js"></script>
+    <script src="../scripts/storage.js"></script>
+    <script src="../scripts/session-manager.js"></script>
+    <script src="../scripts/url-service.js"></script>
+    <script src="../scripts/app.js"></script>
     <script>
         // Verifica se o usuário já esta logado e se negativo, redireciona para tela de login        
-        if (!usuarioCorrente.login) {
+        if (!session.isLogged()) {
             window.location.href = LOGIN_URL;
         }
 
@@ -17,23 +24,30 @@
             
             // Popula a tabela com os registros do banco de dados
             let listaUsuarios = '';
-            for (i = 0; i < db_usuarios.usuarios.length; i++) {
-                let usuario = db_usuarios.usuarios[i];
-                listaUsuarios += `<tr><td scope="row">${usuario.nome}</td><td>${usuario.login}</td><td>${usuario.email}</td></tr>`;
-            }
+            const users = userClient.getAll();
+
+            users.forEach(user => {
+                listaUsuarios += `<tr><td scope="row">${user.fullName}</td><td>${user.name}</td><td>${user.email}</td><td> ${user.role} </td></tr>`;
+
+            })
 
             // Substitui as linhas do corpo da tabela
             document.getElementById("table-usuarios").innerHTML = listaUsuarios
 
         }
 
+        function logout() {
+            session.signout();
+            window.location.reload();
+        }
+
         function initPage() {
 
             // Associa a função de logout ao botão
-            document.getElementById('btn_logout').addEventListener('click', logoutUser);
+            document.getElementById('btn_logout').addEventListener('click', logout);
 
             // Informa o nome do usuário logado
-            document.getElementById('nomeUsuario').innerHTML = usuarioCorrente.nome;
+            document.getElementById('nomeUsuario').innerHTML = session.getCurrentUser().fullName;
 
             // Lista os usuários 
             exibeUsuarios ();
@@ -55,9 +69,10 @@
                 <table id="grid-usuarios" class="table table-striped">
                     <thead>
                         <tr>
-                            <th scope="col">Nome</th>
-                            <th scope="col">login</th>
+                            <th scope="col">Nome Completo</th>
+                            <th scope="col">Apelido</th>
                             <th scope="col">E-mail</th>
+                            <th scope="col">Função</th>
                         </tr>
                     </thead>
                     <tbody id="table-usuarios">
