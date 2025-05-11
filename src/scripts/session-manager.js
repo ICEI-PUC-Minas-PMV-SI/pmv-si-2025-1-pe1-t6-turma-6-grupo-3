@@ -37,26 +37,30 @@ class SessionManager {
         return new Error("Email e/ou Senha não encontrados.");
       }
       this._setCurrentUser(user);
+      if (user.role == "admin") {
+        this.originalUser = user;
+      }
     }
 
     signout() {
       this.currentUser = null;
       this.originalUser = null;
+      this.storage.save();
+
       localStorage.removeItem(CURRENT_USER_KEY);
       this._emitChange();
     }
 
     impersonate(id) {
+      if (this.currentUser.id == id) {
+        return;
+      }
       if (!this.currentUser || this.currentUser.role !== 'admin') {
         return new Error('Somente administradores podem impersonar.');
       }
       const target = this.userClient.findItem(id);
 
       if (!target) return new Error('Usuário para impersonar não encontrado');
-
-      if (!this.originalUser || this.originalUser.id === target.id) {
-        this.originalUser = this.currentUser;
-      }
 
       this.currentUser = target;
 
@@ -66,8 +70,7 @@ class SessionManager {
 
     _setCurrentUser(user) {
       this.currentUser = user;
-
-      if (!this.originalUser) this.originalUser = user;
+      
       localStorage.setItem(CURRENT_USER_KEY, String(user.id));
       this._emitChange();
     }
