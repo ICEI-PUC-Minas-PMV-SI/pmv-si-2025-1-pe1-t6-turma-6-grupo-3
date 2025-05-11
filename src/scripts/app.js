@@ -1,6 +1,6 @@
   
   const LOGIN_URL = "login.html";
-  const HOME_URL = "home.html";
+  const HOME_URL = "caderno-lista.html";
 
   (function(global) {
     'use strict';
@@ -129,6 +129,6 @@
     }
 
     global.session.onChangeUser(loadNotebooksForCurrentUser);
-
+    loadNotebooksForCurrentUser();
   })(window, INITIAL_ITEMS);
   

@@ -14,10 +14,13 @@
 <body onload="init()">
   <div class="container py-4">
      <!-- Seletor de Usuário -->
-    <div id="user-selector-group" class="row mb-3">
+    <div id="user-selector-group" class="row mb-3 flex">
       <div class="col-sm-4">
         <label for="selectUser">Usuário:</label>
         <select id="selectUser" class="form-control"></select>
+      </div>
+      <div class="col-sm-3 d-flex align-items-end">
+        <button id="btn_logout" type="button" class="btn btn-secondary" data-dismiss="modal">Logout</button>
       </div>
     </div>
     <div id="user-add-group" class="row mb-3" style="display:none;">
@@ -116,23 +119,26 @@
   <script src="../scripts/icons-selector/icons.js"></script>
   <script src="../scripts/icons-selector/lib.js"></script>
   <script src="../scripts/storage.js"></script>
+  <script src="../scripts/session-manager.js"></script>
   <script src="../scripts/url-service.js"></script>
   <script src="../scripts/app.js"></script>
   <script>
+    if (!session.isLogged()) {
+        window.location.href = LOGIN_URL;
+    }
      // Popula seletor com opção de adicionar novo
     function populateUserSelect() {
       const select = document.getElementById('selectUser');
+      if (!session.isOriginalUserIsAdmin()) {
+        select.disabled = true;
+      }
       select.innerHTML = '';
-      UserClient.getUsers().forEach(u => {
+      userClient.getAll().forEach(u => {
         const opt = document.createElement('option');
-        opt.value = u;
-        opt.text  = u;
+        opt.value = u.id;
+        opt.text  = u.name;
         select.appendChild(opt);
       });
-      const addOpt = document.createElement('option');
-      addOpt.value = '__add_new';
-      addOpt.text  = '+ Novo usuário';
-      select.appendChild(addOpt);
     }
     
     function displayMessage(msg) {
@@ -149,34 +155,19 @@
     let btnSaveUser = document.getElementById('btnSaveNewUser');
 
     select.addEventListener('change', e => {
-      if (e.target.value === '__add_new') {
-        userGroup.style.display = 'none';
-        addGroup.style.display  = 'flex';
-        inputNew.value          = '';
-        inputNew.focus();
-      } else {
-        console.log('TROCOU USER')
-        UserClient.setCurrentUser(e.target.value);
-        exibeNotebooks();
-      }
-    });
-
-    btnSaveUser.addEventListener('click', () => {
-      const name = inputNew.value.trim();
-      if (!name) return displayMessage('Informe o nome do usuário.');
-      UserClient.addUser(name);
-      populateUserSelect();
-      userGroup.style.display = 'flex';
-      addGroup.style.display  = 'none';
-      select.value            = name;
-      select.dispatchEvent(new Event('change'));
+      console.log('TROCOU USER')
+      // impersionate user
+      // UserClient.setCurrentUser(e.target.value);
+      exibeNotebooks();
+    
     });
 
     // Inicializa seleção para usuário atual
-    const current = UserClient.getCurrentUser();
+    const current = session.getCurrentUser();
 
     populateUserSelect();
-    select.value = current;
+    select.value = current.id;
+    select.text = current.name;
     select.dispatchEvent(new Event('change'));
 
     // Funções CRUD usando notebookClient e storage
@@ -235,6 +226,12 @@
       });
     }
 
+
+    function logout() {
+          session.signout();
+          window.location.reload();
+      }
+
     function init() {
       const form = document.getElementById('form-notebook');
 
@@ -251,13 +248,14 @@
         });
       });
 
+      document.getElementById('btn_logout').addEventListener('click', logout);
       document.getElementById('btnUpdate').addEventListener('click', () => {
         const id = document.getElementById('inputId').value;
         if (!id) return displayMessage('Selecione um notebook para alterar.');
         const data = {
           name: document.getElementById('inputName').value,
           description: document.getElementById('inputDescription').value,
-          icon: document.getElementById('inputIcon').value,
+          icon: document.getElementById('iconSelector').value,
           image: document.getElementById('inputImage').value
         };
         updateNotebook(id, data, () => {
@@ -279,7 +277,6 @@
           document.getElementById('inputId').value = cols[0].innerText;
           document.getElementById('inputName').value = cols[1].innerText;
           document.getElementById('inputDescription').value = cols[2].innerText;
-          // document.getElementById('iconSelector').value = cols[3].innerText.trim();
           // Para imagem, pega a src do img
           const img = cols[3].querySelector('img');
           selectIcon(cols[6].innerText.trim());

@@ -121,6 +121,10 @@ class SessionManager {
       return this.getCurrentUser() !== null;
     }
 
+    isOriginalUserIsAdmin() {
+      return this.originalUser.role == "admin";
+    }
+
     /**
      * Registra callback para evento de deleção de conta
      * @param {function(string)} cb - recebe id deletado
