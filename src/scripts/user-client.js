@@ -1,97 +1,68 @@
 const USER_LIST_KEY = 'notebook_user_list';
 const CURRENT_USER_KEY = 'notebook_current_user';
 const _callbacks = [];
-class MockUserApi {
-    // Mapa interno de usuários (chave: nome, valor: true)
-    static _users = new Map();
 
-    /**
-     * Inicializa o serviço com dados do localStorage ou usuário padrão
-     * @param {string} defaultUser
-     */
-    static init(defaultUser = 'default') {
-      const raw = localStorage.getItem(USER_LIST_KEY);
-      const list = raw ? JSON.parse(raw) : [defaultUser];
-      this._users.clear();
-      list.forEach(u => this._users.set(u, true));
-
-      const current = localStorage.getItem(CURRENT_USER_KEY);
-      if (!current || !this._users.has(current)) {
-        localStorage.setItem(CURRENT_USER_KEY, defaultUser);
-      }
-      this.notifyChange(this.getCurrentUser());
-    }
-
-    /**
-     * Persiste o mapa de usuários no localStorage
-     */
-    static _persistUsers() {
-      localStorage.setItem(
-        USER_LIST_KEY,
-        JSON.stringify(Array.from(this._users.keys()))
-      );
-    }
-
-    /**
-     * Retorna lista de nomes de usuários
-     * @returns {string[]}
-     */
-    static getUsers() {
-      return Array.from(this._users.keys());
-    }
-
-    /**
-     * Adiciona um novo usuário (se ainda não existir)
-     * @param {string} name
-     * @returns {string[]} lista atualizada
-     */
-    static addUser(name) {
-      if (!name) throw new Error('Nome de usuário inválido');
-      if (!this._users.has(name)) {
-        this._users.set(name, true);
-        this._persistUsers();
-        this.notifyChange(name);
-      }
-      return this.getUsers();
-    }
-
-    /**
-     * Define qual usuário está ativo
-     * @param {string} name
-     * @returns {string}
-     */
-    static setCurrentUser(name) {
-      if (!this._users.has(name)) throw new Error('Usuário não encontrado');
-      localStorage.setItem(CURRENT_USER_KEY, name);
-      this.notifyChange(name);
-      return name;
-    }
-
-    /**
-     * Retorna o usuário ativo
-     * @returns {string|null}
-     */
-    static getCurrentUser() {
-      return localStorage.getItem(CURRENT_USER_KEY);
-    }
-
-    /**
-     * Inscreve uma função para ser chamada quando o usuário atual mudar
-     * @param {(name: string) => void} callback
-     */
-    static onChange(callback) {
-      if (typeof callback === 'function') {
-        _callbacks.push(callback);
-      }
-    }
-
-    /**
-     * Notifica todos os inscritos sobre a mudança de usuário
-     * @param {string} name
-     */
-    static notifyChange(name) {
-      _callbacks.forEach(cb => {
-        try { cb(name); } catch (e) { console.error(e); }
-      });
-    }
+class MockUserClient {
+  constructor(initialUsers = []) {
+    this.reset(initialUsers);
   }
+
+  reset(users) {
+    this._users = new Map();
+    this._usersByEmail = new Map()
+    this._nextId = 1;
+
+    users.forEach(u => {
+      const id = String(u.id || this._nextId++);
+      this._users.set(id, { ...u, id });
+      this._usersByEmail.set(u.email, id);
+      this._nextId = Math.max(this._nextId, Number(id) + 1);
+
+    });
+  }
+
+  getAll() {
+    return Array.from(this._users.values());
+  }
+
+  findItem(id) {
+    return this._users.get(String(id)) || null;
+  }
+
+  findItemByEmail(email) {
+    const id = this._usersByEmail.get(String(email)) || null;
+    if (!id) return [null, new Error("User com email não encontrado")];
+
+    return [this.findItem(id), null];
+  }
+
+  insertItem(data) {
+    const id = String(this._nextId++);
+    const user = { 
+      id, name: 
+      data.name, 
+      fullName: data.fullName, 
+      email: data.email, 
+      password: data.password, 
+      role: data.role
+     };
+    this._users.set(id, user);
+    return { ...user };
+  }
+
+  updateItem(id, updates) {
+    const key = String(id);
+    const u = this._users.get(key);
+    if (!u) return [null, new Error("User não encontrado")];
+    const updated = { ...u, ...updates, id: key };
+    this._users.set(key, updated);
+    return [{ ...updated }, null];
+  }
+
+  deleteItem(id) {
+    const key = String(id);
+    const u = this._users.get(key);
+    if (!u) return new Error("User não encontrado");
+    this._users.delete(key);
+  }
+}
