@@ -124,6 +124,10 @@
 
   <script>
 
+    if (!session.isLogged()) {
+        window.location.href = LOGIN_URL;
+    }
+
     window.ti = new TagsInput(
       document.getElementById('tags-input-container'),
       {
@@ -154,7 +158,7 @@
       } else {
         imgEl.style.display = 'none';   // esconde a imagem
       }
-      
+
       document.getElementById('info-createdAt').innerText   = notebook.createdAt;
       document.getElementById('info-updatedAt').innerText   = notebook.updatedAt;
     

@@ -95,6 +95,9 @@
   <script src="../scripts/url-service.js"></script>
   <script src="../scripts/app.js"></script>
   <script>
+     if (!session.isLogged()) {
+        window.location.href = LOGIN_URL;
+    }
     let editingNodeId = null;
 
     function init() {
