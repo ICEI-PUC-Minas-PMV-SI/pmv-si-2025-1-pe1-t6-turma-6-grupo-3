@@ -91,14 +91,14 @@
   <script src="../scripts/user-client.js"></script>
   <script src="../scripts/tag/lib.js"></script>
   <script src="../scripts/storage.js"></script>
+  <script src="../scripts/session-manager.js"></script>
   <script src="../scripts/url-service.js"></script>
   <script src="../scripts/app.js"></script>
   <script>
-    let nodesClient, storageNodes;
     let editingNodeId = null;
 
     function init() {
-      const user = UserClient.getCurrentUser();
+      const user = session.getCurrentUser();
       const notebookId = UrlService.getParam('notebookId');
       const contentId  = UrlService.getParam('contentId');
       const notebook = notebookClient.findItem(notebookId);
@@ -110,7 +110,7 @@
         a.href   = `caderno-detalhe.html?notebookId=${notebookId}`;
         a.innerText = notebook.name;
 
-      document.getElementById('info-user').innerText        = user;
+      document.getElementById('info-user').innerText        = user.name;
       document.getElementById('info-title').innerText       = notebook.name;
       document.getElementById('info-description').innerText = notebook.description;
       document.getElementById('info-icon').classList.add(`bi-${notebook.icon}`);
@@ -152,10 +152,6 @@
       } else{
         metaCompletedEl.parentNode.style = "display: none;"
       };
-      // nodes
-      nodesClient    = new MockContentNodesClient();
-      storageNodes   = new StorageManager(nodesClient, `nodes_${user}_${notebookId}_${contentId}`);
-      storageNodes.load();
 
       setupNodeEditor();
       renderNodesList();
@@ -176,18 +172,21 @@
 
       document.getElementById('btnSaveNode').onclick = () => {
         const [type, value] = getNodeInputValues();
-        nodesClient.insertItem({ type, value });
-        storageNodes.save(); renderNodesList(); resetEditor();
+        contentNodesClient.insertItem({ type, value });
+        storageNode.save();
+        renderNodesList(); resetEditor();
       };
 
       document.getElementById('btnUpdateNode').onclick = () => {
         const [type, value] = getNodeInputValues();
-        nodesClient.updateItem(editingNodeId, { type, value });
-        storageNodes.save(); renderNodesList(); resetEditor();
+        contentNodesClient.updateItem(editingNodeId, { type, value });
+        storageNode.save();
+        renderNodesList(); resetEditor();
       };
       document.getElementById('btnDeleteNode').onclick = () => {
-        nodesClient.deleteItem(editingNodeId);
-        storageNodes.save(); renderNodesList(); resetEditor();
+        contentNodesClient.deleteItem(editingNodeId);
+        storageNode.save();
+        renderNodesList(); resetEditor();
       };
       document.getElementById('btnMoveUpNode').onclick = () => { moveNode('up'); };
       document.getElementById('btnMoveDownNode').onclick = () => { moveNode('down'); };
@@ -219,7 +218,7 @@
 
     function renderNodesList() {
       const ul = document.getElementById('nodes-list'); ul.innerHTML='';
-      nodesClient.getAll().forEach(node=>{
+      contentNodesClient.getAll().forEach(node=>{
         const li = document.createElement('li');
         li.className = 'list-group-item';
         li.dataset.id = node.id;
@@ -265,13 +264,14 @@
     }
 
     function moveNode(dir) {
-      const arr = nodesClient.getAll();
+      const arr = contentNodesClient.getAll();
       const idx = arr.findIndex(n=>n.id===editingNodeId);
       const newIdx = dir==='up'? idx-1: idx+1;
       if (newIdx<0||newIdx>=arr.length) return;
       [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
-      nodesClient.reset(arr);
-      storageNodes.save(); renderNodesList();
+      contentNodesClient.reset(arr);
+      storageNode.save();
+      renderNodesList();
     }
   </script>
 </body>
