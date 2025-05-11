@@ -157,7 +157,11 @@
     select.addEventListener('change', e => {
       console.log('TROCOU USER')
       // impersionate user
-      // UserClient.setCurrentUser(e.target.value);
+      const err = session.impersonate(e.target.value);
+      if (err) {
+        alert(err.message)
+        return;
+      }
       exibeNotebooks();
     
     });
