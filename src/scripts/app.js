@@ -99,13 +99,13 @@
         if (global.storageNode) {
           global.storageNode.save();
         }
-        const notebookKey = 'notebooks_of_' + user;
+        const notebookKey = 'notebooks_of_' + user.id;
         global.storageNB = new StorageManager(global.notebookClient, notebookKey);
         global.storageNB.load();
 
         const notebookID = UrlService.getParam("notebookId");
         if (notebookID) {
-          const metaKey = 'contents_meta_' + user + '_' + notebookID;
+          const metaKey = 'contents_meta_' + user.id + '_' + notebookID;
           global.storageMeta = new StorageManager(global.contentMetaClient, metaKey);
         } else {
           global.storageMeta = new StorageManager(global.contentMetaClient, "");
@@ -129,6 +129,6 @@
     }
 
     global.session.onChangeUser(loadNotebooksForCurrentUser);
-    loadNotebooksForCurrentUser();
+    loadNotebooksForCurrentUser(session.getCurrentUser());
   })(window, INITIAL_ITEMS);
   
