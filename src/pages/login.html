@@ -124,6 +124,7 @@
             const err = session.signup({ fullName, name, password, passwordVerification, email});
             if (err) {
                 alert(err.message);
+                return;
             }
 
             $('#loginModal').modal('hide');

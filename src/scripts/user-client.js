@@ -9,13 +9,12 @@ class MockUserClient {
 
   reset(users) {
     this._users = new Map();
-    this._usersByEmail = new Map()
+    this._usersByEmail = new Map();
     this._nextId = 1;
 
     users.forEach(u => {
       const id = String(u.id || this._nextId++);
-      this._users.set(id, { ...u, id });
-      this._usersByEmail.set(u.email, id);
+      this._addUserInLocalDB(u)
       this._nextId = Math.max(this._nextId, Number(id) + 1);
 
     });
@@ -46,8 +45,14 @@ class MockUserClient {
       password: data.password, 
       role: data.role
      };
-    this._users.set(id, user);
+    this._addUserInLocalDB(user);
+    
     return { ...user };
+  }
+
+  _addUserInLocalDB(user) {
+    this._users.set(user.id, user);
+    this._usersByEmail.set(user.email, user.id);
   }
 
   updateItem(id, updates) {
