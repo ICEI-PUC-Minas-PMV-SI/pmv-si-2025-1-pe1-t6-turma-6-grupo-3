@@ -68,12 +68,6 @@ class SessionManager {
       this._emitChange();
     }
 
-    _setCurrentUser(user) {
-      this.currentUser = user;
-      
-      localStorage.setItem(CURRENT_USER_KEY, String(user.id));
-      this._emitChange();
-    }
 
     revertImpersonation() {
       if (this.originalUser) {
@@ -104,14 +98,7 @@ class SessionManager {
       this.signout();
     }
 
-    /**
-     * Registra callback para mudança de sessão
-     * @param {function(Object|null)} cb
-     */
-    onChangeUser(cb) {
-      if (typeof cb === 'function') this._changeCallbacks.push(cb);
-    }
-
+    
     getCurrentUser() {
       return this.currentUser;
     }
@@ -134,6 +121,22 @@ class SessionManager {
      */
     onDeleteAccount(cb) {
       if (typeof cb === 'function') this._deleteCallbacks.push(cb);
+    
+    }
+    
+    /**
+     * Registra callback para mudança de sessão
+     * @param {function(Object|null)} cb
+     */
+    onChangeUser(cb) {
+      if (typeof cb === 'function') this._changeCallbacks.push(cb);
+    }
+
+    _setCurrentUser(user) {
+      this.currentUser = user;
+      
+      localStorage.setItem(CURRENT_USER_KEY, String(user.id));
+      this._emitChange();
     }
 
     _emitChange() {
