@@ -42,12 +42,17 @@ div.card {
   text-align: center;
 }
 
+.card-title {
+  margin-top: 12px;
+}
+
 .card button.btn {
   border-radius: 20px;
   border-color: none;
 }
 .card-corner-btn button.btn {
   border-color: transparent !important;
+  position: absolute;
 }
 
 .caderno-display {
@@ -91,4 +96,23 @@ div.card {
   border-color: transparent;
   border-radius: 20px;
   padding: 5px 50px 5px 50px;
+}
+
+.icon-notebook {
+  border-color: #145af1;
+  border: solid 2px;
+  border-radius: 100%;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  left: 45%;
+  z-index: 1000;
+  top: -20px;
+  background-color: white;
+}
+
+.icon-notebook i {
+  position: absolute;
+  left: 10px;
+  top: 5px;
 }
