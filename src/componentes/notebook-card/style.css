@@ -37,22 +37,37 @@ h2 {
 }
 
 div.card {
-  border-color: #bdbdbd !important;
+  border-color: #145af1 !important;
   border-radius: 20px;
   text-align: center;
+  border: solid 2px;
 }
 
 .card-title {
-  margin-top: 12px;
+  margin-top: 20px;
 }
 
 .card button.btn {
   border-radius: 20px;
-  border-color: none;
+  border-color: transparent;
+  background-color: #145af1;
 }
+
 .card-corner-btn button.btn {
   border-color: transparent !important;
+  background-color: #bdbdbd !important;
   position: absolute;
+  margin-right: 3px;
+  margin-top: 3px;
+}
+
+.btn-download {
+  color: white;
+  border-color: transparent !important;
+  background-color: #145af1 !important;
+  position: absolute;
+  margin-right: 3px;
+  margin-top: 3px;
 }
 
 .caderno-display {
@@ -99,8 +114,8 @@ div.card {
 }
 
 .icon-notebook {
-  border-color: #145af1;
-  border: solid 2px;
+  border-color: #145af1 !important;
+  border: solid 3px;
   border-radius: 100%;
   width: 40px;
   height: 40px;
