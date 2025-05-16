@@ -1,0 +1,14 @@
+
+.icon-select { /* container do input + dropdown */
+    position: relative;
+  }
+  
+  #iconOptions {
+    position: absolute;
+    top: 100%;       /* imediatamente abaixo do input */
+    left: 0;
+    right: 0;
+    z-index: 1000;   /* acima de outros elementos */
+    max-height: 200px;
+    overflow-y: auto;
+  }
