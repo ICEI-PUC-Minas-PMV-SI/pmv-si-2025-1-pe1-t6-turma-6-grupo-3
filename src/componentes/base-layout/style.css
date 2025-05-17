@@ -1,0 +1,304 @@
+/* ===== ESTILOS GERAIS ===== */
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; 
+  height: 100%;
+}
+
+/* ===== LAYOUT PRINCIPAL ===== */
+.main-content {
+  margin-left: 280px; 
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* ===== SIDEBAR PRINCIPAL ===== */
+.sidebar {
+  width: 280px;
+  height: 100vh;
+  background-color: #ffffff;
+  border-right: none;
+  max-height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  padding: 1rem;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  padding-top: 55px; 
+}
+
+/* Estilos do logo na sidebar */
+.sidebar > a.d-flex {
+  justify-content: center;
+  display: flex;
+  align-items: last baseline;
+  height: 48px;
+  gap: 6px;
+  margin-left: -12px;
+  width: calc(100% + 24px);
+}
+
+.sidebar > a.d-flex img {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 8px;
+  margin-right: 0;
+}
+
+.sidebar > a.d-flex .fs-4 {
+  display: flex;
+  align-items: baseline;
+  padding-bottom: 0;
+  margin-left: -15px;
+  font-size: 1.5rem !important;
+  line-height: 1.2;
+}
+
+.sidebar > a.d-flex .book {
+  position: relative;
+  top: -0.5px;
+}
+
+/* Estilos do texto do logo */
+.sidebar a span {
+  display: flex;
+  align-items: center;
+}
+
+.sidebar a .surf {
+  font-weight: 400;
+  color: #145af1;
+  font-size: 1.25em;
+}
+
+.sidebar a .book {
+  font-weight: 600;
+  color: #145af1;
+  font-size: 1.25em;
+}
+
+/* ===== CABEÇALHO FIXO ===== */
+.header-line {
+  position: fixed;
+  top: 15px;
+  left: 280px;
+  right: 0;
+  height: 65px;
+  background-color: white;
+  border-bottom: 1px solid #BDBDBD;
+  z-index: 999;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+}
+
+.header-line .d-flex.gap-2 {
+  align-items: center; 
+}
+
+/* ===== CONTROLES DO USUÁRIO ===== */
+.icon-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dropdown-toggle span {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px; 
+}
+
+/* Estilos dos ícones circulares */
+.icon-circle, .profile-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+  transition: all 0.3s ease;
+}
+
+.header-line .btn-link {
+  color: #6c757d !important;
+  transition: all 0.2s;
+}
+
+.icon-circle:hover {
+  transform: none;
+}
+
+.header-line .badge {
+  font-size: 0.6rem;
+  padding: 0.15em 0.4em;
+}
+
+.header-line .d-flex.align-items-center {
+  align-items: center; 
+  height: 100%; 
+}
+
+.header-line .dropdown-menu {
+  margin-top: 10px;
+  border: 1px solid rgba(0,0,0,.1);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+/* Variantes de ícones circulares */
+.icon-help {
+  background-color: #f0f0f0;
+}
+.icon-theme {
+  background-color: #f0f0f0;
+}
+
+/* Ícone do perfil */
+
+.dropdown-toggle {
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+
+/* Separador vertical */
+.separator-vertical {
+  width: 1px;
+  height: 30px;
+  background-color: #dee2e6;
+  display: inline-block;
+  align-self: center;
+}
+
+.header-icons-container {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding-top: 1px; 
+}
+
+.icon-circle .bi,
+.profile-circle .bi {
+  font-size: 1.1rem; 
+  line-height: 1;   
+  margin-top: -1px; 
+}
+
+/* ===== CONTEÚDO DA SIDEBAR ===== */
+.sidebar-content {
+  margin-top: 30px;
+}
+
+/* Seção de pesquisa */
+.search-section {
+  margin-bottom:3.5rem;
+}
+
+.search-container {
+  padding: 0 0.5rem;
+}
+
+.search-container .input-group {
+  border: 1px solid #145af1;
+  border-radius: 40px;
+  overflow: hidden;
+  height: 36px;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.search-container .input-group-text {
+  padding-left: 1.2rem !important;
+  background-color: transparent;
+  border: none !important;
+}
+
+.search-container .input-group-text svg {
+  width: 16px;
+  height: 16px;
+  fill: #145af1;
+}
+
+.search-container .form-control {
+  border: none !important;
+  box-shadow: none !important;
+  font-size: 0.8rem;
+  padding-left: 0.5rem;
+  height: 100%;
+  font-family: 'Poppins', sans-serif;
+}
+
+.search-container .form-control::placeholder {
+  color: #6c757d;
+  font-weight: 300;
+  font-style: italic;
+}
+
+/* Títulos das seções */
+.search-title {
+  font-family: 'poppins', sans-serif;
+  font-size: 0.85rem;
+  color: #2b2d31;
+  margin-left: 0.8rem;
+  margin-bottom: 0.5rem;
+  font-weight: 400;
+}
+
+.section-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #2b2d31;
+  letter-spacing: 0.3px;
+  margin-left: 0.8rem;
+ 
+}
+
+/* ===== MENUS DE NAVEGAÇÃO ===== */
+.nav-pills {
+  margin-top: 0.2rem;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  border-radius: 20px !important;
+  margin-bottom: 4px; 
+  color: #2b2d31;
+}
+
+.nav-link span:last-child {
+  font-weight: 200;
+  font-size: 1.2em;
+  color: #2b2d31;
+}
+
+.nav-link span.ms-auto {
+  position: relative;
+  top: -1px;
+}
+
+.nav-link svg {
+  margin-top: -2px;
+}
+
+.nav-link.active {
+  color: #2b2d31 !important;
+  background-color: #f5f5f5 !important;
+}
+
+.nav-link .bi {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-link i {
+  margin-right: 1rem !important; 
+}
