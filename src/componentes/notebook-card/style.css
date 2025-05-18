@@ -72,7 +72,6 @@ div.card {
 
 .caderno-display {
   height: 22rem;
-  margin: 20px;
 }
 
 .grup-cards {
@@ -80,7 +79,7 @@ div.card {
   border-radius: 20px;
   border-color: #bdbdbd;
   border-style: solid;
-  padding: 40px;
+  padding: 40px 20px;
   border-width: 1px;
 }
 

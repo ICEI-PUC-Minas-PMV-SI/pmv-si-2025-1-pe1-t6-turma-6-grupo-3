@@ -1,44 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Bootstrap demo</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
-  <link rel="stylesheet" href="style.css">
-</head>
-
-<body>
-
-
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-md-4 col-sm-12 col-lg-3">
-        <div class="card caderno-display" style="width: 18rem;">
-          <span class="icon-notebook"><i class="bi bi-buildings"></i></span>
-          <div class="d-grid gap-2 d-flex justify-content-end card-corner-btn" role="group" aria-label="First group">
-            <button type="button" class="btn btn-outline-secondary btn-sm btn-favorite">
-              <i class="bi bi-heart-fill"></i>
-            </button>
-          </div>
-          <div class="card-body d-flex flex-column">
-            <div class="flex-grow-1">
-              <h5 class="card-title">Arquitetura Empresarial e da Tecnologia da Informação</h5>
-              <img src="../../../docs/img/slack.jpg" class="card-img-top" alt="...">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <script src="./create-card.js" ></script>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <template id="card-template">
+        <div class="col-lg-3 col-md-4 col-sm-12 card caderno-display">
+            <span class="icon-notebook">
+              <i class="bi bi-buildings"></i>
+            </span>
+            <div class="d-grid gap-2 d-flex justify-content-end card-corner-btn" role="group" aria-label="First group">
+              <button type="button" class="btn btn-outline-secondary btn-sm btn-favorite">
+                <i class="bi bi-heart-fill"></i>
+              </button>
             </div>
-            <div class="mt-auto">
-              <div class="btn-group gap-2 " role="group" aria-label="First group">
-                <button type="button" class="btn btn-primary">Acessar material</button>
+            <div class="card-body d-flex flex-column">
+              <div class="flex-grow-1">
+                <h5 class="card-title">Arquitetura Empresarial e da Tecnologia da Informação</h5>
+                <img src="../../../docs/img/slack.jpg" class="card-img-top" alt="...">
               </div>
-              <div class="btn-group gap-2" role="group" aria-label="First group">
-                <button type="button" class="btn btn-info btn-download">
-                  <i class="bi bi-download"></i>
-                </button>
-              </div>
+              <div class="mt-auto">
+                <div class="btn-group gap-2 " role="group" aria-label="First group">
+                  <button type="button" class="btn btn-primary">Acessar material</button>
+                </div>
+                <div class="btn-group gap-2" role="group" aria-label="First group">
+                  <button type="button" class="btn btn-info btn-download">
+                    <i class="bi bi-download"></i>
+                  </button>
+                </div>
             </div>
           </div>
         </div>
-      </div>
+        </template>
+        <div id="preview-container" class="row">
+
+        </div>
+
+      </div><!--row-->
+    </div> <!--container-fluid-->
+
+  <script>
+    // Dados de exemplo só para o preview
+    const exemplos = [
+      { name: 'Card Exemplo 1', image: 'https://placehold.co/600x400/orange/white?text=Card+One&font=roboto', icon: 'bi bi-star' },
+      { name: 'Card Exemplo 2', image: 'https://placehold.co/600x400/orange/white?text=Card+Two&font=roboto', icon: 'bi bi-music-note' },
+      { name: 'Card Exemplo 3', image: 'https://placehold.co/600x400/orange/white?text=Card+Three&font=roboto', icon: 'bi bi-camera' },
+    ];
+
+    const preview = document.getElementById('preview-container');
+    const wrapper = document;
+    exemplos.forEach(e => preview.appendChild(createCard(document, wrapper, e)));
+  </script>
+  </body>
+  </html>
