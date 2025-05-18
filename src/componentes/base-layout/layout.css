@@ -1,4 +1,9 @@
 /* ===== ESTILOS GERAIS ===== */
+
+:root {
+  --sidebar-width: 250px;     /* ajuste à sua largura */
+  --topbar-height: 56px;      /* altura da navbar fixed-top, se usar Bootstrap */
+}
 body, html {
   margin: 0;
   padding: 0;
@@ -6,11 +11,40 @@ body, html {
   height: 100%;
 }
 
+ .clickable {
+    cursor: pointer;           /* muda o cursor para “mãozinha” */
+    position: relative;        /* necessário se for posicionar o tooltip */
+  }
+
+  /* Tooltip simples via CSS */
+  .clickable:hover::after {
+    content: attr(data-tooltip);   /* pega a mensagem do atributo data-tooltip */
+    position: absolute;
+    bottom: 0%;                  /* posiciona acima da div */
+    left: 50%;
+    transform: translateX(-50%) translateY(-0.5rem);
+    background: rgba(0,0,0,0.75);
+    color: #fff;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    white-space: nowrap;
+    pointer-events: none;          /* o tooltip não bloqueia o hover */
+    font-size: 0.875rem;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  .clickable:hover::after {
+    opacity: 1;
+  }
+
 /* ===== LAYOUT PRINCIPAL ===== */
 .main-content {
-  margin-left: 280px; 
+  margin-left: 300px; 
   min-height: 100vh;
-  padding: 20px;
+  margin-top: 100px;
+  margin-right: 20px;
 }
 
 /* ===== SIDEBAR PRINCIPAL ===== */
@@ -29,6 +63,27 @@ body, html {
   overflow-y: hidden;
   padding-top: 55px; 
 }
+
+
+/* SM */
+@media (min-width: 576px) {
+  
+}
+
+/* MD */
+@media (min-width: 768px) {
+  .card.col-md-4 {
+    width: 32%;
+  }
+}
+
+
+@media (min-width: 1250px) {
+  .card.col-lg-3 {
+    width: 24%;
+  }
+}
+
 
 /* Estilos do logo na sidebar */
 .sidebar > a.d-flex {
@@ -83,10 +138,10 @@ body, html {
 /* ===== CABEÇALHO FIXO ===== */
 .header-line {
   position: fixed;
-  top: 15px;
+  top: 0px;
   left: 280px;
   right: 0;
-  height: 65px;
+  height: 80px;
   background-color: white;
   border-bottom: 1px solid #BDBDBD;
   z-index: 999;

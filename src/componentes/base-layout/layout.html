@@ -9,9 +9,17 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="layout.css">
+  <link rel="stylesheet" href="../base-container/container.css">
+  <link rel="stylesheet" href="../notebook-card/card.css">
+  <link rel="stylesheet" href="../content-card/card.css">
+  <script src="../base-container/create-container.js"></script>
+  <script src="../notebook-card/create-card.js"></script>
+  <script src="../content-card/create-card.js"></script>
+  <script src="./create-layout.js"></script>
 </head>
 <body>
+  <template id="base-layout">
   <!-- ===== SIDEBAR PRINCIPAL ===== -->
 
 <div class="sidebar d-flex flex-column flex-shrink-0 p-3 bg-white position-fixed vh-100">
@@ -150,9 +158,83 @@
           </a>
         </li>
       </ul>
-
   </div>
+  <div data-slot="content" class="main-content"></div>
+  </template>
+  <div id="preview-container"></div>
   <!-- Importação do JavaScript do Bootstrap -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+      const exemplos = [
+      {
+        name: 'Fundamentos de Banco de Dados',
+        description: 'Entenda modelos relacionais, linguagem SQL e boas práticas de normalização.',
+        image: 'https://placehold.co/600x400/orange/white?text=Banco+de+Dados&font=roboto',
+        icon: 'bi bi-database',
+        tags: [
+          { title: 'Dados',       color: '#0dcaf0' },  // info
+          { title: 'SQL',         color: '#6610f2' }   // purple
+        ]
+      },
+      {
+        name: 'Lógica de Programação em JavaScript',
+        image: 'https://placehold.co/600x400/orange/white?text=Banco+de+Dados&font=roboto',
+        description: 'Aprenda estruturas de controle, funções e manipulação de arrays.',
+        icon: 'bi bi-code-slash',
+        tags: [
+          { title: 'Lógica',      color: '#fd7e14' },  // orange
+          { title: 'Programação', color: '#6f42c1' }   // purple-dark
+        ]
+      },
+      {
+        name: 'Infraestrutura de TI',
+        description: 'Conheça redes, servidores e protocolos essenciais para sistemas corporativos.',
+        image: 'https://placehold.co/600x400/orange/white?text=Banco+de+Dados&font=roboto',
+        icon: 'bi bi-server',
+        tags: [
+          { title: 'TI',          color: '#198754' }   // success/green
+        ]
+      },
+      {
+        name: 'Análise de Dados Avançada',
+        description: 'Técnicas de visualização, estatística descritiva e interpretação de grandes volumes de dados.',
+        image: 'https://placehold.co/600x400/orange/white?text=Banco+de+Dados&font=roboto',
+        icon: 'bi bi-bar-chart-line',
+        tags: [
+          { title: 'Dados',       color: '#0dcaf0' },
+          { title: 'Lógica',      color: '#fd7e14' }
+        ]
+      },
+    ];
+
+      const preview = document.getElementById('preview-container');
+
+      Promise.all([
+        fetch('../notebook-card/card.html').then(res => res.text()),
+        fetch('../content-card/card.html').then(res => res.text()),
+        fetch('../base-container/container.html').then(res => res.text())
+      ]).then(([htmlNotebook, htmlContent, htmlContainer]) => {
+        const wrapperNotebook = document.createElement('div');
+        wrapperNotebook.innerHTML = htmlNotebook;
+
+        const wrapperContent = document.createElement('div');
+        wrapperContent.innerHTML = htmlContent;
+
+        const wrapperContainer = document.createElement('div');
+        wrapperContainer.innerHTML = htmlContainer;
+
+        const container = document.createElement('span');
+
+        const cards = exemplos.map(e => createNotebookCard(document, wrapperNotebook, e));
+        const notebooksRow = createContainer(document, wrapperContainer, {items: cards});
+       
+        const contents = exemplos.map(e => createContentCard(document, wrapperContent, e));
+        const contentsRow = createContainer(document, wrapperContainer, {items: contents});
+        
+        container.appendChild(notebooksRow);
+        container.appendChild(contentsRow);
+        preview.appendChild(createLayout(document, document, { content: container }));
+      });
+  </script>
 </body>
 </html>

@@ -43,11 +43,11 @@ div.card {
   border: solid 2px;
 }
 
-.card-title {
+.caderno-display .card-title {
   margin-top: 20px;
 }
 
-.card button.btn {
+.caderno-display button.btn {
   border-radius: 20px;
   border-color: transparent;
   background-color: #145af1;
@@ -72,45 +72,6 @@ div.card {
 
 .caderno-display {
   height: 22rem;
-  margin: 20px;
-}
-
-.grup-cards {
-  background-color: rgb(255, 255, 255);
-  border-radius: 20px;
-  border-color: #bdbdbd;
-  border-style: solid;
-  padding: 40px;
-  border-width: 1px;
-}
-
-.btn-todos-cadernos {
-  margin: 30px;
-  border-radius: 20px;
-  width: 150px;
-}
-
-.btn-outline-secondary {
-  border-color: transparent;
-  background-color: transparent;
-  color: #2c2d31;
-}
-
-.btn-primary {
-  border-radius: 20px;
-}
-
-.breadcrumb-item {
-  color: #bdbdbd;
-  text-decoration: none;
-}
-
-.dropdown-toggle {
-  background-color: transparent;
-  color: #2c2d31;
-  border-color: transparent;
-  border-radius: 20px;
-  padding: 5px 50px 5px 50px;
 }
 
 .icon-notebook {
@@ -121,7 +82,7 @@ div.card {
   height: 40px;
   position: absolute;
   left: 45%;
-  z-index: 1000;
+  z-index: 998;
   top: -20px;
   background-color: white;
 }
