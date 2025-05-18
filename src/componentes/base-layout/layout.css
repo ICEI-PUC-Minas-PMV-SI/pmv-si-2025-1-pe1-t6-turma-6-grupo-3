@@ -11,6 +11,34 @@ body, html {
   height: 100%;
 }
 
+ .clickable {
+    cursor: pointer;           /* muda o cursor para “mãozinha” */
+    position: relative;        /* necessário se for posicionar o tooltip */
+  }
+
+  /* Tooltip simples via CSS */
+  .clickable:hover::after {
+    content: attr(data-tooltip);   /* pega a mensagem do atributo data-tooltip */
+    position: absolute;
+    bottom: 0%;                  /* posiciona acima da div */
+    left: 50%;
+    transform: translateX(-50%) translateY(-0.5rem);
+    background: rgba(0,0,0,0.75);
+    color: #fff;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    white-space: nowrap;
+    pointer-events: none;          /* o tooltip não bloqueia o hover */
+    font-size: 0.875rem;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  .clickable:hover::after {
+    opacity: 1;
+  }
+
 /* ===== LAYOUT PRINCIPAL ===== */
 .main-content {
   margin-left: 300px; 
