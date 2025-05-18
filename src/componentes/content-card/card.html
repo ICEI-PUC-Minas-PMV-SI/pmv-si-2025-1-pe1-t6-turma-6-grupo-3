@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <script src="./create-card.js" ></script>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <template id="card-template">
+        <div class="card card-custom p-3 mb-4 clickable" data-tooltip="Clique aqui para acessar o conteúdo.">
+        <div class="d-flex justify-content-between align-items-center">
+
+            <!-- Esquerda: Ícone + conteúdo -->
+            <div class="d-flex align-items-center gap-3">
+      
+              <!-- Ícone -->
+            <span class="content-icon">
+                <i class="bi bi-buildings"></i>
+            </span>
+              <!-- Conteúdo do card -->
+              <div>
+                <h5 class="card-title mb-1">Arquitetura de Dados</h5>
+                <p class="card-description mb-2 mb-md-1">Define como os dados são estruturados, armazenados, integrados e acessados dentro da organização...</p>
+                <div class="d-flex gap-2 flex-wrap tags-container">
+                </div>
+              </div>
+            </div>
+    
+          <!-- Direita: Botões de ação -->
+
+         <div class="d-flex flex-column align-items-end gap-2">
+            <button class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-pencil me-1"></i>
+                Editar
+            </button>
+            <button class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-trash me-1"></i>
+                Excluir
+            </button>
+        </div>
+        </div>
+      </div>
+        </template>
+        <div id="preview-container" class="row">
+
+        </div>
+
+      </div><!--row-->
+    </div> <!--container-fluid-->
+
+  <script>
+    // Dados de exemplo só para o preview
+   const exemplos = [
+      {
+        name: 'Fundamentos de Banco de Dados',
+        description: 'Entenda modelos relacionais, linguagem SQL e boas práticas de normalização.',
+        image: 'https://placehold.co/600x400/orange/white?text=Banco+de+Dados&font=roboto',
+        icon: 'bi bi-database',
+        tags: [
+          { title: 'Dados',       color: '#0dcaf0' },  // info
+          { title: 'SQL',         color: '#6610f2' }   // purple
+        ]
+      },
+      {
+        name: 'Lógica de Programação em JavaScript',
+        image: 'https://placehold.co/600x400/orange/white?text=Banco+de+Dados&font=roboto',
+        description: 'Aprenda estruturas de controle, funções e manipulação de arrays.',
+        icon: 'bi bi-code-slash',
+        tags: [
+          { title: 'Lógica',      color: '#fd7e14' },  // orange
+          { title: 'Programação', color: '#6f42c1' }   // purple-dark
+        ]
+      },
+      {
+        name: 'Infraestrutura de TI',
+        description: 'Conheça redes, servidores e protocolos essenciais para sistemas corporativos.',
+        image: 'https://placehold.co/600x400/orange/white?text=Banco+de+Dados&font=roboto',
+        icon: 'bi bi-server',
+        tags: [
+          { title: 'TI',          color: '#198754' }   // success/green
+        ]
+      },
+      {
+        name: 'Análise de Dados Avançada',
+        description: 'Técnicas de visualização, estatística descritiva e interpretação de grandes volumes de dados.',
+        image: 'https://placehold.co/600x400/orange/white?text=Banco+de+Dados&font=roboto',
+        icon: 'bi bi-bar-chart-line',
+        tags: [
+          { title: 'Dados',       color: '#0dcaf0' },
+          { title: 'Lógica',      color: '#fd7e14' }
+        ]
+      },
+    ];
+
+    const preview = document.getElementById('preview-container');
+    const wrapper = document;
+    exemplos.forEach(content => preview.appendChild(createContentCard(document, wrapper, content)));
+  </script>
+  </body>
+  </html>

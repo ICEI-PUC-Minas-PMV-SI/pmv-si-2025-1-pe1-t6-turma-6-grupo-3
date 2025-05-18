@@ -1,0 +1,37 @@
+
+.card-custom {
+    border: 1px solid #007bff;
+    border-radius: 8px;
+    text-align: left;
+  }
+  
+  .card-title {
+    color: #007bff;
+    font-weight: bold;
+  }
+  
+  div.card-custom{
+     text-align: left;
+
+  }
+  .brain-icon {
+    width: 60px;
+  }
+  
+  .card-section {
+    margin-top: 20px;
+  }
+
+  .content-icon {
+    font-size: 60px;
+    padding: 20px;
+  }
+  
+  
+
+  .card-custom .btn {
+    width: 100px;
+    border-radius: 20px;
+  }
+
+  
