@@ -74,44 +74,6 @@ div.card {
   height: 22rem;
 }
 
-.grup-cards {
-  background-color: rgb(255, 255, 255);
-  border-radius: 20px;
-  border-color: #bdbdbd;
-  border-style: solid;
-  padding: 40px 20px;
-  border-width: 1px;
-}
-
-.btn-todos-cadernos {
-  margin: 30px;
-  border-radius: 20px;
-  width: 150px;
-}
-
-.btn-outline-secondary {
-  border-color: transparent;
-  background-color: transparent;
-  color: #2c2d31;
-}
-
-.btn-primary {
-  border-radius: 20px;
-}
-
-.breadcrumb-item {
-  color: #bdbdbd;
-  text-decoration: none;
-}
-
-.dropdown-toggle {
-  background-color: transparent;
-  color: #2c2d31;
-  border-color: transparent;
-  border-radius: 20px;
-  padding: 5px 50px 5px 50px;
-}
-
 .icon-notebook {
   border-color: #145af1 !important;
   border: solid 3px;
