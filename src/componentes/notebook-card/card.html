@@ -14,7 +14,7 @@
     <div class="container-fluid">
       <div class="row">
         <template id="card-template">
-        <div class="col-lg-3 col-md-4 col-sm-12 card caderno-display">
+        <div class="col-lg-3 col-md-4 col-sm-12 card caderno-display mb-4">
             <span class="icon-notebook">
               <i class="bi bi-buildings"></i>
             </span>
@@ -58,7 +58,7 @@
 
     const preview = document.getElementById('preview-container');
     const wrapper = document;
-    exemplos.forEach(e => preview.appendChild(createCard(document, wrapper, e)));
+    exemplos.forEach(e => preview.appendChild(createNotebookCard(document, wrapper, e)));
   </script>
   </body>
   </html>

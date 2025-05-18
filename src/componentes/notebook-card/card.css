@@ -43,11 +43,11 @@ div.card {
   border: solid 2px;
 }
 
-.card-title {
+.caderno-display .card-title {
   margin-top: 20px;
 }
 
-.card button.btn {
+.caderno-display button.btn {
   border-radius: 20px;
   border-color: transparent;
   background-color: #145af1;
@@ -82,7 +82,7 @@ div.card {
   height: 40px;
   position: absolute;
   left: 45%;
-  z-index: 1000;
+  z-index: 998;
   top: -20px;
   background-color: white;
 }
