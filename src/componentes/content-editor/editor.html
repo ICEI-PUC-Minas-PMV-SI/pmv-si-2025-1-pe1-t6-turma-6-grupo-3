@@ -15,7 +15,7 @@
   <script>
     const editor = document.getElementById("editor");
 
-    const initial_nodes = [
+    let initial_nodes = [
       {
         type: "h1", // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
         position: 0,
@@ -78,18 +78,27 @@
       },
       addNewNode: (nodeType, position=0) => {
         const nextId = initial_nodes.length;
-        initial_nodes.push({
-          type: nodeType, // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
+        const new_node = {
+          type: nodeType, // "h1/h2/h3/h4/h5", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
           position: position,
           customStyle: "",
           id: nextId,
           "value": "",
-        });
+        };
+        const first_half = initial_nodes.slice(0, position);
+        const second_half = initial_nodes.slice(position);
+        initial_nodes = [...first_half, new_node, ...second_half];
+
+        // TODO: move to editor.js
         editor.innerHTML = "";
         initial_nodes.forEach(
-          (node, i) => editor.appendChild(createBlock(node))
+          (node, i) => {
+            node.position = i;
+            editor.appendChild(createBlock(node))
+          }
         );
-        setCaretToEnd(editor.lastElementChild.childNodes[2].childNodes[0]);
+        console.log("ELEMENTS: ", editor.childNodes[position].children[2].children[0])
+        setCaretToEnd(editor.childNodes[position].children[2].children[0]);
     },
   })
   

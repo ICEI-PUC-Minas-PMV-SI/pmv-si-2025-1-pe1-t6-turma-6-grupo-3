@@ -138,7 +138,10 @@ function FactoryCreateBlock(document, editor, {
         menu.className = "menu";
 
 
-
+        const addSeparator = document.createElement("button");
+        addSeparator.textContent = "+ Adicionar";
+        addSeparator.disabled = true;
+        menu.appendChild(addSeparator);
         // const colorPickerBtn = document.createElement("div");
         // colorPickerBtn.className = "color-picker";
 
@@ -163,35 +166,64 @@ function FactoryCreateBlock(document, editor, {
         // colorPickerBtn.appendChild(colorIndicator);
 
         const addTitleBtn = document.createElement("button");
-        addTitleBtn.textContent = "🔠 Adicionar um Título H1";
+        addTitleBtn.textContent = "🔠 Título H1";
+        addTitleBtn.style.paddingLeft = "20px";
+
         addTitleBtn.onclick = () => {
-         addNewBlock("h1",0);
+         addNewBlock("h1");
         };
         menu.appendChild(addTitleBtn);
 
         const addParagraphBtn = document.createElement("button");
-        addParagraphBtn.textContent = "📜 Adicionar um Parágrafo";
+        addParagraphBtn.textContent = "📜 Parágrafo";
+        addParagraphBtn.style.paddingLeft = "20px";
         addParagraphBtn.onclick = () => {
-          addNewBlock("paragraph", 0);
+          addNewBlock("paragraph");
         };
         menu.appendChild(addParagraphBtn);
+
+
+        const addBulletListBtn = document.createElement("button");
+        addBulletListBtn.textContent = "• Lista com Marcadores";
+        addBulletListBtn.style.paddingLeft = "20px";
+        addBulletListBtn.onclick = () => {
+            addNewBlock("unordered_list");
+        };
+        menu.appendChild(addBulletListBtn);
+
+
+        const addOrderedListBtn = document.createElement("button");
+        addOrderedListBtn.textContent = "1️⃣ Lista Ordenada";
+        addOrderedListBtn.style.paddingLeft = "20px";
+        addOrderedListBtn.onclick = () => {
+            addNewBlock("ordered_list");
+        };
+        menu.appendChild(addOrderedListBtn);
+
+
+        const addActionListBtn = document.createElement("button");
+        addActionListBtn.textContent = "✅ Checklist Simples";
+        addActionListBtn.style.paddingLeft = "20px";
+        addActionListBtn.onclick = () => {
+            addNewBlock("unordered_action_list");
+        };
+        menu.appendChild(addActionListBtn);
+
+
+        const addOrderedActionListBtn = document.createElement("button");
+        addOrderedActionListBtn.textContent = "☑️ Checklist Ordenado";
+        addOrderedActionListBtn.style.paddingLeft = "20px";
+        addOrderedActionListBtn.onclick = () => {
+            addNewBlock("ordered_action_list");
+        };
+        menu.appendChild(addOrderedActionListBtn);
+
 
 
         const deleteBtn = document.createElement("button");
         deleteBtn.textContent = "🗑️ Excluir bloco";
         deleteBtn.onclick = deleteMe;
         menu.appendChild(deleteBtn);
-
-       
-
-        // const bulletListBtn = document.createElement("button");
-        // bulletListBtn.textContent = "• Lista com Marcadores";
-        // bulletListBtn.onclick = () => {
-        //   removeCheckbox();
-        //   content.innerHTML = '<ul><li>Item 1</li><li>Item 2</li></ul>';
-        //   content.style.fontSize = "16px";
-        //   content.style.fontWeight = "normal";
-        // };
 
         // const numberListBtn = document.createElement("button");
         // numberListBtn.textContent = "1️⃣ Lista Numerada";
@@ -360,7 +392,7 @@ function FactoryCreateBlock(document, editor, {
                     }
                     block.remove();
                 },
-                addNewBlock: addNewNode
+                addNewBlock: (nodeType) => addNewNode(nodeType, node.position+1),
             }
         });
 
