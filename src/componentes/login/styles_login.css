@@ -1,0 +1,46 @@
+body {
+  background-color: #ffffff;
+  font-family: "Arial", sans-serif;
+}
+.logo-text {
+  font-size: 26px;
+  font-weight: bold;
+  margin-left: 8px;
+  color: #000;
+}
+.blue-text {
+  color: #1e64f0;
+}
+.custom-input {
+  border-radius: 25px;
+  text-align: center;
+  height: 45px;
+  font-style: italic;
+  border: 1px solid #ccc;
+  color: #aaa;
+}
+.custom-input::placeholder {
+  color: #ccc;
+  font-style: italic;
+}
+.custom-btn {
+  border-radius: 25px;
+  height: 45px;
+  font-weight: 500;
+  background-color: #1e64f0;
+  border: none;
+}
+.custom-btn:hover {
+  background-color: #0e51d0;
+}
+.custom-outline-btn {
+  border-radius: 25px;
+  height: 45px;
+  font-weight: 500;
+  border: 1px solid #1e64f0;
+  background-color: #fff;
+  color: #1e64f0;
+}
+.custom-outline-btn:hover {
+  background-color: #f2f9ff;
+}
