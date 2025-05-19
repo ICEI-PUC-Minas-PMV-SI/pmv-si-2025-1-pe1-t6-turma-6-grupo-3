@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Caderno SurfBook</title>
+    <link rel="stylesheet" href="editor.css">
+</head>
+<body>
+
+  <h1>Começando com o Caderno</h1>
+  <p>Bem-vindo ao caderno 👋</p>
+  <main class="editor" id="editor"></main>
+  <script src="./editor.js"></script>
+  <script>
+    const editor = document.getElementById("editor");
+
+    const initial_nodes = [
+      {
+        type: "h1", // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
+        position: 0,
+        customStyle: "",
+        id: "0",
+        value: "Meu Titulo",
+      },
+      {
+        type: "paragraph", // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
+        position: 1,
+        customStyle: "",
+        id: "1",
+        value: "Uma descricao qualquer",
+      },
+      {
+        type: "unordered_list", // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
+        position: 2,
+        customStyle: "",
+        id: "2",
+        "value": "Açucar\tSal\tManteiga",
+      },
+      {
+        type: "ordered_list", // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
+        position: 3,
+        customStyle: "",
+        id: "3",
+        "value": "Item 1\tItem 2\tItem 3",
+      },
+      {
+        type: "unordered_list", // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
+        position: 4,
+        customStyle: "",
+        id: "4",
+        "value": "Item",
+      },
+      {
+        type: "ordered_action_list", // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
+        position: 4,
+        customStyle: "",
+        id: "4",
+        "value": "- Item\tx Item\t- Item",
+      },
+      {
+        type: "unordered_action_list", // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
+        position: 4,
+        customStyle: "",
+        id: "4",
+        "value": "- Item\tx Item\t- Item",
+      },
+    ];
+    
+    const [createBlock, setCaretToEnd] = FactoryCreateBlock(document, editor, {
+      removeNode: (id) => {
+        const index = initial_nodes.findIndex(node => node.id === id);
+        if (index == -1) {
+          return new Error("Node não encontrado. Delete não executado");
+        }
+        initial_nodes.splice(index, 1);
+        return;
+      },
+      addNewNode: (nodeType, position=0) => {
+        const nextId = initial_nodes.length;
+        initial_nodes.push({
+          type: nodeType, // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
+          position: position,
+          customStyle: "",
+          id: nextId,
+          "value": "",
+        });
+        editor.innerHTML = "";
+        initial_nodes.forEach(
+          (node, i) => editor.appendChild(createBlock(node))
+        );
+        setCaretToEnd(editor.lastElementChild.childNodes[2].childNodes[0]);
+    },
+  })
+  
+
+    window.onload = () => {
+      // for (let i = 0; i < 8; i++) {
+      initial_nodes.forEach((node, i) =>  editor.appendChild(createBlock(node)) 
+     );
+      // }
+    };
+  </script>
+</body>
+</html>
