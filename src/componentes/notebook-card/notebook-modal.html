@@ -13,36 +13,68 @@
 </head>
 
 <body>
-
+  <!-- button modal -->
   <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@mdo">Crie um novo caderno</button>
 
-
+  <!-- modal -->
   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
       <div class="modal-content">
-
+        <!-- título : crie um novo caderno -->
         <div class="modal-header">
-
           <h1 class="modal-title fs-5" id="exampleModalLabel"> <i class="bi bi-stickies"></i>Crie um novo caderno</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-
         <div class="detalhes-caderno">
           <div class="modal-body">
             <form>
-              <div class="mb-3">
-                <label for="recipient-name" class="col-form-label">Título</label>
-                <input type="text" class="form-control" id="recipient-name">
+              <!-- id -->
+              <div class="row">
+                <div class="mb-3 col-md-2">
+                  <label for="recipient-name" class="col-form-label">ID</label>
+                  <input type="text" class="form-control" id="recipient-name">
+                </div>
+
+                <!-- ícone -->
+                <div class="mb-3 col-md-2">
+                  <label for="recipient-name" class="col-form-label">Ícone</label>
+
+                  <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle btn-icone-modal" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      Selecione
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" href="#"><i class="bi bi-heart-fill"></i></i></a></li>
+                      <li><a class="dropdown-item" href="#"><i class="bi bi-star-fill"></i></a></li>
+                      <li><a class="dropdown-item" href="#"><i class="bi bi-question-circle"></i></a></li>
+                    </ul>
+                  </div>
+                </div>
+
+                <!-- nome do caderno-->
+                <div class="mb-3 col-md-8">
+                  <label for="recipient-name" class="col-form-label">Nome *</label>
+                  <input type="text" class="form-control" id="recipient-name">
+                </div>
               </div>
+
+              <!-- descrição do caderno -->
               <div class="mb-3">
-                <label for="message-text" class="col-form-label">Descrição</label>
+                <label for="message-text" class="col-form-label">Descrição *</label>
                 <textarea class="form-control" id="message-text"></textarea>
               </div>
+              <!-- url da imagem -->
+              <div class="mb-3">
+                <label for="message-text" class="col-form-label">URL da imagem</label>
+                <textarea class="form-control form-url-img" id="message-text">https://...</textarea>
+              </div>
             </form>
+            <p>* Campos obrigatórios</p>
           </div>
 
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary btn-modal-feito">Feito</button>
+            <button type="button" class="btn btn-primary btn-modal">Limpar</button>
+            <button type="button" class="btn btn-primary btn-modal">Feito</button>
           </div>
         </div>
 
