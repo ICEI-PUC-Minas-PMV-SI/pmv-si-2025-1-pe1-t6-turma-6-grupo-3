@@ -7,66 +7,68 @@
   <title>Bootstrap demo</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
   <link rel="stylesheet" href="../notebook-card/card.css">
   <link rel="stylesheet" href="../content-card/card.css">
   <script src="../notebook-card/create-card.js"></script>
   <script src="../content-card/create-card.js"></script>
   <link rel="stylesheet" href="container.css">
-   <script src="./create-container.js"></script>
+  <script src="./create-container.js"></script>
 </head>
 
 <body>
   <template id="container-template">
- 
-      <div class="row sub-header">
 
-        <div class="col-md-8">
-          <div class="btn-group gap-2 " role=" group" aria-label="First group">
-            <button type="button" class="btn btn-primary btn-todos-cadernos">Todos</button>
-          </div>
-          <div class="btn-group gap-2 " role="group" aria-label="First group">
-            <button type="button" class="btn btn-primary btn-todos-cadernos btn-outline-secondary">Caderno A</button>
-          </div>
-          <div class="btn-group gap-2 " role="group" aria-label="First group">
-            <button type="button" class="btn btn-primary btn-todos-cadernos btn-outline-secondary">Caderno B</button>
-          </div>
-        </div>
+    <div class="row sub-header">
 
-        <div class="col-md-4">
-          <div class=" d-grid gap-2 d-md-flex justify-content-md-end">
-            <button class="btn btn-primary me-md" type="button">
-              <i class="bi bi-plus-lg"></i>
+      <div class="container ms-4 mt-4">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">Cadernos</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Arquitetura Empresarial...</li>
+          </ol>
+        </nav>
+
+        <div class="row align-items-center justify-content-between mb-4">
+          <div class="col-md-auto d-flex align-items-center">
+            <i class="bi bi-journal-text fs-3 text-primary me-2"></i>
+            <h3 class="mb-0 text-primary">Arquitetura Empresarial e da Tecnologia da Informação</h3>
+          </div>
+          <div class="col-md-auto d-flex align-items-center mt-5">
+            <button type="button" class="btn btn-primary rounded-pill px-4 me-4">
+              <i class="bi bi-plus-lg me-2"></i>Adicionar
             </button>
-            <button class="btn btn-primary me-md" type="button">
+
+            <button type="button" class="btn btn-light icon-btn me-3">
               <i class="bi bi-funnel"></i>
             </button>
-            <button class="btn btn-primary me-md" type="button">
-              <i class="bi bi-calendar3"></i>
-            </button>
-          </div>
 
-        </div>
-      </div> <!--row sub-header-->
-
-
-      <div class="row grup-cards d-md-flex gx-2 d-grid justify-content-between" data-slot="items-slot">
             
-      </div> <!--row grup-cards-->
-      </template>
+          </div>
+        </div>
+      </div>
+    </div> <!--row sub-header-->
+
+
+    <div class="row grup-cards d-md-flex gx-2 d-grid justify-content-between" data-slot="items-slot">
+
+    </div> <!--row grup-cards-->
+  </template>
   <div class="container-fluid">
-      <div id="preview-container" class="row"></div>
-    </div><!--row grup-cards-->
-    <script>
-      const exemplos = [
+    <div id="preview-container" class="row"></div>
+  </div><!--row grup-cards-->
+  <script>
+    const exemplos = [
       {
         name: 'Fundamentos de Banco de Dados',
         description: 'Entenda modelos relacionais, linguagem SQL e boas práticas de normalização.',
         image: 'https://placehold.co/600x400/orange/white?text=Banco+de+Dados&font=roboto',
         icon: 'bi bi-database',
         tags: [
-          { title: 'Dados',       color: '#0dcaf0' },  // info
-          { title: 'SQL',         color: '#6610f2' }   // purple
+          { title: 'Dados', color: '#0dcaf0' },  // info
+          { title: 'SQL', color: '#6610f2' }   // purple
         ]
       },
       {
@@ -75,7 +77,7 @@
         description: 'Aprenda estruturas de controle, funções e manipulação de arrays.',
         icon: 'bi bi-code-slash',
         tags: [
-          { title: 'Lógica',      color: '#fd7e14' },  // orange
+          { title: 'Lógica', color: '#fd7e14' },  // orange
           { title: 'Programação', color: '#6f42c1' }   // purple-dark
         ]
       },
@@ -85,7 +87,7 @@
         image: 'https://placehold.co/600x400/orange/white?text=Banco+de+Dados&font=roboto',
         icon: 'bi bi-server',
         tags: [
-          { title: 'TI',          color: '#198754' }   // success/green
+          { title: 'TI', color: '#198754' }   // success/green
         ]
       },
       {
@@ -94,8 +96,8 @@
         image: 'https://placehold.co/600x400/orange/white?text=Banco+de+Dados&font=roboto',
         icon: 'bi bi-bar-chart-line',
         tags: [
-          { title: 'Dados',       color: '#0dcaf0' },
-          { title: 'Lógica',      color: '#fd7e14' }
+          { title: 'Dados', color: '#0dcaf0' },
+          { title: 'Lógica', color: '#fd7e14' }
         ]
       },
     ];
@@ -107,7 +109,7 @@
         const wrapper = document.createElement('div');
         wrapper.innerHTML = html;
         const cards = exemplos.map(notebook => createNotebookCard(document, wrapper, notebook));
-        preview.appendChild(createContainer(document, document, {items: cards}));
+        preview.appendChild(createContainer(document, document, { items: cards }));
       });
 
     fetch('../content-card/card.html')
@@ -117,10 +119,10 @@
         wrapper.innerHTML = html;
 
         const cards = exemplos.map(content => createContentCard(document, wrapper, content));
-        preview.appendChild(createContainer(document, document, {items: cards}));
+        preview.appendChild(createContainer(document, document, { items: cards }));
       });
 
-    </script>
+  </script>
 </body>
 
 </html>

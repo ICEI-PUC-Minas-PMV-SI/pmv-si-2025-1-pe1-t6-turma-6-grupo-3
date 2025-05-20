@@ -35,3 +35,24 @@
   border-radius: 20px;
   padding: 5px 50px 5px 50px;
 }
+
+.mt-5 {
+    margin-top: 8rem !important;
+    ;
+}
+
+.gap-1 {
+    gap: 1rem !important;
+}
+
+.icon-btn{
+  width: 41px;
+  height: 41px;
+  border-radius: 100%;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  content: ">";
+  color: #6c757d; /* cor do separador (cinza padrão Bootstrap) */
+  padding: 0 0.5rem;
+}
