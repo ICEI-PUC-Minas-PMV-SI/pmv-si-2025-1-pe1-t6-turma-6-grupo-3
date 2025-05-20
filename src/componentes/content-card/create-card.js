@@ -1,26 +1,32 @@
 // Função de clonagem igual à usada na página real    
-function createContentCard(document, wrapper, data) {
+function createContentCard(document, wrapper, { data, actions }) {
     const t = wrapper.querySelector('#card-template').content;
     const clone = document.importNode(t, true);
-    clone.querySelector('.card-title').textContent = data.name;
-    clone.querySelector('.card-description').textContent = data.description;
+
+    if (actions) {
+        clone.querySelector('[data-action="view"]').addEventListener("click", actions.view)
+        clone.querySelector('[data-action="edit"]').addEventListener("click", actions.edit)
+    }
+
+    clone.querySelector('.card-title').textContent = data.title;
 
     const tagsContainer = clone.querySelector('.tags-container');
     tagsContainer.innerHTML = '';  // limpa o template
-    data.tags.forEach(tag => {
+    data.tags.split(" ").forEach(tag => {
         const span = document.createElement('span');
         span.className = 'badge';
-        span.textContent = tag.title;
-        span.title       = tag.title;
-        span.style.backgroundColor = tag.color;
-        span.style.color = getContrastWCAG(tag.color.replace(/^rgb\(|\)|\s+/g, c =>
-    ('0'+parseInt(c).toString(16)).slice(-2)
-  )) || getContrastWCAG(tag.color.replace(/^#/,''));
+        span.textContent = tag;
+        span.title       = tag;
+        // TODO: put it back when tag got color
+        // span.style.backgroundColor = tag.color;
+  //       span.style.color = getContrastWCAG(tag.color.replace(/^rgb\(|\)|\s+/g, c =>
+  //   ('0'+parseInt(c).toString(16)).slice(-2)
+  // )) || getContrastWCAG(tag.color.replace(/^#/,''));
         tagsContainer.appendChild(span);
     });
 
 
-    clone.querySelector('.content-icon i').className = data.icon;
+    clone.querySelector('.content-icon i').className = `bi bi-${data.icon}`;
     return clone;
 }
 /**

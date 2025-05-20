@@ -61,42 +61,51 @@
       const exemplos = [
       {
         name: 'Fundamentos de Banco de Dados',
+        title: 'Fundamentos de Banco de Dados',
         description: 'Entenda modelos relacionais, linguagem SQL e boas práticas de normalização.',
         image: 'https://placehold.co/600x400/orange/white?text=Banco+de+Dados&font=roboto',
-        icon: 'bi bi-database',
-        tags: [
-          { title: 'Dados',       color: '#0dcaf0' },  // info
-          { title: 'SQL',         color: '#6610f2' }   // purple
-        ]
+        icon: 'database',
+        tags: "foo bar"
+        // tags: [
+        //   { title: 'Dados',       color: '#0dcaf0' },  // info
+        //   { title: 'SQL',         color: '#6610f2' }   // purple
+        // ]
       },
       {
         name: 'Lógica de Programação em JavaScript',
+        title: 'Lógica de Programação em JavaScript',
         image: 'https://placehold.co/600x400/orange/white?text=Banco+de+Dados&font=roboto',
         description: 'Aprenda estruturas de controle, funções e manipulação de arrays.',
         icon: 'bi bi-code-slash',
-        tags: [
-          { title: 'Lógica',      color: '#fd7e14' },  // orange
-          { title: 'Programação', color: '#6f42c1' }   // purple-dark
-        ]
+        tags: "foo bar"
+        // tags: [
+        //   { title: 'Lógica',      color: '#fd7e14' },  // orange
+        //   { title: 'Programação', color: '#6f42c1' }   // purple-dark
+        // ]
       },
       {
         name: 'Infraestrutura de TI',
+        title: 'Infraestrutura de TI',
         description: 'Conheça redes, servidores e protocolos essenciais para sistemas corporativos.',
         image: 'https://placehold.co/600x400/orange/white?text=Banco+de+Dados&font=roboto',
-        icon: 'bi bi-server',
-        tags: [
-          { title: 'TI',          color: '#198754' }   // success/green
-        ]
+        icon: 'server',
+        tags: ""
+
+        // tags: [
+        //   { title: 'TI',          color: '#198754' }   // success/green
+        // ]
       },
       {
         name: 'Análise de Dados Avançada',
+        title: 'Análise de Dados Avançada',
         description: 'Técnicas de visualização, estatística descritiva e interpretação de grandes volumes de dados.',
         image: 'https://placehold.co/600x400/orange/white?text=Banco+de+Dados&font=roboto',
-        icon: 'bi bi-bar-chart-line',
-        tags: [
-          { title: 'Dados',       color: '#0dcaf0' },
-          { title: 'Lógica',      color: '#fd7e14' }
-        ]
+        icon: 'bar-chart-line',
+        tags: ""
+        // tags: [
+        //   { title: 'Dados',       color: '#0dcaf0' },
+        //   { title: 'Lógica',      color: '#fd7e14' }
+        // ]
       },
     ];
     const preview = document.getElementById('preview-container');
@@ -106,7 +115,7 @@
       .then(html => {
         const wrapper = document.createElement('div');
         wrapper.innerHTML = html;
-        const cards = exemplos.map(notebook => createNotebookCard(document, wrapper, notebook));
+        const cards = exemplos.map(notebook => createNotebookCard(document, wrapper, {data: notebook}));
         preview.appendChild(createContainer(document, document, {items: cards}));
       });
 
@@ -116,7 +125,7 @@
         const wrapper = document.createElement('div');
         wrapper.innerHTML = html;
 
-        const cards = exemplos.map(content => createContentCard(document, wrapper, content));
+        const cards = exemplos.map(content => createContentCard(document, wrapper, { data: content }));
         preview.appendChild(createContainer(document, document, {items: cards}));
       });
 
