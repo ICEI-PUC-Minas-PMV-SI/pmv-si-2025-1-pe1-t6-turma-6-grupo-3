@@ -18,6 +18,10 @@
   <script src="../componentes/notebook-card/create-card.js"></script>
   <script src="../componentes/content-card/create-card.js"></script>
   <script src="../componentes/base-layout/create-layout.js"></script>
+  <script src="../componentes/base-header/create-header.js"></script>
+
+  <script src="../componentes/content-editor/editor.js"></script>
+  <script src="../componentes/content-editor/create-editor.js"></script>
 </head>
 <body>
   <div id="loader"></div>
@@ -31,8 +35,6 @@
   <script src="../scripts/session-manager.js"></script>
   <script src="../scripts/url-service.js"></script>
   <script src="../scripts/app.js"></script>
-  <script src="../componentes/content-editor/editor.js"></script>
-  <script src="../componentes/content-editor/create-editor.js"></script>
   <script>
 
      if (!session.isLogged()) {
@@ -129,8 +131,9 @@
         fetch('../componentes/notebook-card/card.html').then(res => res.text()),
         fetch('../componentes/content-card/card.html').then(res => res.text()),
         fetch('../componentes/base-container/container.html').then(res => res.text()),
-        fetch('../componentes/base-layout/layout.html').then(res => res.text())
-      ]).then(([htmlNotebook, htmlContent, htmlContainer, htmlLayout]) => {
+        fetch('../componentes/base-layout/layout.html').then(res => res.text()),
+        fetch('../componentes/base-header/header.html').then(res => res.text()),
+      ]).then(([htmlNotebook, htmlContent, htmlContainer, htmlLayout, htmlHeader]) => {
         const wrapperNotebook = document.createElement('div');
         wrapperNotebook.innerHTML = htmlNotebook;
 
@@ -142,8 +145,41 @@
 
         const wrapperLayout = document.createElement('div');
         wrapperLayout.innerHTML = htmlLayout;
+        const wrapperHeader = document.createElement('div');
+        wrapperHeader.innerHTML = htmlHeader;
 
-        loader.appendChild(createLayout(document, wrapperLayout, { content: editor }));
+        const notebookId = getNotebookId();
+        const notebook = notebookClient.findItem(notebookId);
+
+        const contentId =  UrlService.getParam('contentId');
+        const contentMeta = contentMetaClient.findItem(contentId);
+        
+        const simpleContainer = document.createElement('span');
+        simpleContainer.appendChild(createHeader(document, wrapperHeader, {
+          "icon": `${notebook.icon}`,
+          actions: {
+            // add: console.log,
+            // filter: console.log,
+          },
+          breadcrumbs: [{
+            label: "Home",
+            href: "/src/pages/caderno-lista-v2.html"
+          },
+          {
+            label: `${notebook.name}`,
+            href: `/src/pages/caderno-detalhe-v2.html?notebookId=${notebookId}`
+          },
+          {
+            label: `${contentMeta.title}`
+          }
+          ],
+          title: `${contentMeta.title}`
+        }));
+
+        const editorRow = createContainer(document, wrapperContainer, {items: [editor] });
+        simpleContainer.appendChild(editorRow);
+
+        loader.appendChild(createLayout(document, wrapperLayout, { content: simpleContainer }));
       });
     
   </script>
