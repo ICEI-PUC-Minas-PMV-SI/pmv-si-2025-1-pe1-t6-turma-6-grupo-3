@@ -64,7 +64,7 @@
       display: none;
       flex-direction: column;
       min-width: 140px;
-      z-index: 10;
+      z-index: 1009;
     }
     .menu button {
       background: none;

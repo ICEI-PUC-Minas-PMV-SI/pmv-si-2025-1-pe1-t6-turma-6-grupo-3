@@ -18,6 +18,7 @@
   <script src="../componentes/notebook-card/create-card.js"></script>
   <script src="../componentes/content-card/create-card.js"></script>
   <script src="../componentes/base-layout/create-layout.js"></script>
+  <script src="../componentes/base-header/create-header.js"></script>
 </head>
 <body>
   <div id="loader">
@@ -68,8 +69,9 @@
         fetch('../componentes/notebook-card/card.html').then(res => res.text()),
         fetch('../componentes/content-card/card.html').then(res => res.text()),
         fetch('../componentes/base-container/container.html').then(res => res.text()),
-        fetch('../componentes/base-layout/layout.html').then(res => res.text())
-      ]).then(([htmlNotebook, htmlContent, htmlContainer, htmlLayout]) => {
+        fetch('../componentes/base-layout/layout.html').then(res => res.text()),
+        fetch('../componentes/base-header/header.html').then(res => res.text()),
+      ]).then(([htmlNotebook, htmlContent, htmlContainer, htmlLayout, htmlHeader]) => {
         const wrapperNotebook = document.createElement('div');
         wrapperNotebook.innerHTML = htmlNotebook;
 
@@ -82,8 +84,28 @@
         const wrapperLayout = document.createElement('div');
         wrapperLayout.innerHTML = htmlLayout;
 
-        const container = document.createElement('span');
+        const wrapperHeader = document.createElement('div');
+        wrapperHeader.innerHTML = htmlHeader;
 
+        const notebookId = getNotebookId();
+        const notebook = notebookClient.findItem(notebookId)
+        const container = document.createElement('span');
+        container.appendChild(createHeader(document, wrapperHeader, {
+          "icon": `${notebook.icon}`,
+          actions: {
+            add: console.log,
+            filter: console.log,
+          },
+          breadcrumbs: [{
+            label: "Home",
+            href: "/src/pages/caderno-lista-v2.html"
+          },
+          {
+            label: `${notebook.name}`,
+          }
+          ],
+          title: `${notebook.name}`
+        }));
         const contentCards = readContentsMeta(allContentMeta => allContentMeta.map(
           contentMeta => createContentCard(
             document,
@@ -111,7 +133,8 @@
         );
         
         const contentsRow = createContainer(document, wrapperContainer, {items: contentCards});
-        loader.appendChild(createLayout(document, wrapperLayout, { content: contentsRow }));
+        container.appendChild(contentsRow);
+        loader.appendChild(createLayout(document, wrapperLayout, { content:  container}));
       });
   </script>
 </body>
