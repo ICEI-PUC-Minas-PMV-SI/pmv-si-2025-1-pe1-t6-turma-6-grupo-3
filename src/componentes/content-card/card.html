@@ -14,7 +14,7 @@
     <div class="container-fluid">
       <div class="row">
         <template id="card-template">
-        <div class="card card-custom p-3 mb-4 clickable" data-tooltip="Clique aqui para acessar o conteúdo.">
+        <div class="card card-custom p-3 mb-4 clickable" data-tooltip="Clique aqui para acessar o conteúdo." data-action="view">
         <div class="d-flex justify-content-between align-items-center">
 
             <!-- Esquerda: Ícone + conteúdo -->
@@ -22,7 +22,7 @@
       
               <!-- Ícone -->
             <span class="content-icon">
-                <i class="bi bi-buildings"></i>
+                <i class=""></i>
             </span>
               <!-- Conteúdo do card -->
               <div>
@@ -36,7 +36,7 @@
           <!-- Direita: Botões de ação -->
 
          <div class="d-flex flex-column align-items-end gap-2">
-            <button class="btn btn-outline-primary btn-sm">
+            <button class="btn btn-outline-primary btn-sm" data-action="edit">
                 <i class="bi bi-pencil me-1"></i>
                 Editar
             </button>
@@ -59,49 +59,54 @@
     // Dados de exemplo só para o preview
    const exemplos = [
       {
-        name: 'Fundamentos de Banco de Dados',
+        title: 'Fundamentos de Banco de Dados',
         description: 'Entenda modelos relacionais, linguagem SQL e boas práticas de normalização.',
         image: 'https://placehold.co/600x400/orange/white?text=Banco+de+Dados&font=roboto',
         icon: 'bi bi-database',
-        tags: [
-          { title: 'Dados',       color: '#0dcaf0' },  // info
-          { title: 'SQL',         color: '#6610f2' }   // purple
-        ]
+        tags: "foo bar"
+        
+        // tags: [
+        //   { title: 'Dados',       color: '#0dcaf0' },  // info
+        //   { title: 'SQL',         color: '#6610f2' }   // purple
+        // ]
       },
       {
-        name: 'Lógica de Programação em JavaScript',
+        title: 'Lógica de Programação em JavaScript',
         image: 'https://placehold.co/600x400/orange/white?text=Banco+de+Dados&font=roboto',
         description: 'Aprenda estruturas de controle, funções e manipulação de arrays.',
         icon: 'bi bi-code-slash',
-        tags: [
-          { title: 'Lógica',      color: '#fd7e14' },  // orange
-          { title: 'Programação', color: '#6f42c1' }   // purple-dark
-        ]
+        tags: "foo bar"
+        // tags: [
+        //   { title: 'Lógica',      color: '#fd7e14' },  // orange
+        //   { title: 'Programação', color: '#6f42c1' }   // purple-dark
+        // ]
       },
       {
-        name: 'Infraestrutura de TI',
+        title: 'Infraestrutura de TI',
         description: 'Conheça redes, servidores e protocolos essenciais para sistemas corporativos.',
         image: 'https://placehold.co/600x400/orange/white?text=Banco+de+Dados&font=roboto',
         icon: 'bi bi-server',
-        tags: [
-          { title: 'TI',          color: '#198754' }   // success/green
-        ]
+        tags: "foo bar"
+        // tags: [
+        //   { title: 'TI',          color: '#198754' }   // success/green
+        // ]
       },
       {
-        name: 'Análise de Dados Avançada',
+        title: 'Análise de Dados Avançada',
         description: 'Técnicas de visualização, estatística descritiva e interpretação de grandes volumes de dados.',
         image: 'https://placehold.co/600x400/orange/white?text=Banco+de+Dados&font=roboto',
         icon: 'bi bi-bar-chart-line',
-        tags: [
-          { title: 'Dados',       color: '#0dcaf0' },
-          { title: 'Lógica',      color: '#fd7e14' }
-        ]
+        tags: "foo bar"
+        // tags: [
+        //   { title: 'Dados',       color: '#0dcaf0' },
+        //   { title: 'Lógica',      color: '#fd7e14' }
+        // ]
       },
     ];
 
     const preview = document.getElementById('preview-container');
     const wrapper = document;
-    exemplos.forEach(content => preview.appendChild(createContentCard(document, wrapper, content)));
+    exemplos.forEach(content => preview.appendChild(createContentCard(document, wrapper, { data: content })));
   </script>
   </body>
   </html>
