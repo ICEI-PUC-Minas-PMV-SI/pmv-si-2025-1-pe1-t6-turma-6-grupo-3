@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bootstrap demo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+  <link rel="stylesheet" href="../notebook-card/card.css">
+  <link rel="stylesheet" href="../content-card/card.css">
+  <script src="../notebook-card/create-card.js"></script>
+  <script src="../content-card/create-card.js"></script>
+  <link rel="stylesheet" href="header.css">
+  <script src="./create-header.js"></script>
+</head>
+
+<body>
+  <template id="header-template">
+
+    <div class="row sub-header">
+
+      <div class="container ms-4 mt-4">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb" data-sub-component="header::breadcrumb::ol">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">Cadernos</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Arquitetura Empresarial...</li>
+          </ol>
+        </nav>
+
+        <div class="row align-items-center justify-content-between mb-4">
+          <div class="col-md-9 d-flex align-items-center">
+            <i data-sub-component="header::icon" class="fs-3 text-primary me-2"></i>
+            <h3 class="mb-0 text-primary" data-sub-component="header::title">Arquitetura Empresarial e da Tecnologia da Informação</h3>
+          </div>
+          <div class="col-md-3 d-flex align-items-center">
+            <button data-action="add" type="button" class="btn btn-primary rounded-pill px-4 me-4">
+              <i class="bi bi-plus-lg me-2" ></i>Adicionar
+            </button>
+
+            <button  data-action="filter" type="button" class="btn btn-light icon-btn me-3">
+              <i class="bi bi-funnel"></i>
+            </button>
+
+            
+          </div>
+        </div>
+      </div>
+    </div> <!--row sub-header-->
+  </template>
+  <div class="container-fluid">
+    <div id="preview-container" class="row"></div>
+  </div><!--row grup-cards-->
+  <script>
+    const preview = document.getElementById('preview-container');
+
+    const h1Basic = document.createElement("h1");
+    h1Basic.innerText = "Basic header:";
+    preview.appendChild(h1Basic);
+    
+    preview.appendChild(createHeader( 
+      document,
+      document,
+      {
+        breadcrumbs: [{
+          label: "Home",
+          href: "#"
+        },
+        {
+          label: "Cadernos",
+          href: "#"
+        },
+        {
+          label: "Exemplo de Header",
+        },
+        ],
+        title: "Um Bom Exemplo de Header"
+      }
+    ))
+
+    const h1WithIcon = document.createElement("h1");
+    h1WithIcon.innerText = "Header with Icon:";
+    preview.appendChild(h1WithIcon);
+    
+        
+    preview.appendChild(createHeader( 
+      document,
+      document,
+      {
+        "icon": "journal-text",
+        breadcrumbs: [{
+          label: "Home",
+          href: "#"
+        },
+        {
+          label: "Cadernos",
+          href: "#"
+        },
+        {
+          label: "Exemplo de Header",
+        },
+        ],
+        title: "Um Bom Exemplo de Header"
+      }
+    ))
+
+    const h1WithIconAndPlusButton = document.createElement("h1");
+    h1WithIconAndPlusButton.innerText = "Header with Icon and plus button:";
+    preview.appendChild(h1WithIconAndPlusButton);
+       
+    preview.appendChild(createHeader( 
+      document,
+      document,
+      {
+        "icon": "journal-text",
+        actions: {
+          add: console.log
+        },
+        breadcrumbs: [{
+          label: "Home",
+          href: "#"
+        },
+        {
+          label: "Cadernos",
+          href: "#"
+        },
+        {
+          label: "Exemplo de Header",
+        },
+        ],
+        title: "Um Bom Exemplo de Header"
+      }
+    ))
+
+
+    const h1Complete = document.createElement("h1");
+    h1Complete.innerText = "Header complete:";
+    preview.appendChild(h1Complete);
+       
+    preview.appendChild(createHeader( 
+      document,
+      document,
+      {
+        "icon": "journal-text",
+        actions: {
+          add: console.log,
+          filter: console.log,
+        },
+        breadcrumbs: [{
+          label: "Home",
+          href: "#"
+        },
+        {
+          label: "Cadernos",
+          href: "#"
+        },
+        {
+          label: "Exemplo de Header",
+        },
+        ],
+        title: "Um Bom Exemplo de Header"
+      }
+    ))
+
+  </script>
+</body>
+
+</html>

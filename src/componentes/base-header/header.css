@@ -1,0 +1,58 @@
+.grup-cards {
+  background-color: rgb(255, 255, 255);
+  border-radius: 20px;
+  border-color: #bdbdbd;
+  border-style: solid;
+  padding: 40px;
+  border-width: 1px;
+}
+
+.btn-todos-cadernos {
+  margin: 30px;
+  border-radius: 20px;
+  width: 150px;
+}
+
+.btn-outline-secondary {
+  border-color: transparent;
+  background-color: transparent;
+  color: #2c2d31;
+}
+
+.btn-primary {
+  border-radius: 20px;
+}
+
+.breadcrumb-item {
+  color: #bdbdbd;
+  text-decoration: none;
+}
+
+.dropdown-toggle {
+  background-color: transparent;
+  color: #2c2d31;
+  border-color: transparent;
+  border-radius: 20px;
+  padding: 5px 50px 5px 50px;
+}
+
+.mt-5 {
+    margin-top: 8rem !important;
+    ;
+}
+
+.gap-1 {
+    gap: 1rem !important;
+}
+
+.icon-btn{
+  width: 41px;
+  height: 41px;
+  border-radius: 100%;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  content: ">";
+  color: #6c757d; /* cor do separador (cinza padrão Bootstrap) */
+  padding: 0 0.5rem;
+}
