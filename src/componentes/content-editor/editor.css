@@ -132,3 +132,13 @@
       width: 20px;
       height: 20px;
     }
+
+    /* feedback de inserir acima */
+.block.drag-over-top {
+  border-top: 3px solid #007bff;
+}
+
+/* feedback de inserir abaixo */
+.block.drag-over-bottom {
+  border-bottom: 3px solid #007bff;
+}

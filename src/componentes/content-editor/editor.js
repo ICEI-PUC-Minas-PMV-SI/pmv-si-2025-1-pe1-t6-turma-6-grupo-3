@@ -2,6 +2,7 @@ function FactoryCreateBlock(document, editor, {
     addNewNode,
     removeNode,
     updateNode,
+    moveNode,
 }) {
     function getBlock() {
         const block = document.createElement("div");
@@ -377,9 +378,11 @@ function FactoryCreateBlock(document, editor, {
     }
 
     function createBlock(node) {
+        console.log("CREATE_BLOCK:NODE: ",node)
         const {type, position, customStyle, id} = node;
         
         const block = getBlock();
+        block.dataset.id = node.id;
         const menu = getMenu({
             actions: {
                 // id => delete no dado
@@ -392,7 +395,13 @@ function FactoryCreateBlock(document, editor, {
                     }
                     block.remove();
                 },
-                addNewBlock: (nodeType) => addNewNode(nodeType, node.position+1),
+                addNewBlock: (nodeType) => {
+                   const new_node = addNewNode(nodeType, node.position+1);
+                   const new_block = createBlock(new_node);
+                   insertBeforeBlock(new_block, true);
+                    console.log("ELEMENTS: ", editor.childNodes[new_node.position].children[2].children[0])
+                    setCaretToEnd(editor.childNodes[new_node.position].children[2].children[0]);
+                },
             }
         });
 
@@ -476,40 +485,62 @@ function FactoryCreateBlock(document, editor, {
 
         
 
-        menuBtn.addEventListener('dragstart', () => {
+        menuBtn.addEventListener('dragstart', e => {
             draggedBlock = block;
             block.style.opacity = "0.5";
             menuBtn.style.cursor = "grabbing";
+            // informar qual bloco está sendo arrastado
+            e.dataTransfer.setData('text/plain', node.id);
+            e.dataTransfer.effectAllowed = 'move';
         });
 
         menuBtn.addEventListener('dragend', () => {
             draggedBlock = null;
+            block.classList.remove('dragging');
             block.style.opacity = "1";
             menuBtn.style.cursor = "grab";
         });
 
         block.addEventListener('dragover', (e) => {
             e.preventDefault();
-            block.classList.add('drag-over');
+            const rect = block.getBoundingClientRect();
+            const midpoint = rect.top + rect.height / 2;
+
+            block.classList.remove('drag-over-top', 'drag-over-bottom');
+
+            if (e.clientY < midpoint) {
+                block.classList.add('drag-over-top');
+            } else {
+                block.classList.add('drag-over-bottom');
+            }
         });
 
         block.addEventListener('dragleave', () => {
-            block.classList.remove('drag-over');
+            block.classList.remove('drag-over-top', 'drag-over-bottom');
         });
 
         block.addEventListener('drop', (e) => {
+            console.log("DROP: ", e)
             e.preventDefault();
-            block.classList.remove('drag-over');
-            if (draggedBlock && block !== draggedBlock) {
-                const offset = e.clientY - block.getBoundingClientRect().top;
-                const shouldInsertAfter = offset > block.clientHeight / 2;
-                editor.insertBefore(draggedBlock, shouldInsertAfter ? block.nextSibling : block);
-            }
+            block.classList.remove('drag-over-top', 'drag-over-bottom');
+            const draggedId = e.dataTransfer.getData('text/plain');
+            const targetId  = block.dataset.id;
+            const { top, height } = block.getBoundingClientRect();
+            const after = (e.clientY - top) > height/2;
+            moveNode(draggedId, targetId, after);
+            const draggedEl = editor.querySelector(`.block[data-id="${draggedId}"]`);
+            insertBeforeBlock(draggedEl, after);
         });
 
         document.addEventListener('click', () => {
             menu.style.display = 'none';
         });
+        function insertBeforeBlock(targetEl, after){
+            editor.insertBefore(
+               targetEl,
+                after ? block.nextSibling : block
+            );
+        }
 
         return block;
     }
@@ -519,5 +550,7 @@ function FactoryCreateBlock(document, editor, {
             menu.style.display = 'none';
         });
     }
+
+   
     return [createBlock, setCaretToEnd];
 }
