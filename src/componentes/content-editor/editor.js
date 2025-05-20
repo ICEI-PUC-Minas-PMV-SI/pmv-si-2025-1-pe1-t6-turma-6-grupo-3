@@ -87,6 +87,7 @@ function FactoryCreateBlock(document, editor, {
 
         return list;
     }
+    
 
     function render({type, position, customStyle, id, value},{ onUpdateCheckbox }, content) {
         content.style.cssText = '';
