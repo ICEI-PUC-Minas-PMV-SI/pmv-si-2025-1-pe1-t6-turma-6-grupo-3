@@ -2,7 +2,6 @@
     const tmpl = wrapper.querySelector('#container-template').content;
     const clone = document.importNode(tmpl, true);
 
-    // cards
     const slot = clone.querySelector('[data-slot="items-slot"]');
     items.forEach(el => slot.appendChild(el));
 
