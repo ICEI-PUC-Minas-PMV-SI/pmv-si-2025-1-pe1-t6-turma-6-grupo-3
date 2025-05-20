@@ -12,14 +12,15 @@
   <p>Bem-vindo ao caderno 👋</p>
   <main class="editor" id="editor"></main>
   <script src="./editor.js"></script>
+  <script src="./create-editor.js"></script>
   <script>
     const editor = document.getElementById("editor");
 
-    let initial_nodes = [
+    let initial_nodes = {nodes: [
       {
         type: "h1", // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
         position: 0,
-        customStyle: "",
+        customStyle: ["center-text","bigger-text", "background-paper"],
         id: "0",
         value: "Meu Titulo",
       },
@@ -53,62 +54,30 @@
       },
       {
         type: "ordered_action_list", // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
-        position: 4,
+        position: 5,
         customStyle: "",
-        id: "4",
+        id: "5",
         "value": "- Item\tx Item\t- Item",
       },
       {
         type: "unordered_action_list", // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
-        position: 4,
+        position: 6,
         customStyle: "",
-        id: "4",
+        id: "6",
         "value": "- Item\tx Item\t- Item",
       },
-    ];
-    
-    const [createBlock, setCaretToEnd] = FactoryCreateBlock(document, editor, {
-      removeNode: (id) => {
-        const index = initial_nodes.findIndex(node => node.id === id);
-        if (index == -1) {
-          return new Error("Node não encontrado. Delete não executado");
-        }
-        initial_nodes.splice(index, 1);
-        return;
+      {
+        type: "image", // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
+        position: 7,
+        customStyle: "",
+        id: "7",
+        "value": "https://placehold.co/600x400/orange/white?text=Minha+Imagem&font=roboto",
       },
-      addNewNode: (nodeType, position=0) => {
-        const nextId = initial_nodes.length;
-        const new_node = {
-          type: nodeType, // "h1/h2/h3/h4/h5", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
-          position: position,
-          customStyle: "",
-          id: nextId,
-          "value": "",
-        };
-        const first_half = initial_nodes.slice(0, position);
-        const second_half = initial_nodes.slice(position);
-        initial_nodes = [...first_half, new_node, ...second_half];
-
-        // TODO: move to editor.js
-        editor.innerHTML = "";
-        initial_nodes.forEach(
-          (node, i) => {
-            node.position = i;
-            editor.appendChild(createBlock(node))
-          }
-        );
-        console.log("ELEMENTS: ", editor.childNodes[position].children[2].children[0])
-        setCaretToEnd(editor.childNodes[position].children[2].children[0]);
-    },
-  })
-  
-
-    window.onload = () => {
-      // for (let i = 0; i < 8; i++) {
-      initial_nodes.forEach((node, i) =>  editor.appendChild(createBlock(node)) 
-     );
-      // }
-    };
+    ]
+  };
+        mountEditor(document, editor, initial_nodes);
+    
+    
   </script>
 </body>
 </html>
