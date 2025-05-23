@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SurfBook - Login</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="form.css" />
+  </head>
+  <body>
+    <template id="login-field-template">
+      <span>
+          <input
+            type="password"
+            data-element-type="input"
+            class="form-control custom-input mb-3"
+            placeholder="Digite sua senha"
+          />
+      </span>
+    </template>
+
+    <template id="login-button-template">
+      <span>
+          <button data-element-type="button" class="btn custom-btn mb-3 w-100">
+            Entrar
+          </button>
+      </span>
+    </template>
+
+    <template id="login-form-template">
+      <div class="container d-flex justify-content-center align-items-center vh-100">
+      <div class="login-box text-center w-100" style="max-width: 350px">
+        <div class="logo mb-4" data-sub-component="form::header::logo">
+          <img
+            src="https://i.postimg.cc/43vHWZ45/LOGO.png"
+            alt="onda"
+            style="height: 40px; vertical-align: bottom"
+          />
+          <span class="logo-text">
+              Surf
+              <span class="blue-text">Book.</span>
+          </span>
+        </div>
+        <h5 class="mb-3 fw-normal text-muted" data-sub-component="form::body::title">Login</h5>
+        <span data-sub-component="form::body::fields-slot">
+          <input
+            id="emailnput"
+            type="email"
+            class="form-control custom-input mb-3"
+            placeholder="Insira seu e-mail"
+            required
+          />
+          <input
+            id="passwordInput"
+            type="password"
+            class="form-control custom-input mb-3"
+            placeholder="Digite sua senha asat"
+          />
+        </span>
+        <span data-sub-component="form::footer::buttons-slot">
+          <button id="loginBtn" class="btn btn-primary custom-btn mb-3 w-100">
+            Entrar
+          </button>
+          <div class="text-muted mb-3">ou</div>
+          <button
+            class="btn custom-outline-btn w-100"
+            data-bs-toggle="modal"
+            data-bs-target="#cadastroModal"
+          >
+            Cadastre-se
+          </button>
+        </span>
+      </div>
+    </div>
+  
+    </template>
+    <div id="preview-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="create-form-login.js"></script>
+    <script>
+
+    const preview = document.getElementById('preview-container');
+    const fields = [
+      createLoginField(document, document, {
+        placeholder: "Insira seu email",
+        type: "email",
+        name: "email",
+        actions: {
+          blur: (e, el) => {
+            console.log("BLUR: ", el.value);
+          }
+        }
+      }),
+      createLoginField(document, document, {
+        placeholder: "Digite sua senha",
+        type: "senha",
+        name: "senha",
+        actions: {
+          blur: (e, el) => {
+            console.log("BLUR: ", el.value);
+          }
+        }
+      })
+    ];
+
+    const buttons = [
+      createLoginButton( document, document, {
+        name: "Entrar",
+        isPrimary: true,
+        actions: {
+          click: (ev, el) => {
+            console.log("CLIcKOU Entrar");
+          }
+        }
+      }),
+      createLoginButton( document, document, {
+        name: "Cadastrar",
+        isOutline: true,
+        actions: {
+          click: (ev, el) => {
+            console.log("CLIcKOU Cadastrar");
+          }
+        }
+      }),
+    ]
+
+    preview.appendChild(createLoginForm(document, document, { 
+      withLogo: true,
+      title: "Form Login",
+      fields,
+      buttons,
+    }))
+    </script>
+  </body>
+</html>

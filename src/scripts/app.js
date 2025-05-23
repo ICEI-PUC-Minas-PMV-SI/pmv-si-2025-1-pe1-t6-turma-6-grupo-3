@@ -1,6 +1,6 @@
   
   const LOGIN_URL = "login.html";
-  const HOME_URL = "caderno-lista.html";
+  const HOME_URL = "caderno-lista-v2.html";
 
   (function(global) {
     'use strict';
