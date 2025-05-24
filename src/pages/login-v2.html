@@ -36,24 +36,17 @@
 
         Promise.all([
             fetch('../componentes/form-login/form.html').then(res => res.text()),
-            fetch('../componentes/form-login/form.html').then(res => res.text()),
-            fetch('../componentes/form-login/form.html').then(res => res.text()),
-        ]).then(([htmlForm, htmlField, htmlButton]) => {
-                const wrapperForm = document.createElement('div');
-                wrapperForm.innerHTML = htmlForm;
+        ]).then(([htmlForm]) => {
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = htmlForm;
 
-                const wrapperField = document.createElement('div');
-                wrapperField.innerHTML = htmlField;
-
-                const wrapperButton = document.createElement('div');
-                wrapperButton.innerHTML = htmlButton;
 
                 const memory = {
                     email: "",
                     password: "",
                 };
                 const fields = [
-                    createLoginField(document, wrapperField, {
+                    createLoginField(document, wrapper, {
                         placeholder: "Insira seu email",
                         type: "email",
                         name: "email",
@@ -64,9 +57,9 @@
                         }
                         }
                     }),
-                    createLoginField(document, wrapperField, {
+                    createLoginField(document, wrapper, {
                         placeholder: "Digite sua senha",
-                        type: "senha",
+                        type: "password",
                         name: "senha",
                         actions: {
                             blur: (e, el) => {
@@ -78,7 +71,7 @@
                 ];
 
                 const buttons = [
-                    createLoginButton(document, wrapperButton, {
+                    createLoginButton(document, wrapper, {
                         name: "Entrar",
                         isPrimary: true,
                         actions: {
@@ -97,7 +90,7 @@
                             }
                         }
                     }),
-                    createLoginButton(document, wrapperButton, {
+                    createLoginButton(document, wrapper, {
                         name: "Cadastrar",
                         isOutline: true,
                         actions: {
@@ -109,7 +102,7 @@
                     }),
                 ]
 
-            preview.appendChild(createLoginForm(document, wrapperForm, { 
+            preview.appendChild(createLoginForm(document, wrapper, { 
                 withLogo: true,
                 title: "Login",
                 fields,
