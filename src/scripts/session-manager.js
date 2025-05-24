@@ -16,6 +16,15 @@ class SessionManager {
     }
 
     signup({ name, fullName, email, password, passwordVerification }) {
+      const errors = this._validateSignup({ name, fullName, email, password, passwordVerification });
+      if (errors && errors.length == 1) {
+        return errors[0];
+      }
+
+      if (errors && errors.length > 1) {
+        return new Error(`Multiplos erros encontrados: \n ${errors.map(e => `${e.message}\n`)}`)
+      }
+
       if (password != passwordVerification) return new Error("as senhas não são iguais, vefique.");
 
       const user = this.userClient.insertItem({ name, fullName, email, password, role: "user" });
@@ -25,13 +34,77 @@ class SessionManager {
       this._setCurrentUser(user);
     }
 
+    _isValidEmail(email) {
+      const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+      return emailRegex.test(email)
+    }
+
+    _validateSignin({email, password}) {
+      const errors = [];
+      if (!email) {
+        errors.push(new Error("Email não pode ser vazio"))
+      }
+      
+      if (email && !this._isValidEmail(email)) {
+        errors.push(new Error("Email inválido"))
+      }
+
+      if (!password) {
+        errors.push(new Error("Senha não pode ser vazio"))
+      }
+
+      if (errors.length > 0) {
+        return errors;
+      }
+
+      return
+    }
+
+    _validateSignup({email, password, passwordVerification, fullName, name}) {
+      const errors = [];
+      if (!email) {
+        errors.push(new Error("Email não pode ser vazio"))
+      }
+
+      if (!name) {
+        errors.push(new Error("Nome não pode ser vazio"))
+      }
+
+      if (!fullName) {
+        errors.push(new Error("Nome Completo não pode ser vazio"))
+      }
+      
+      if (email && !this._isValidEmail(email)) {
+        errors.push(new Error("Email inválido"))
+      }
+
+      if (!password) {
+        errors.push(new Error("Senha não pode ser vazio"))
+      }
+
+      if (!passwordVerification) {
+        errors.push(new Error("Confimação Senha não pode ser vazio"))
+      }
+
+      if (errors.length > 0) {
+        return errors;
+      }
+
+      return
+    }
+
     signin({email, password}) {
+      const errors = this._validateSignin({email, password});
+      if (errors && errors.length == 1) {
+        return errors[0];
+      }
+
+      if (errors && errors.length > 1) {
+        return new Error(`Multiplos erros encontrados: \n ${errors.map(e => `${e.message}\n`)}`)
+      }
+
       const [user, err] = this.userClient.findItemByEmail(email);
-      console.log("user: ", user);
-      console.log("user.password != password: ", user.password != password);
-      console.log("user.password: ", user.password);
-      console.log("password input: ", password);
-      console.log("!!err", !!err);
+
       if (err || user.password != password) {
         console.error("userClient.findItemByEmail: ", err);
         return new Error("Email e/ou Senha não encontrados.");
