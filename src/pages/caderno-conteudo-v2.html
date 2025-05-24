@@ -145,7 +145,7 @@
         const wrapperHeader = document.createElement('div');
         wrapperHeader.innerHTML = htmlHeader;
 
-        const notebookId = UrlService.getParam('notebookId');;
+        const notebookId = UrlService.getParam('notebookId');
         const notebook = notebookClient.findItem(notebookId);
 
         const contentId =  UrlService.getParam('contentId');

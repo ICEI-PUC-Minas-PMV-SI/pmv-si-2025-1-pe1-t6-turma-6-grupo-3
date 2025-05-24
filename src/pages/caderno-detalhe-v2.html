@@ -39,9 +39,6 @@
     if (!session.isLogged()) {
         window.location.href = LOGIN_URL;
     }
-    function getNotebookId(contentMeta){ // for now we dont store notebok id inside the metacontent
-      return UrlService.getParam('notebookId');
-    }
 
     // Funções CRUD usando notebookClient e storage
     function readContentsMeta(callback) {
@@ -87,8 +84,9 @@
         const wrapperHeader = document.createElement('div');
         wrapperHeader.innerHTML = htmlHeader;
 
-        const notebookId = getNotebookId();
-        const notebook = notebookClient.findItem(notebookId)
+        const notebookId = UrlService.getParam('notebookId');
+        const notebook = notebookClient.findItem(notebookId);
+        
         const container = document.createElement('span');
         container.appendChild(createHeader(document, wrapperHeader, {
           "icon": `${notebook.icon}`,
