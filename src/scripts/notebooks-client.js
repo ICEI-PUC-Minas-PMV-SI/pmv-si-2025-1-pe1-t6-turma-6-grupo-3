@@ -83,18 +83,19 @@ const INITIAL_ITEMS = [
         updatedAt: now
       };
       this.items.set(String(newItem.id), newItem);
-      return newItem;
+      return [newItem, null];
     }
 
     // atualiza notebook existente
     updateItem(id, updates) {
+      console.log("ID", id)
       const key = String(id);
-      if (!this.items.has(key)) return null;
+      if (!this.items.has(key)) return [null, new Error("Key not found")];
       const item = this.items.get(key);
       Object.assign(item, updates);
       item.updatedAt = new Date().toISOString();
       this.items.set(key, item);
-      return item;
+      return [item, null];
     }
 
     // deleta um notebook
