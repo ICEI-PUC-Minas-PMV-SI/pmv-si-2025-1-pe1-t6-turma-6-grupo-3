@@ -2,9 +2,10 @@
 function createNotebookCard(document, wrapper, {data, actions }) {
     const t = wrapper.querySelector('#card-template').content;
     const clone = document.importNode(t, true);
+
     if (actions){
-        clone.querySelector('[data-action="view"]').addEventListener("click", actions.view)
-        clone.querySelector('[data-action="edit"]').addEventListener("click", actions.edit)
+        clone.querySelector('[data-action="view"]').addEventListener("click", actions.view);
+        clone.querySelector('[data-action="edit"]').addEventListener("click", actions.edit);
     }
 
     clone.querySelector('.card-title').textContent = data.name;
