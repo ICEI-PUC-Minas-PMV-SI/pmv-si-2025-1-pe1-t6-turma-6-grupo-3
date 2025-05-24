@@ -47,6 +47,7 @@ function createModal(document, wrapper, {
     });
   }
 
+  
   // começa escondido
   overlay.classList.add('hidden');
   return overlay;
@@ -89,6 +90,7 @@ function createModalField(document, wrapper, {
   type = 'text',
   label = '',
   placeholder = '',
+  customClass = [],
   actions = {}
 }) {
   const tmpl = wrapper.querySelector('#modal-field-template').content;
@@ -101,12 +103,14 @@ function createModalField(document, wrapper, {
   labelEl.innerText = label;
   inputEl.name = name;
   inputEl.placeholder = placeholder;
+  inputEl.type = type;
 
   // associa handlers
   Object.entries(actions).forEach(([evt, handler]) => {
     inputEl.addEventListener(evt, e => handler(e, inputEl));
   });
 
+  customClass.forEach(c => fieldEl.classList.add(c));
   return fieldEl;
 }
 
@@ -115,6 +119,7 @@ function createModalTextarea(document, wrapper, {
   label = '',
   placeholder = '',
   rows = 4,
+  customClass=[],
   actions = {}
 }) {
   // 1. Pega o template
@@ -132,10 +137,75 @@ function createModalTextarea(document, wrapper, {
   textareaEl.placeholder    = placeholder;
   textareaEl.rows           = rows;
 
+  customClass.forEach(c => fieldEl.classList.add(c));
+
   // 4. Associa event listeners
   Object.entries(actions).forEach(([evt, handler]) => {
     textareaEl.addEventListener(evt, e => handler(e, textareaEl));
   });
 
   return fieldEl;
+}
+
+function updateModal(modalEl, {
+  title,
+  footerButtons,
+  closeOnBackdrop,
+  closeOnEsc,
+  fieldValues
+}) {
+  // 1) Atualiza título
+  if (title !== undefined) {
+    modalEl.querySelector('[data-element-type="title"]').innerText = title;
+  }
+
+  // 2) Atualiza footer (se necessário)
+  if (Array.isArray(footerButtons)) {
+    const footerSlot = modalEl.querySelector('[data-element-type="footer"]');
+    footerSlot.innerHTML = '';
+    footerButtons.forEach(btn => footerSlot.appendChild(btn));
+  }
+
+  // 3) Injeta valores nos campos
+  if (fieldValues && typeof fieldValues === 'object') {
+    Object.entries(fieldValues).forEach(([name, value]) => {
+      // encontra input ou textarea com esse name
+      const field = modalEl.querySelector(`[name="${name}"]`);
+      if (field) {
+        field.value = value;
+      }
+    });
+  }
+
+  // 4) Configura fechar por backdrop
+  if (closeOnBackdrop !== undefined) {
+    if (modalEl._backdropHandler) {
+      modalEl.removeEventListener('click', modalEl._backdropHandler);
+      delete modalEl._backdropHandler;
+    }
+    if (closeOnBackdrop) {
+      const handler = e => {
+        if (e.target === modalEl) hideModal(modalEl);
+      };
+      modalEl._backdropHandler = handler;
+      modalEl.addEventListener('click', handler);
+    }
+  }
+
+  // 5) Configura fechar com Esc
+  if (closeOnEsc !== undefined) {
+    if (modalEl._escHandler) {
+      document.removeEventListener('keydown', modalEl._escHandler);
+      delete modalEl._escHandler;
+    }
+    if (closeOnEsc) {
+      const handler = e => {
+        if (e.key === 'Escape' && !modalEl.classList.contains('hidden')) {
+          hideModal(modalEl);
+        }
+      };
+      modalEl._escHandler = handler;
+      document.addEventListener('keydown', handler);
+    }
+  }
 }

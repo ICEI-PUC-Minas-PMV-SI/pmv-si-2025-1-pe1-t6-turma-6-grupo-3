@@ -14,11 +14,14 @@
   <link rel="stylesheet" href="../componentes/base-container/container.css">
   <link rel="stylesheet" href="../componentes/notebook-card/card.css">
   <link rel="stylesheet" href="../componentes/content-card/card.css">
+  <link rel="stylesheet" href="../componentes/base-modal/modal.css">
+
   <script src="../componentes/base-container/create-container.js"></script>
   <script src="../componentes/notebook-card/create-card.js"></script>
   <script src="../componentes/content-card/create-card.js"></script>
   <script src="../componentes/base-layout/create-layout.js"></script>
   <script src="../componentes/base-header/create-header.js"></script>
+  <script src="../componentes/base-modal/create-modal.js"></script>
 </head>
 <body>
   <div id="loader">
@@ -40,35 +43,186 @@
         window.location.href = LOGIN_URL;
     }
 
+    const newNotebookModalTitle = "Crie um Novo Caderno";
+    const newNotebookSaveTitle = "Criar Caderno";
+    const editNotebookModalTitle = "Atualize seu Caderno";
+    const editNotebookSaveTitle = "Atualizar Caderno";
     // Funções CRUD usando notebookClient e storage
     function readNotebooks(callback) {
       return callback(notebookClient.getAll());
     }
-    function createNotebook(data, callback) {
-      notebookClient.insertItem(data);
-      storageNB.save();
-      callback();
-    }
-    function updateNotebook(id, data, callback) {
-      notebookClient.updateItem(id, data);
-      storageNB.save();
-      callback();
-    }
+
     function deleteNotebook(id, callback) {
       notebookClient.deleteItem(id);
       storageNB.save();
       callback();
     }
 
-      const loader = document.getElementById('loader');
 
-      Promise.all([
+    function createNotebookModal(wrapper, { create, update }) {
+
+      const id = createModalField(document, wrapper, {
+        name: 'id',
+        type: 'text',
+        label: 'id',
+        customClass: ["hidden"],
+        placeholder: 'Dê um nome claro ao seu Caderno',
+        actions: {
+          input: (e, el) => console.log('digitou nome:', el.value)
+        }
+      });
+
+      const icon = createModalField(document, wrapper, {
+        name: 'icon',
+        type: 'text',
+        label: 'Icone',
+        customClass: ["col-md-2"],
+        placeholder: 'Escolha um icone',
+        actions: {
+          input: (e, el) => console.log('digitou nome:', el.value)
+        }
+      });
+
+      const name = createModalField(document, wrapper, {
+        name: 'name',
+        type: 'text',
+        customClass: ["col-md-10"],
+        label: 'Título',
+        placeholder: 'Dê um nome claro ao seu Caderno',
+        actions: {
+          input: (e, el) => console.log('digitou nome:', el.value)
+        }
+      });
+
+      const image = createModalField(document, wrapper, {
+        name: 'image',
+        type: 'text',
+        label: 'Imagem',
+        placeholder: 'Adicione a url de uma imagem',
+        actions: {
+          input: (e, el) => console.log('digitou nome:', el.value)
+        }
+      });
+
+      const description = createModalTextarea(document, wrapper, {
+        name:        'description',
+        label:       'Descrição',
+        placeholder: 'Descreva em poucas palavaras os objetivos desse caderno...',
+        rows:        6,
+        actions: {
+          input: (e, el) => console.log('Conteúdo:', el.value)
+        }
+      });
+      
+      const fields = [
+        id,
+        icon,
+        name,
+        image,
+        description,
+      ];
+      
+      const btnCancelar = createModalButton(document, wrapper, {
+        text: 'Cancelar',
+        isOutline: true,
+        actions: { click: () => hideModal(nootebookModal) }
+      });
+      
+      
+      const btnNew = createModalButton(document, wrapper, {
+        text: "Criar Caderno",
+        isPrimary: true,
+        actions: { click: () => {
+          const err = create(getFieldsValues());
+          if (err) {
+            alert(err.message)
+            return
+          }
+          hideModal(nootebookModal);
+        }}
+      });
+
+      const btnEdit = createModalButton(document, wrapper, {
+        text: "Atualizar Caderno",
+        isPrimary: true,
+        actions: { click: () => {
+          const err = update(getFieldsValues());
+          if (err) {
+            alert(err.message)
+            return
+          }
+          hideModal(nootebookModal);
+        }}
+      });
+      
+      const newModalButtons = [btnCancelar, btnNew];
+      const editModalButtons = [btnCancelar, btnEdit];
+
+      // 3) Cria o próprio modal
+      const nootebookModal = createModal(document, wrapper, {
+        id:            'cadastroModal',
+        title:         "Crie seu Novo Notebook",
+        bodyElements:  fields,
+        footerButtons: newModalButtons,
+      });
+
+      const getFieldsValues = () => fields.reduce((acc, el) => ({...acc, [el.children[1].name]:el.children[1].value }), {});
+
+      return [nootebookModal, newModalButtons, editModalButtons];
+    }
+    const loader = document.getElementById('loader');
+
+    Promise.all([
         fetch('../componentes/notebook-card/card.html').then(res => res.text()),
         fetch('../componentes/content-card/card.html').then(res => res.text()),
         fetch('../componentes/base-container/container.html').then(res => res.text()),
         fetch('../componentes/base-layout/layout.html').then(res => res.text()),
         fetch('../componentes/base-header/header.html').then(res => res.text()),
-      ]).then(([htmlNotebook, htmlContent, htmlContainer, htmlLayout, htmlHeader]) => {
+        fetch('../componentes/base-modal/modal.html').then(res => res.text()),
+      ]).then(([htmlNotebook, htmlContent, htmlContainer, htmlLayout, htmlHeader, htmlModal]) => {
+        function createNewNotebook(data, cb) {
+          const [created, err] = notebookClient.insertItem(data);
+          if (err) {
+            return [null, err]
+          }
+
+          storageNB.save();
+          cb(created);
+        }
+        
+        function updateNotebook(data, cb) {
+          const [updated, err] = notebookClient.updateItem(data.id, data);
+          if (err) {
+            return err
+          }
+          storageNB.save();
+          cb(updated)
+        }
+
+        const viewNotebookAction = (notebook) => {
+          console.log(`View NOTEBOOK: notebook[${notebook.id}`);
+          window.location.assign(`caderno-detalhe-v2.html?notebookId=${notebook.id}`);
+        };
+
+        const editNotebookAction = (notebook) => {
+          console.log("notebook", notebook)
+          console.log(`EDIT NOTEBOOK: notebook[${notebook.id}]`);
+          // open modal here
+          console.log("notebook: ", notebook);
+          // 2) Chamamos updateModal passando o mapa de valores
+          updateModal(notebookModal, {
+            title: editNotebookModalTitle,
+            footerButtons: editModalButtons,
+            fieldValues: {
+              id: notebook.id,
+              icon: notebook.icon,
+              image: notebook.image,
+              description: notebook.description,
+              name: notebook.name,
+            },
+          });
+          showModal(notebookModal);
+        }
         const wrapperNotebook = document.createElement('div');
         wrapperNotebook.innerHTML = htmlNotebook;
 
@@ -84,19 +238,39 @@
         const wrapperHeader = document.createElement('div');
         wrapperHeader.innerHTML = htmlHeader;
 
+        const wrapperModal = document.createElement('div');
+        wrapperModal.innerHTML = htmlModal;
+
+
+
+        
         const container = document.createElement('span');
         container.appendChild(createHeader(document, wrapperHeader, {
-        "icon": "journal-text",
-        actions: {
-          add: console.log,
-          filter: console.log,
-        },
-        breadcrumbs: [{
-          label: "Home",
-        }
-        ],
-        title: "Seus Cadernos"
-      }))
+          "icon": "journal-text",
+          actions: {
+            add: () => {
+              // open modal here
+              updateModal(notebookModal, {
+                title: newNotebookModalTitle,
+                footerButtons: newModalButtons,
+                fieldValues: {
+                    id: "",
+                    icon: "",
+                    image: "",
+                    description: "",
+                    name: "",
+                  },
+              });
+              showModal(notebookModal);
+            },
+            filter: console.log,
+          },
+          breadcrumbs: [{
+            label: "Home",
+          }
+          ],
+          title: "Seus Cadernos"
+        }))
 
         const cards = readNotebooks(allNotebooks => allNotebooks.map(
           notebook => createNotebookCard(
@@ -105,20 +279,47 @@
             {
               data: notebook, 
               actions: {
-                view: () => {
-                  console.log(`View NOTEBOOK: notebook[${notebook.id}`);
-                  window.location.assign(`caderno-detalhe-v2.html?notebookId=${notebook.id}`);
-                }, 
-                edit: () => {
-                 console.log(`EDIT NOTEBOOK: notebook[${notebook.id}`);
-                }
+                edit: () => console.log("create on modal", notebook) || editNotebookAction(notebook),
+                view: () => console.log("update on modal", notebook) || viewNotebookAction(notebook),
               }
             },
           )
         )
         );
-        const notebooksRow = createContainer(document, wrapperContainer, {items: cards});
+        const containerID = "notebook-cards-list";
+        const [
+          notebookModal, 
+          newModalButtons, 
+          editModalButtons, 
+        ] = createNotebookModal(
+            wrapperModal, 
+            { 
+              create: (fromModal) => createNewNotebook(fromModal, (fromClient) => {
+                const card = createNotebookCard(document, wrapperNotebook, {
+                  data: fromClient,
+                  actions: {
+                    edit: () => editNotebookAction(fromClient),
+                    view: () => viewNotebookAction(fromClient),
+                  }
+                });
+                console.log("card::", card)
+                appendToContainerSlot(
+                  document,
+                  containerID,
+                  card,
+                );
+              }), 
+              update: (fromModal) => updateNotebook(fromModal, (fromClient) => {
+                updateNotebookCard(document, fromClient);
+              })
+            });
+
+        const notebooksRow = createContainer(document, wrapperContainer, {
+          id: containerID,
+          items: cards,
+        });
         container.appendChild(notebooksRow);
+        container.appendChild(notebookModal);
         loader.appendChild(createLayout(document, wrapperLayout, { content: container }));
       });
   </script>
