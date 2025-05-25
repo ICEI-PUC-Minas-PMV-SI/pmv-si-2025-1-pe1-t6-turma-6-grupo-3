@@ -114,14 +114,14 @@
                 view: (e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  const notebokId = getNotebookId();
+                  const notebokId = UrlService.getParam('notebookId');
                   console.log(`VIEW CONTENT NODES: notebook[${{notebokId}}] content[${contentMeta.id}]`);
                   window.location.assign(`caderno-conteudo-v2.html?notebookId=${notebokId}&contentId=${contentMeta.id}`);
                 },
                 edit: (e) => {
                   e.preventDefault();
                   e.stopPropagation();      
-                  const notebokId = getNotebookId();
+                  const notebokId = UrlService.getParam("notebookId");
                   console.log(`EDIT CONTENT META: notebook[${{notebokId}}] content[${contentMeta.id}]`)
                 }
               },
@@ -132,7 +132,20 @@
         
         const contentsRow = createContainer(document, wrapperContainer, {items: contentCards});
         container.appendChild(contentsRow);
-        loader.appendChild(createLayout(document, wrapperLayout, { content:  container}));
+       
+        const current = session.getCurrentUser();
+
+        loader.appendChild(createLayout(document, wrapperLayout, { 
+          content:  container,
+          user: {
+              name: current.name,
+              logout: () => {
+                console.log("LOGOUT!"); 
+                session.signout();
+                window.location.assign("/src/pages/login-v2.html");
+              },
+          }
+        }));
       });
   </script>
 </body>
