@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="../componentes/notebook-card/card.css">
   <link rel="stylesheet" href="../componentes/content-card/card.css">
   <link rel="stylesheet" href="../componentes/base-modal/modal.css">
+  <link rel="stylesheet" href="../componentes/icons-selector/selector.css">
 
   <script src="../componentes/base-container/create-container.js"></script>
   <script src="../componentes/notebook-card/create-card.js"></script>
@@ -22,6 +23,8 @@
   <script src="../componentes/base-layout/create-layout.js"></script>
   <script src="../componentes/base-header/create-header.js"></script>
   <script src="../componentes/base-modal/create-modal.js"></script>
+  <script src="../componentes/icons-selector/create-selector.js"></script>
+  <script src="../componentes/icons-selector/icons.js"></script>
 </head>
 <body>
   <div id="loader">
@@ -32,8 +35,6 @@
   <script src="../scripts/content-metadata-client.js"></script>
   <script src="../scripts/content-nodes-client.js"></script>
   <script src="../scripts/user-client.js"></script>
-  <!-- <script src="../scripts/icons-selector/icons.js"></script>
-  <script src="../scripts/icons-selector/lib.js"></script> -->
   <script src="../scripts/storage.js"></script>
   <script src="../scripts/session-manager.js"></script>
   <script src="../scripts/url-service.js"></script>
@@ -59,7 +60,7 @@
     }
 
 
-    function createNotebookModal(wrapper, { create, update }) {
+    function createNotebookModal(wrapper, { create, update }, iconField) {
 
       const id = createModalField(document, wrapper, {
         name: 'id',
@@ -72,16 +73,7 @@
         }
       });
 
-      const icon = createModalField(document, wrapper, {
-        name: 'icon',
-        type: 'text',
-        label: 'Icone',
-        customClass: ["col-md-2"],
-        placeholder: 'Escolha um icone',
-        actions: {
-          input: (e, el) => console.log('digitou nome:', el.value)
-        }
-      });
+      const icon = iconField;
 
       const name = createModalField(document, wrapper, {
         name: 'name',
@@ -117,6 +109,13 @@
       const fields = [
         id,
         icon,
+        name,
+        image,
+        description,
+      ];
+
+      const fieldsWithoutIcon = [
+        id,
         name,
         image,
         description,
@@ -166,7 +165,11 @@
         footerButtons: newModalButtons,
       });
 
-      const getFieldsValues = () => fields.reduce((acc, el) => ({...acc, [el.children[1].name]:el.children[1].value }), {});
+      const getFieldsValues = () => fieldsWithoutIcon.reduce(
+        (acc, el) => ({...acc, [el.children[1].name]:el.children[1].value }),
+        {
+          icon: iconField.children[1].children[1].value,
+        });
 
       return [nootebookModal, newModalButtons, editModalButtons];
     }
@@ -179,7 +182,10 @@
         fetch('../componentes/base-layout/layout.html').then(res => res.text()),
         fetch('../componentes/base-header/header.html').then(res => res.text()),
         fetch('../componentes/base-modal/modal.html').then(res => res.text()),
-      ]).then(([htmlNotebook, htmlContent, htmlContainer, htmlLayout, htmlHeader, htmlModal]) => {
+        fetch('../componentes/icons-selector/selector.html').then(res => res.text()),
+      ]).then((
+        [htmlNotebook, htmlContent, htmlContainer, htmlLayout, htmlHeader, htmlModal, htmlIconSelector]
+      ) => {
         function createNewNotebook(data, cb) {
           const [created, err] = notebookClient.insertItem(data);
           if (err) {
@@ -223,6 +229,7 @@
           });
           showModal(notebookModal);
         }
+        
         const wrapperNotebook = document.createElement('div');
         wrapperNotebook.innerHTML = htmlNotebook;
 
@@ -241,7 +248,8 @@
         const wrapperModal = document.createElement('div');
         wrapperModal.innerHTML = htmlModal;
 
-
+        const wrapperIconsSel = document.createElement('div');
+        wrapperIconsSel.innerHTML = htmlIconSelector
 
         
         const container = document.createElement('span');
@@ -312,7 +320,18 @@
               update: (fromModal) => updateNotebook(fromModal, (fromClient) => {
                 updateNotebookCard(document, fromClient);
               })
-            });
+            },
+            createIconSelector(document, wrapperIconsSel, {
+              name:         'icon',
+              label:        'Ícone',
+              popular:      ['alarm','heart','star'],
+              allIcons,
+              customClass: ["col-md-2"],
+              actions: {
+                select: (iconName, el) => console.log('Ícone:', iconName)
+              }
+            })
+          );
 
         const notebooksRow = createContainer(document, wrapperContainer, {
           id: containerID,
