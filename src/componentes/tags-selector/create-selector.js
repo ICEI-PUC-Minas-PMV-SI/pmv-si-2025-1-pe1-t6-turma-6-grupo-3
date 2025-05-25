@@ -8,7 +8,7 @@ function createTagInput(document, wrapper, {
 }) {
   const tmpl        = wrapper.querySelector('#tags-input-template').content;
   const fragment    = document.importNode(tmpl, true);
-  const fieldEl     = fragment.querySelector('[data-element-type="tag-input"]');
+  const fieldEl     = fragment.querySelector('[data-element-type="tag-selector"]');
   const labelEl     = fieldEl.querySelector('[data-element-type="label"]');
   const inputEl     = fieldEl.querySelector('[data-element-type="input"]');
   const tagsEl      = fieldEl.querySelector('[data-element-type="tags-container"]');
@@ -177,6 +177,7 @@ function createTagInput(document, wrapper, {
     // limpa estado e DOM
     tags.splice(0, tags.length);
     tagsEl.innerHTML = '';
+    if (!newTags) return;
     // adiciona cada uma
     newTags.forEach(item => {
       if (typeof item === 'string') {
@@ -187,6 +188,11 @@ function createTagInput(document, wrapper, {
     });
     // e limpa o input de texto
     inputEl.value = '';
+  };
+
+  fieldEl.getTags = function() {
+    // retornar cópia para não expor o array interno
+    return tags.map(t => ({ name: t.name, color: t.color }));
   };
 
   return fieldEl;
