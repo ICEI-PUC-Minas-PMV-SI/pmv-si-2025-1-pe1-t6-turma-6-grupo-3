@@ -33,8 +33,27 @@
 
         <div class="row align-items-center justify-content-between mb-4">
           <div class="col-md-9 d-flex align-items-center">
+            <!-- ícone opcional -->
             <i data-sub-component="header::icon" class="fs-3 text-primary me-2"></i>
+            
+            <!-- título -->
             <h3 class="mb-0 text-primary" data-sub-component="header::title">Arquitetura Empresarial e da Tecnologia da Informação</h3>
+
+            <!-- dropdown de configurações -->
+            <div class="dropdown ms-3" data-sub-component="header::settings">
+            <button 
+              class="btn btn-light icon-btn" 
+              type="button" 
+              data-bs-toggle="dropdown" 
+              aria-expanded="false"
+            >
+              <i class="bi bi-gear"></i>
+            </button>
+            <ul class="dropdown-menu" data-sub-component="header::settings::menu">
+              <!-- JS vai injetar <li><button class="dropdown-item">…</button></li> -->
+            </ul>
+          </div>
+          
           </div>
           <div class="col-md-3 d-flex align-items-center">
             <button data-action="add" type="button" class="btn btn-primary rounded-pill px-4 me-4">
