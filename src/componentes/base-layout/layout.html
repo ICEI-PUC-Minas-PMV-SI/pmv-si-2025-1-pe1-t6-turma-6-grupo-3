@@ -63,14 +63,14 @@
               <div class="profile-circle">
                 <i class="bi bi-person fs-5 text-secondary"></i>
               </div>
-              <span class="d-none d-md-inline">Eric Nash</span>
+              <span class="d-none d-md-inline" data-sub-component="layout::top-bar::username">Eric Nash</span>
             </div>
           </div>
           <ul class="dropdown-menu dropdown-menu-end">
             <li><a class="dropdown-item"><i class="bi bi-person me-2"></i>Perfil</a></li>
             <li><a class="dropdown-item"><i class="bi bi-gear me-2"></i>Configurações</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item"><i class="bi bi-box-arrow-right me-2"></i>Sair</a></li>
+            <li class="clickable" data-tooltip="Click para sair"><a class="dropdown-item"><i class="bi bi-box-arrow-right me-2"></i>Sair</a></li>
           </ul>
         </div>
       </div>
@@ -97,13 +97,13 @@
       <!-- Itens do menu principal -->
       <ul class="nav nav-pills flex-column mt-3">
         <li class="nav-item">
-          <a href="#" class="nav-link active" aria-current="page">
+          <a href="#" class="nav-link" aria-current="page">
             <i class="bi bi-house-door me-4"></i>
             Home
           </a>
         </li>
         <li>
-          <a href="#" class="nav-link text-dark">
+          <a href="#" class="nav-link text-dark active" >
             <i class="bi bi-journal me-4"></i>
             Cadernos
             <span class="ms-auto">+</span>
@@ -152,7 +152,7 @@
           </a>
         </li>
         <li>
-          <a href="#" class="nav-link text-dark">
+          <a href="#" class="nav-link text-dark" data-sub-component="layout::sidebar::logout">
             <i class="bi bi-box-arrow-right me-4"></i>
             Sair
           </a>
