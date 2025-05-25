@@ -176,7 +176,21 @@
         const editorRow = createContainer(document, wrapperContainer, {items: [editor] });
         simpleContainer.appendChild(editorRow);
 
-        loader.appendChild(createLayout(document, wrapperLayout, { content: simpleContainer }));
+        const current = session.getCurrentUser();
+        
+        loader.appendChild(
+          createLayout(document, wrapperLayout, {
+            content: simpleContainer,
+            user: {
+              name: current.name,
+              logout: () => {
+                console.log("LOGOUT!"); 
+                session.signout();
+                window.location.assign("/src/pages/login-v2.html");
+              },
+            }
+          })
+        );
       });
     
   </script>

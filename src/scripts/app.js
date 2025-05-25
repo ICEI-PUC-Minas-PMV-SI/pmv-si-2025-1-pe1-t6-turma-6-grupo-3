@@ -88,6 +88,9 @@
     global.session = new SessionManager(userClient, storageUser);
 
     function loadNotebooksForCurrentUser(user) {
+        if (!user) {
+          return
+        }
         if (global.storageNB) {
           global.storageNB.save();
         }

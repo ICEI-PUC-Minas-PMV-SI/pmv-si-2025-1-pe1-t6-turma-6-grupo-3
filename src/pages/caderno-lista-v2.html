@@ -332,14 +332,28 @@
               }
             })
           );
-
+        
         const notebooksRow = createContainer(document, wrapperContainer, {
           id: containerID,
           items: cards,
         });
         container.appendChild(notebooksRow);
         container.appendChild(notebookModal);
-        loader.appendChild(createLayout(document, wrapperLayout, { content: container }));
+
+        const current = session.getCurrentUser();
+
+        loader.appendChild(
+          createLayout(document, wrapperLayout, { 
+            content: container,
+            user: {
+              name: current.name,
+              logout: () => {
+                console.log("LOGOUT!"); 
+                session.signout();
+                window.location.assign("/src/pages/login-v2.html");
+              },
+            }
+          }));
       });
   </script>
 </body>
