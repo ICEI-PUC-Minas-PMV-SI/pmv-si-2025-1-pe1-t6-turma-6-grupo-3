@@ -37,10 +37,12 @@ function createNotebookCard(document, wrapper, {data, actions }) {
  *   - actions?: { view?: Function, edit?: Function } — novos handlers
  */
 function updateNotebookCard(document, {
-  id,
-  name,
-  image,
-  icon,
+  data: {
+    id,
+    name,
+    image,
+    icon
+  },
   actions = {}
 }) {
   // 1) encontra o card existente
@@ -92,4 +94,14 @@ function updateNotebookCard(document, {
   if (actions.edit) {
     replaceListener('[data-action="edit"]', 'click', actions.edit);
   }
+}
+
+
+function removeGenericCard(document, id) {
+  const card = document.querySelector(`[data-card-id="${id}"]`);
+  if (!card) {
+    console.warn(`removeCard: nenhum card encontrado com data-card-id="${id}"`);
+    return;
+  }
+  card.remove();
 }

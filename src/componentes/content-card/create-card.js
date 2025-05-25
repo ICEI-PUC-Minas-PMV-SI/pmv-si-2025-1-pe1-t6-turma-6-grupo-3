@@ -2,17 +2,20 @@
 function createContentCard(document, wrapper, { data, actions }) {
     const t = wrapper.querySelector('#card-template').content;
     const clone = document.importNode(t, true);
-
+    clone.firstElementChild.dataset.cardId = `content-card-${data.id}`;
     if (actions) {
         clone.querySelector('[data-action="view"]').addEventListener("click", actions.view)
         clone.querySelector('[data-action="edit"]').addEventListener("click", actions.edit)
+        clone.querySelector('[data-action="remove"]').addEventListener("click", actions.remove)
     }
 
-    clone.querySelector('.card-title').textContent = data.title;
+    clone.querySelector('.card-title').textContent = data.name;
 
     const tagsContainer = clone.querySelector('.tags-container');
     tagsContainer.innerHTML = '';  // limpa o template
-    data.tags.split(" ").forEach(tag => {
+    console.log("data.tags::", data.tags);
+    data.tags.split(", ").forEach(tag => {
+      console.log("tag: ",  tag)
         const span = document.createElement('span');
         span.className = 'badge';
         span.textContent = tag;
@@ -52,4 +55,76 @@ function getContrastWCAG(hex) {
 function toLinear(c) {
   c = c/255;
   return c <= 0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4);
+}
+
+/*
+* @param {Object} opts
+ *   - id:       string                 — o mesmo data.id usado na criação
+ *   - name?:    string                 — novo título
+ *   - tags?:    string | string[]      — string separada por “, ” ou array de strings
+ *   - icon?:    string                 — nome do Bootstrap Icon (sem “bi-”)
+ *   - actions?: { view?: fn, edit?: fn } — novos handlers
+ */
+function updateContentCard(document, {
+  data: {
+    id,
+    name,
+    tags,
+    icon,
+  },
+  actions = {}
+}) {
+  // 1) encontra o card existente `notebook-card-${data.id}`;
+  const card = document.querySelector(`[data-card-id="content-card-${id}"]`);
+  if (!card) {
+    console.warn(`ContentCard com data-card-id="${id}" não encontrado.`);
+    return;
+  }
+
+  // 2) atualiza o título
+  if (name !== undefined) {
+    const titleEl = card.querySelector('.card-title');
+    if (titleEl) titleEl.textContent = name;
+  }
+
+  // 3) atualiza as tags
+  if (tags !== undefined) {
+    const container = card.querySelector('.tags-container');
+    if (container) {
+      container.innerHTML = '';
+      // normaliza em array
+      const list = Array.isArray(tags)
+        ? tags
+        : String(tags).split(/\s*,\s*/).filter(Boolean);
+      list.forEach(tag => {
+        const span = document.createElement('span');
+        span.className = 'badge';
+        span.textContent = tag;
+        span.title       = tag;
+        container.appendChild(span);
+      });
+    }
+  }
+
+  // 4) atualiza o ícone de conteúdo
+  if (icon !== undefined) {
+    const iconEl = card.querySelector('.content-icon i');
+    if (iconEl) iconEl.className = `bi bi-${icon}`;
+  }
+
+  // 5) substitui event listeners, se vierem novos handlers
+  function replaceListener(selector, eventName, handler) {
+    const btn = card.querySelector(selector);
+    if (!btn) return;
+    const novo = btn.cloneNode(true);
+    btn.parentNode.replaceChild(novo, btn);
+    if (handler) novo.addEventListener(eventName, handler);
+  }
+
+  if (actions.view !== undefined) {
+    replaceListener('[data-action="view"]', 'click', actions.view);
+  }
+  if (actions.edit !== undefined) {
+    replaceListener('[data-action="edit"]', 'click', actions.edit);
+  }
 }

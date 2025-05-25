@@ -1,5 +1,4 @@
-
- function createHeader(document, wrapper, { 
+function createHeader(document, wrapper, { 
     id, 
     breadcrumbs,
     title,
@@ -180,11 +179,14 @@ function updateHeader(headerEl, {
 
   // 4) Botões Add / Filter
   // se vier handler, substitui listener; se não, esconde
-  const addBtn = replaceListener('[data-action="add"]', 'click', actions.add);
-  if (!actions.add && addBtn) addBtn.style.display = 'none';
 
-  const filterBtn = replaceListener('[data-action="filter"]', 'click', actions.filter);
-  if (!actions.filter && filterBtn) filterBtn.style.display = 'none';
+  if (actions && actions.add) {
+    replaceListener('[data-action="add"]', 'click', actions.add);
+  }
+
+  if (actions && actions.filter) {
+    replaceListener('[data-action="filter"]', 'click', actions.filter);
+  }
 
   // 5) Settings dropdown
   const settingsEl   = headerEl.querySelector('[data-sub-component="header::settings"]');

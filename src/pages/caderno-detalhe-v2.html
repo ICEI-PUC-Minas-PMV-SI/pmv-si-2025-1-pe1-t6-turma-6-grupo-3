@@ -46,12 +46,14 @@
     if (!session.isLogged()) {
         window.location.href = LOGIN_URL;
     }
-
+    const containerID = "notebook-content-meta-list";
     const notebookId = UrlService.getParam('notebookId');
     const notebook = notebookClient.findItem(notebookId);
     if (!notebook) {
       throw new Error("Caderno não encontrado");
     }
+    const newContentModalTitle = "Novo Conteúdo";
+    const editContentModalTitle = "Atualize seu Conteúdo";
     const editNotebookModalTitle = "Atualize seu Caderno";
     const deleteNotebookModalTitle = "Confirme a Exclusão do seu Caderno";
     const editNotebookSaveTitle = "Atualizar Caderno";
@@ -61,9 +63,42 @@
     function readContentsMeta(callback) {
       return callback(contentMetaClient.getAll());
     }
+    function createNewContent(data, cb) {
+      const [created, err] = contentMetaClient.insertItem(data);
+      if (err) {
+        return [null, err]
+      }
+      storageMeta.save();
+      cb(created);
+    }
 
-    function updateNotebook(id, data, callback) {
-      notebookClient.updateItem(id, data);
+    function updateContent(data, callback) {
+      const [updated, err] = contentMetaClient.updateItem(data.id, data);
+      if (err) {
+        alert(err.message);
+        return
+      }
+      storageMeta.save();
+      callback(updated);
+    }
+
+    function deleteContent(id, callback) {
+      console.log("id to be deleted:", id);
+      const err = contentMetaClient.deleteItem(id);
+      if (err) {
+        alert(err.message);
+        return
+      }
+      storageNB.save();
+      callback();
+    }
+
+    function updateNotebook(data, callback) {
+      const [updated, err] = notebookClient.updateItem(data.id, data);
+      if (err) {
+        alert(err.message);
+        return
+      }
       storageNB.save();
       callback();
     }
@@ -72,6 +107,108 @@
       notebookClient.deleteItem(id);
       storageNB.save();
       callback();
+    }
+
+    function createContentModal(wrapper, { update, create }, iconField) {
+      const id = createModalField(document, wrapper, {
+        name: 'id',
+        type: 'text',
+        label: 'id',
+        customClass: ["hidden"],
+        placeholder: 'Dê um nome objetivo ao seu conteúdo',
+        actions: {
+          input: (e, el) => console.log('digitou nome:', el.value)
+        }
+      });
+
+      const icon = iconField;
+
+      const name = createModalField(document, wrapper, {
+        name: 'name',
+        type: 'text',
+        customClass: ["col-md-10"],
+        label: 'Título',
+        placeholder: 'Dê um nome objetivo ao seu conteúdo',
+        actions: {
+          input: (e, el) => console.log('digitou nome:', el.value)
+        }
+      });
+      
+      const tags = createModalField(document, wrapper, {
+        name: 'tags',
+        type: 'text',
+        customClass: [],
+        label: 'Título',
+        placeholder: 'Escolha suas tags',
+        actions: {
+          input: (e, el) => console.log('digitou nome:', el.value)
+        }
+      });
+      
+      
+      const fields = [
+        id,
+        icon,
+        name,
+        tags,
+      ];
+
+      const fieldsWithoutIcon = [
+        id,
+        name,
+        tags,
+      ];
+      
+      const btnCancelar = createModalButton(document, wrapper, {
+        text: 'Cancelar',
+        isOutline: true,
+        actions: { click: () => hideModal(nootebookModal) }
+      });
+
+      const btnEdit = createModalButton(document, wrapper, {
+        text: "Atualizar Conteúdo",
+        isPrimary: true,
+        actions: { click: () => {
+          const err = update(getFieldsValues());
+          if (err) {
+            alert(err.message)
+            return
+          }
+          hideModal(nootebookModal);
+        }}
+      });
+
+      const btnCreate = createModalButton(document, wrapper, {
+        text: "Criar Conteúdo",
+        isPrimary: true,
+        actions: { click: () => {
+          const err = create(getFieldsValues());
+          if (err) {
+            alert(err.message)
+            return
+          }
+          hideModal(nootebookModal);
+        }}
+      });
+
+      const editModalButtons = [btnCancelar, btnEdit];
+      const createModalButtons = [btnCancelar, btnCreate];
+
+      // 3) Cria o próprio modal
+      const nootebookModal = createModal(document, wrapper, {
+        id:            'createEditMetaContentModal',
+        title:         "Crie seu Novo Notebook",
+        bodyElements:  fields,
+        footerButtons: editModalButtons,
+      });
+
+      const getFieldsValues = () => fieldsWithoutIcon.reduce(
+        (acc, el) => ({...acc, [el.children[1].name]:el.children[1].value }),
+        {
+          icon: iconField.children[1].children[1].value,
+        });
+
+      return [nootebookModal, createModalButtons, editModalButtons];
     }
 
     function createNotebookModal(wrapper, { update }, iconField) {
@@ -238,6 +375,65 @@
       return [nootebookModal, deleteModalButtons];
     }
 
+    function createDeleteContentModal(wrapper, { deleteFn }) {
+      const id = createModalField(document, wrapper, {
+        name: 'id',
+        type: 'text',
+        label: 'id',
+        customClass: ["hidden"],
+        placeholder: 'Dê um nome claro ao seu Caderno',
+        actions: {
+          input: (e, el) => console.log('digitou nome:', el.value)
+        }
+      });
+
+      const span = document.createElement("span");
+      span.innerHTML = `
+      <h4 style="color:red;">Atenção!</h4>
+      <p>Você está prestes a deletar definitivamente seu conteúdo.</p>
+
+      <p>Esta ação é <strong>IRREVERSÍVEL</strong></p>
+      `;
+      
+      const fields = [
+        id,
+        span,
+      ];
+
+      const btnCancelar = createModalButton(document, wrapper, {
+        text: 'Cancelar',
+        isOutline: true,
+        actions: { click: () => hideModal(nootebookModal) }
+      });
+
+      const btnDelete = createModalButton(document, wrapper, {
+        text: "Deletar Conteúdo!",
+        isPrimary: true,
+        actions: { click: () => {
+          const err = deleteFn(getFieldsValues());
+          if (err) {
+            alert(err.message);
+            return
+          }
+          hideModal(nootebookModal);
+        }}
+      });
+
+      const deleteModalButtons = [btnCancelar, btnDelete];
+
+      // 3) Cria o próprio modal
+      const nootebookModal = createModal(document, wrapper, {
+        id:            'deleteConteúdoModal',
+        title:         "Confirmação de Exclusão",
+        bodyElements:  fields,
+        footerButtons: deleteModalButtons,
+      });
+
+      const getFieldsValues = () => ({ id: id.children[1].value });
+
+      return [nootebookModal];
+    }
+
       const loader = document.getElementById('loader');
 
       Promise.all([
@@ -249,14 +445,43 @@
         fetch('../componentes/base-modal/modal.html').then(res => res.text()),
         fetch('../componentes/icons-selector/selector.html').then(res => res.text()),
       ]).then(([htmlNotebook, htmlContent, htmlContainer, htmlLayout, htmlHeader, htmlModal, htmlIconSelector]) => {
-        function updateNotebook(data, cb) {
-          const [updated, err] = notebookClient.updateItem(data.id, data);
-          if (err) {
-            return err
-          }
-          storageNB.save();
-          cb(updated)
-        }
+         const removeContentAction = (e, data) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log(`Remove CONTENT NODES: notebook[${{notebookId}}] content[${data.id}]`);
+
+          updateModal(contentDeleteModal, {
+            fieldValues: {
+              id: data.id,
+            },
+          });
+          showModal(contentDeleteModal);
+        };
+
+        const editContentAction = (e, data) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log(`EDIT CONTENT NODES: notebook[${{notebookId}}] content[${data.id}]`);
+
+          updateModal(contentModal, {
+            title: editContentModalTitle,
+            footerButtons: editContentModalButtons,
+            fieldValues: {
+              id: data.id,
+              icon: data.icon,
+              name: data.name,
+              tags: data.tags,
+            },
+          });
+          showModal(contentModal);
+        };
+        
+        const viewContentAction = (e, data) => {
+          e.preventDefault();
+          e.stopPropagation();    
+          console.log(`VIEW CONTENT NODES: notebook[${{notebookId}}] content[${data.id}]`);
+          window.location.assign(`caderno-conteudo-v2.html?notebookId=${notebookId}&contentId=${data.id}`);
+        };
         
         const wrapperNotebook = document.createElement('div');
         wrapperNotebook.innerHTML = htmlNotebook;
@@ -284,11 +509,24 @@
         const notebook = notebookClient.findItem(notebookId);
         
         const container = document.createElement('span');
+        
         const pageHeader = createHeader(document, wrapperHeader, {
           id: 'cabecalho-principal',
           "icon": `${notebook.icon}`,
           actions: {
-            add: console.log,
+            add: () => {
+              updateModal(contentModal, {
+                title: newContentModalTitle,
+                footerButtons: createContentModalButtons,
+                fieldValues: {
+                    id: "",
+                    tags: "",
+                    icon: "",
+                    name: "",
+                  },
+              });
+              showModal(contentModal);
+            },
             filter: console.log,
           },
           breadcrumbs: [{
@@ -331,30 +569,80 @@
           ],
         });
         container.appendChild(pageHeader);
-        const contentCards = readContentsMeta(allContentMeta => allContentMeta.map(
-          contentMeta => createContentCard(
-            document,
-            wrapperContent,
+        
+        const [
+          contentModal, 
+          createContentModalButtons, 
+          editContentModalButtons, 
+        ] = createContentModal(
+            wrapperModal, 
             {
-              data: contentMeta, 
-              actions: {
-                view: (e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  console.log(`VIEW CONTENT NODES: notebook[${{notebookId}}] content[${contentMeta.id}]`);
-                  window.location.assign(`caderno-conteudo-v2.html?notebookId=${notebookId}&contentId=${contentMeta.id}`);
-                },
-                edit: (e) => {
-                  e.preventDefault();
-                  e.stopPropagation();      
-                  console.log(`EDIT CONTENT META: notebook[${{notebookId}}] content[${contentMeta.id}]`)
-                }
+              create: (fromModal) => {
+                console.log("Create content", fromModal)
+                createNewContent(fromModal, (fromClient) => {
+                  const card = createContentCard(
+                    document,
+                    wrapperContent,
+                    {
+                      data: fromClient,
+                      actions: {
+                        edit: () => editContentAction(fromClient),
+                        view: () => viewContentAction(fromClient),
+                      }
+                    },
+                  );
+                  console.log("card::", card)
+                  appendToContainerSlot(
+                    document,
+                    containerID,
+                    card,
+                  );
+                });
+              },
+              update: (fromModal) => {
+                console.log("Update content", fromModal)
+                updateContent(fromModal, (fromClient) => {
+                  const payload = {
+                    data: fromClient,
+                    actions: {
+                      view: (e) => viewContentAction(e, fromClient),
+                      edit: (e) => editContentAction(e, fromClient)
+                    }
+                  };
+                  console.log("updateContentCard.payload", payload);
+                  updateContentCard(document, payload)
+                })
               },
             },
-          )
-        )
-        );
+            createIconSelector(document, wrapperIconsSel, {
+              name:         'icon',
+              label:        'Ícone',
+              popular:      ['alarm','heart','star'],
+              allIcons,
+              customClass: ["col-md-2"],
+              actions: {
+                select: (iconName, el) => console.log('Ícone:', iconName)
+              }
+            })
+          );
+        container.appendChild(contentModal);
 
+        const [
+          contentDeleteModal,
+        ] = createDeleteContentModal(
+            wrapperModal, 
+            {
+              deleteFn: (fromModal) => {
+                console.log("Create content", fromModal)
+                deleteContent(fromModal, (fromClient) => {
+                  console.log("card::deleted > ", fromClient)
+                  removeGenericCard(document, `content-card-${fromModal.id}`)
+                });
+              },
+            }
+          );
+        container.appendChild(contentDeleteModal);
+        
         const [
           notebookModal, 
           editModalButtons, 
@@ -380,6 +668,8 @@
               }
             })
           );
+        
+        container.appendChild(notebookModal);
 
         const [
           notebookDeleteModal, 
@@ -402,11 +692,29 @@
             }
             },
           );
-        
-        const contentsRow = createContainer(document, wrapperContainer, {items: contentCards});
-        container.appendChild(contentsRow);
-        container.appendChild(notebookModal);
         container.appendChild(notebookDeleteModal);
+      
+        const contentCards = readContentsMeta(allContentMeta => allContentMeta.map(
+          contentMeta => createContentCard(
+            document,
+            wrapperContent,
+            {
+              data: contentMeta, 
+              actions: {
+                view: (e) => viewContentAction(e, contentMeta),
+                edit: (e) => editContentAction(e, contentMeta),
+                remove: (e) => removeContentAction(e, contentMeta)
+              },
+            },
+          )
+        )
+        );
+        const contentsRow = createContainer(
+          document, 
+          wrapperContainer, 
+          { id: containerID, items: contentCards },
+        );
+        container.appendChild(contentsRow);
         
         const current = session.getCurrentUser();
 

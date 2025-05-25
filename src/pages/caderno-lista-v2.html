@@ -53,12 +53,30 @@
       return callback(notebookClient.getAll());
     }
 
+    function createNewNotebook(data, cb) {
+      const [created, err] = notebookClient.insertItem(data);
+      if (err) {
+        return [null, err]
+      }
+
+      storageNB.save();
+      cb(created);
+    }
+    
+    function updateNotebook(data, cb) {
+      const [updated, err] = notebookClient.updateItem(data.id, data);
+      if (err) {
+        return err
+      }
+      storageNB.save();
+      cb(updated)
+    }
+
     function deleteNotebook(id, callback) {
       notebookClient.deleteItem(id);
       storageNB.save();
       callback();
     }
-
 
     function createNotebookModal(wrapper, { create, update }, iconField) {
 
@@ -186,25 +204,6 @@
       ]).then((
         [htmlNotebook, htmlContent, htmlContainer, htmlLayout, htmlHeader, htmlModal, htmlIconSelector]
       ) => {
-        function createNewNotebook(data, cb) {
-          const [created, err] = notebookClient.insertItem(data);
-          if (err) {
-            return [null, err]
-          }
-
-          storageNB.save();
-          cb(created);
-        }
-        
-        function updateNotebook(data, cb) {
-          const [updated, err] = notebookClient.updateItem(data.id, data);
-          if (err) {
-            return err
-          }
-          storageNB.save();
-          cb(updated)
-        }
-
         const viewNotebookAction = (notebook) => {
           console.log(`View NOTEBOOK: notebook[${notebook.id}`);
           window.location.assign(`caderno-detalhe-v2.html?notebookId=${notebook.id}`);
@@ -318,7 +317,13 @@
                 );
               }), 
               update: (fromModal) => updateNotebook(fromModal, (fromClient) => {
-                updateNotebookCard(document, fromClient);
+                updateNotebookCard(document, {
+                  data: fromClient, 
+                  actions: {
+                    view: (e) => viewNotebookAction(fromClient),
+                    edit: (e) => editNotebookAction(fromClient)
+                  }
+                });
               })
             },
             createIconSelector(document, wrapperIconsSel, {

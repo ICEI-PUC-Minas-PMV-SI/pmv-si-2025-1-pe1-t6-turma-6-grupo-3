@@ -10,9 +10,10 @@ class MockContentMetadataClient {
     getAll() { return Array.from(this.items.values()); }
     findItem(id) { return this.items.get(String(id)) || null; }
     insertItem(data) {
+      // TODO: add validation
       const newItem = { id: String(this.nextId++), ...data };
       this.items.set(newItem.id, newItem);
-      return newItem;
+      return [newItem, null];
     }
     updateItem(id, updates) {
       const key = String(id);
@@ -20,9 +21,10 @@ class MockContentMetadataClient {
       const it = this.items.get(key);
       Object.assign(it, updates);
       this.items.set(key, it);
-      return it;
+      return [it, null];
     }
     deleteItem(id) {
-      return this.items.delete(String(id));
+      this.items.delete(String(id));
+      return null;
     }
   }
