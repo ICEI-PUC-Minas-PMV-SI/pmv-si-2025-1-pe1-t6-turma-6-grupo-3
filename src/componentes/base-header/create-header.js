@@ -10,6 +10,8 @@
     const tmpl = wrapper.querySelector('#header-template').content;
     const clone = document.importNode(tmpl, true);
 
+    const headerEl = clone.firstElementChild;
+    if (id) headerEl.id = id;
     // — Breadcrumb
     const ol = clone.querySelector('[data-sub-component="header::breadcrumb::ol"]')
     ol.innerHTML = "";
@@ -107,3 +109,108 @@
     return clone;
   }
 
+/**
+ * Atualiza um header já renderizado no DOM.
+ *
+ * @param {HTMLElement} headerEl — o elemento raiz do header (ex: .sub-header)
+ * @param {Object} opts
+ *   - breadcrumbs?: Array<{ label: string, href?: string }>
+ *   - title?: string
+ *   - icon?: string            // nome do bi-icon (sem 'bi-')
+ *   - actions?: { add?: fn, filter?: fn }
+ *   - settingsButtons?: Array<{
+ *       label: string,
+ *       action: Function,
+ *       icon?: string
+ *     }>
+ */
+function updateHeader(headerEl, {
+  breadcrumbs,
+  title,
+  icon,
+  actions = {},
+  settingsButtons
+}) {
+  // HELPERS
+  function replaceListener(selector, eventName, handler) {
+    const old = headerEl.querySelector(selector);
+    if (!old) return;
+    const neo = old.cloneNode(true);
+    old.parentNode.replaceChild(neo, old);
+    if (handler) neo.addEventListener(eventName, handler);
+    return neo;
+  }
+
+  // 1) Breadcrumbs
+  if (Array.isArray(breadcrumbs)) {
+    const ol = headerEl.querySelector('[data-sub-component="header::breadcrumb::ol"]');
+    ol.innerHTML = '';
+    breadcrumbs.forEach(({ label, href }, idx) => {
+      const li = document.createElement('li');
+      const isLast = idx === breadcrumbs.length - 1;
+      li.className = `breadcrumb-item${isLast ? ' active' : ''}`;
+      if (isLast) {
+        li.textContent = label;
+      } else {
+        const a = document.createElement('a');
+        a.href = href || '#';
+        a.textContent = label;
+        li.appendChild(a);
+      }
+      ol.appendChild(li);
+    });
+  }
+
+  // 2) Título
+  if (title !== undefined) {
+    const h3 = headerEl.querySelector('[data-sub-component="header::title"]');
+    h3.textContent = title;
+  }
+
+  // 3) Ícone ao lado do título
+  if (icon !== undefined) {
+    const iconEl = headerEl.querySelector('[data-sub-component="header::icon"]');
+    if (icon) {
+      iconEl.style.display = '';
+      iconEl.className = `fs-3 text-primary me-2 bi bi-${icon}`;
+    } else {
+      iconEl.style.display = 'none';
+    }
+  }
+
+  // 4) Botões Add / Filter
+  // se vier handler, substitui listener; se não, esconde
+  const addBtn = replaceListener('[data-action="add"]', 'click', actions.add);
+  if (!actions.add && addBtn) addBtn.style.display = 'none';
+
+  const filterBtn = replaceListener('[data-action="filter"]', 'click', actions.filter);
+  if (!actions.filter && filterBtn) filterBtn.style.display = 'none';
+
+  // 5) Settings dropdown
+  const settingsEl   = headerEl.querySelector('[data-sub-component="header::settings"]');
+  const toggleBtn    = settingsEl && settingsEl.querySelector('button');
+  const menu         = settingsEl && settingsEl.querySelector('[data-sub-component="header::settings::menu"]');
+
+  if (settingsButtons && menu && toggleBtn) {
+    // limpa menu
+    menu.innerHTML = '';
+    // popula
+    settingsButtons.forEach(({ label, action, icon: btnIcon }) => {
+      const li  = document.createElement('li');
+      const btn = document.createElement('button');
+      btn.type      = 'button';
+      btn.className = 'dropdown-item';
+      btn.innerHTML = btnIcon
+        ? `<i class="bi bi-${btnIcon} me-2"></i>${label}`
+        : label;
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        action(e);
+        menu.classList.remove('show');
+      });
+      li.appendChild(btn);
+      menu.appendChild(li);
+    });
+    settingsEl.style.display = '';
+  }
+}
