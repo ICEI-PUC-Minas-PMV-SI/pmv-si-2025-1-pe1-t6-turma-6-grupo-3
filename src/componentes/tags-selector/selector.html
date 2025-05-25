@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bootstrap demo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+  <link rel="stylesheet" href="../notebook-card/card.css">
+  <link rel="stylesheet" href="../content-card/card.css">
+  <script src="../notebook-card/create-card.js"></script>
+  <script src="../content-card/create-card.js"></script>
+  <link rel="stylesheet" href="selector.css">
+  <script src="./create-selector.js"></script>
+</head>
+
+<body>
+  <template id="tags-input-template">
+    <div class="tag-input-field" data-element-type="tag-input">
+      <label data-element-type="label"></label>
+      <div class="tags-wrapper">
+        <div class="tags-container" data-element-type="tags-container"></div>
+        <input type="text"
+              class="tag-input"
+              data-element-type="input"
+              placeholder="" />
+      </div>
+      <input type="hidden" data-element-type="hidden-input" name="" />
+    </div>
+  </template>
+
+  <div class="container-fluid">
+    <div id="preview-container" class="row"></div>
+  </div><!--row grup-cards-->
+  <script>
+    
+    const preview = document.getElementById('preview-container');
+
+    const tagInput = createTagInput(document, document, {
+      name: 'habilidades',
+      label: 'Habilidades',
+      placeholder: 'Digite e tecle Enter',
+      initialTags: [
+        'JavaScript',
+        { name: 'Rust',       color: '#dea584' },
+        { name: 'TypeScript', color: '#2f74c0' }
+      ],
+      actions: {
+        onAdd: tag => console.log('Adicionou', tag),
+        onRemove: tag => console.log('Removeu', tag),
+        onColorChange: (tag, color) => console.log(`Cor de ${tag}:`, color)
+      }
+    });
+    preview.appendChild(tagInput);
+  </script>
+</body>
+
+</html>
