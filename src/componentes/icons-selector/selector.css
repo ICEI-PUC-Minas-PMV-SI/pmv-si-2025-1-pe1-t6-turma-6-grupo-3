@@ -1,0 +1,20 @@
+.icon-selector-field {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.icon-selector-field .options-list {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.input-group-text i {
+  line-height: 2;
+}
+.icon-selector-field .options-list.hidden {
+  display: none;
+}
+
+.icon-selector-field .list-group-item {
+  cursor: pointer;
+}
