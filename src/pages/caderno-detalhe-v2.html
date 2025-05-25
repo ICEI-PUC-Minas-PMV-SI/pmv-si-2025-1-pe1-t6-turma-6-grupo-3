@@ -14,16 +14,23 @@
   <link rel="stylesheet" href="../componentes/base-container/container.css">
   <link rel="stylesheet" href="../componentes/notebook-card/card.css">
   <link rel="stylesheet" href="../componentes/content-card/card.css">
+  <link rel="stylesheet" href="../componentes/base-modal/modal.css">
+  <link rel="stylesheet" href="../componentes/icons-selector/selector.css">
+
   <script src="../componentes/base-container/create-container.js"></script>
   <script src="../componentes/notebook-card/create-card.js"></script>
   <script src="../componentes/content-card/create-card.js"></script>
   <script src="../componentes/base-layout/create-layout.js"></script>
   <script src="../componentes/base-header/create-header.js"></script>
+  <script src="../componentes/base-modal/create-modal.js"></script>
+  <script src="../componentes/icons-selector/create-selector.js"></script>
+  <script src="../componentes/icons-selector/icons.js"></script>
 </head>
 <body>
   <div id="loader">
   
   </div>
+
   <!-- MockClient e StorageNBManager -->
   <script src="../scripts/notebooks-client.js"></script>
   <script src="../scripts/content-metadata-client.js"></script>
@@ -40,24 +47,195 @@
         window.location.href = LOGIN_URL;
     }
 
+    const notebookId = UrlService.getParam('notebookId');
+    const notebook = notebookClient.findItem(notebookId);
+    if (!notebook) {
+      throw new Error("Caderno não encontrado");
+    }
+    const editNotebookModalTitle = "Atualize seu Caderno";
+    const deleteNotebookModalTitle = "Confirme a Exclusão do seu Caderno";
+    const editNotebookSaveTitle = "Atualizar Caderno";
+    const deleteNotebookDeleteTitle = "Excluir Caderno";
+
     // Funções CRUD usando notebookClient e storage
     function readContentsMeta(callback) {
       return callback(contentMetaClient.getAll());
     }
-    function createNotebook(data, callback) {
-      notebookClient.insertItem(data);
-      storageNB.save();
-      callback();
-    }
+
     function updateNotebook(id, data, callback) {
       notebookClient.updateItem(id, data);
       storageNB.save();
       callback();
     }
     function deleteNotebook(id, callback) {
+      console.log("id to be deleted:", id);
       notebookClient.deleteItem(id);
       storageNB.save();
       callback();
+    }
+
+    function createNotebookModal(wrapper, { update }, iconField) {
+      const id = createModalField(document, wrapper, {
+        name: 'id',
+        type: 'text',
+        label: 'id',
+        customClass: ["hidden"],
+        placeholder: 'Dê um nome claro ao seu Caderno',
+        actions: {
+          input: (e, el) => console.log('digitou nome:', el.value)
+        }
+      });
+
+      const icon = iconField;
+
+      const name = createModalField(document, wrapper, {
+        name: 'name',
+        type: 'text',
+        customClass: ["col-md-10"],
+        label: 'Título',
+        placeholder: 'Dê um nome claro ao seu Caderno',
+        actions: {
+          input: (e, el) => console.log('digitou nome:', el.value)
+        }
+      });
+
+      const image = createModalField(document, wrapper, {
+        name: 'image',
+        type: 'text',
+        label: 'Imagem',
+        placeholder: 'Adicione a url de uma imagem',
+        actions: {
+          input: (e, el) => console.log('digitou nome:', el.value)
+        }
+      });
+
+      const description = createModalTextarea(document, wrapper, {
+        name:        'description',
+        label:       'Descrição',
+        placeholder: 'Descreva em poucas palavaras os objetivos desse caderno...',
+        rows:        6,
+        actions: {
+          input: (e, el) => console.log('Conteúdo:', el.value)
+        }
+      });
+      
+      const fields = [
+        id,
+        icon,
+        name,
+        image,
+        description,
+      ];
+
+      const fieldsWithoutIcon = [
+        id,
+        name,
+        image,
+        description,
+      ];
+      
+      const btnCancelar = createModalButton(document, wrapper, {
+        text: 'Cancelar',
+        isOutline: true,
+        actions: { click: () => hideModal(nootebookModal) }
+      });
+
+      const btnEdit = createModalButton(document, wrapper, {
+        text: "Atualizar Caderno",
+        isPrimary: true,
+        actions: { click: () => {
+          const err = update(getFieldsValues());
+          if (err) {
+            alert(err.message)
+            return
+          }
+          hideModal(nootebookModal);
+        }}
+      });
+
+      const editModalButtons = [btnCancelar, btnEdit];
+
+      // 3) Cria o próprio modal
+      const nootebookModal = createModal(document, wrapper, {
+        id:            'editCadernoModal',
+        title:         "Crie seu Novo Notebook",
+        bodyElements:  fields,
+        footerButtons: editModalButtons,
+      });
+
+      const getFieldsValues = () => fieldsWithoutIcon.reduce(
+        (acc, el) => ({...acc, [el.children[1].name]:el.children[1].value }),
+        {
+          icon: iconField.children[1].children[1].value,
+        });
+
+      return [nootebookModal, editModalButtons];
+    }
+
+    function createDeleteNotebookModal(wrapper, { deleteFn }) {
+      const id = createModalField(document, wrapper, {
+        name: 'id',
+        type: 'text',
+        label: 'id',
+        customClass: ["hidden"],
+        placeholder: 'Dê um nome claro ao seu Caderno',
+        actions: {
+          input: (e, el) => console.log('digitou nome:', el.value)
+        }
+      });
+
+
+      const name = createModalField(document, wrapper, {
+        name: 'name',
+        type: 'text',
+        customClass: ["col-md-10"],
+        label: 'Título',
+        placeholder: 'Escreva o nome do seu caderno para confirmar a Exclusão',
+        actions: {
+          input: (e, el) => console.log('digitou nome:', el.value)
+        }
+      });
+      
+      const fields = [
+        id,
+        name,
+      ];
+
+      const btnCancelar = createModalButton(document, wrapper, {
+        text: 'Cancelar',
+        isOutline: true,
+        actions: { click: () => hideModal(nootebookModal) }
+      });
+
+      const btnDelete = createModalButton(document, wrapper, {
+        text: deleteNotebookDeleteTitle,
+        isPrimary: true,
+        actions: { click: () => {
+          const err = deleteFn(getFieldsValues());
+          if (err) {
+            alert(err.message)
+            return
+          }
+          hideModal(nootebookModal);
+        }}
+      });
+
+      const deleteModalButtons = [btnCancelar, btnDelete];
+
+      // 3) Cria o próprio modal
+      const nootebookModal = createModal(document, wrapper, {
+        id:            'deleteCadernoModal',
+        title:         deleteNotebookModalTitle,
+        bodyElements:  fields,
+        footerButtons: deleteModalButtons,
+      });
+
+      const getFieldsValues = () => fields.reduce(
+        (acc, el) => ({...acc, [el.children[1].name]:el.children[1].value }),
+        {},
+      );
+
+      return [nootebookModal, deleteModalButtons];
     }
 
       const loader = document.getElementById('loader');
@@ -68,7 +246,18 @@
         fetch('../componentes/base-container/container.html').then(res => res.text()),
         fetch('../componentes/base-layout/layout.html').then(res => res.text()),
         fetch('../componentes/base-header/header.html').then(res => res.text()),
-      ]).then(([htmlNotebook, htmlContent, htmlContainer, htmlLayout, htmlHeader]) => {
+        fetch('../componentes/base-modal/modal.html').then(res => res.text()),
+        fetch('../componentes/icons-selector/selector.html').then(res => res.text()),
+      ]).then(([htmlNotebook, htmlContent, htmlContainer, htmlLayout, htmlHeader, htmlModal, htmlIconSelector]) => {
+        function updateNotebook(data, cb) {
+          const [updated, err] = notebookClient.updateItem(data.id, data);
+          if (err) {
+            return err
+          }
+          storageNB.save();
+          cb(updated)
+        }
+        
         const wrapperNotebook = document.createElement('div');
         wrapperNotebook.innerHTML = htmlNotebook;
 
@@ -84,11 +273,19 @@
         const wrapperHeader = document.createElement('div');
         wrapperHeader.innerHTML = htmlHeader;
 
+        const wrapperModal = document.createElement('div');
+        wrapperModal.innerHTML = htmlModal;
+
+        const wrapperIconsSel = document.createElement('div');
+        wrapperIconsSel.innerHTML = htmlIconSelector
+
+
         const notebookId = UrlService.getParam('notebookId');
         const notebook = notebookClient.findItem(notebookId);
         
         const container = document.createElement('span');
-        container.appendChild(createHeader(document, wrapperHeader, {
+        const pageHeader = createHeader(document, wrapperHeader, {
+          id: 'cabecalho-principal',
           "icon": `${notebook.icon}`,
           actions: {
             add: console.log,
@@ -102,8 +299,38 @@
             label: `${notebook.name}`,
           }
           ],
-          title: `${notebook.name}`
-        }));
+          title: `${notebook.name}`,
+          settingsButtons: [
+            { label: 'Editar Caderno', icon: 'pencil',  action: () => {
+              updateModal(notebookModal, {
+                title: editNotebookModalTitle,
+                footerButtons: editModalButtons,
+                fieldValues: {
+                  id: notebook.id,
+                  icon: notebook.icon,
+                  image: notebook.image,
+                  description: notebook.description,
+                  name: notebook.name,
+                },
+              });
+              showModal(notebookModal);
+            } },
+            { label: 'Excluir Caderno', icon: 'trash', action: () => {
+                console.log('exportar');
+                updateModal(notebookDeleteModal, {
+                  title: deleteNotebookModalTitle,
+                  footerButtons: deleteModalButtons,
+                  fieldValues: {
+                    id: notebook.id,
+                    name: "",
+                  },
+                });
+                showModal(notebookDeleteModal);
+              }
+            },
+          ],
+        });
+        container.appendChild(pageHeader);
         const contentCards = readContentsMeta(allContentMeta => allContentMeta.map(
           contentMeta => createContentCard(
             document,
@@ -114,25 +341,73 @@
                 view: (e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  const notebokId = UrlService.getParam('notebookId');
-                  console.log(`VIEW CONTENT NODES: notebook[${{notebokId}}] content[${contentMeta.id}]`);
-                  window.location.assign(`caderno-conteudo-v2.html?notebookId=${notebokId}&contentId=${contentMeta.id}`);
+                  console.log(`VIEW CONTENT NODES: notebook[${{notebookId}}] content[${contentMeta.id}]`);
+                  window.location.assign(`caderno-conteudo-v2.html?notebookId=${notebookId}&contentId=${contentMeta.id}`);
                 },
                 edit: (e) => {
                   e.preventDefault();
                   e.stopPropagation();      
-                  const notebokId = UrlService.getParam("notebookId");
-                  console.log(`EDIT CONTENT META: notebook[${{notebokId}}] content[${contentMeta.id}]`)
+                  console.log(`EDIT CONTENT META: notebook[${{notebookId}}] content[${contentMeta.id}]`)
                 }
               },
             },
           )
         )
         );
+
+        const [
+          notebookModal, 
+          editModalButtons, 
+        ] = createNotebookModal(
+            wrapperModal, 
+            {
+              update: (fromModal) => updateNotebook(fromModal, (fromClient) => {
+                console.log("PAGE HEADER", pageHeader)
+                updateHeader(
+                  document.getElementById('cabecalho-principal'), 
+                  { title: fromClient.name, icon: fromClient.icon },
+                );
+              })
+            },
+            createIconSelector(document, wrapperIconsSel, {
+              name:         'icon',
+              label:        'Ícone',
+              popular:      ['alarm','heart','star'],
+              allIcons,
+              customClass: ["col-md-2"],
+              actions: {
+                select: (iconName, el) => console.log('Ícone:', iconName)
+              }
+            })
+          );
+
+        const [
+          notebookDeleteModal, 
+          deleteModalButtons, 
+        ] = createDeleteNotebookModal(
+            wrapperModal, 
+            {
+              deleteFn: (fromModal) => {
+                if (fromModal.name != notebook.name) {
+                  alert("Nome do Carderno não coincide com o escrito na confirmação");
+                  return
+                }
+                deleteNotebook(fromModal.id, (errFromClient) => {
+                if (errFromClient) {
+                  alert(errFromClient.message);
+                  return
+                }
+                document.location.assign("/src/pages/caderno-lista-v2.html")
+              })
+            }
+            },
+          );
         
         const contentsRow = createContainer(document, wrapperContainer, {items: contentCards});
         container.appendChild(contentsRow);
-       
+        container.appendChild(notebookModal);
+        container.appendChild(notebookDeleteModal);
+        
         const current = session.getCurrentUser();
 
         loader.appendChild(createLayout(document, wrapperLayout, { 
