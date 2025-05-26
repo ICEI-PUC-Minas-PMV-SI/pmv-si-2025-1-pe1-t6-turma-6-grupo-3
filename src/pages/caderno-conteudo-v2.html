@@ -134,27 +134,30 @@
       const editor = document.createElement('div');
 
       mountEditor(document, editor);
+      // not using original creator here because we are using less components
+      // so I'm manually building an small version of the creator
       Promise.all([
-        fetch('../componentes/notebook-card/card.html').then(res => res.text()),
-        fetch('../componentes/content-card/card.html').then(res => res.text()),
         fetch('../componentes/base-container/container.html').then(res => res.text()),
         fetch('../componentes/base-layout/layout.html').then(res => res.text()),
         fetch('../componentes/base-header/header.html').then(res => res.text()),
-      ]).then(([htmlNotebook, htmlContent, htmlContainer, htmlLayout, htmlHeader]) => {
-        const wrapperNotebook = document.createElement('div');
-        wrapperNotebook.innerHTML = htmlNotebook;
-
-        const wrapperContent = document.createElement('div');
-        wrapperContent.innerHTML = htmlContent;
-
+      ]).then(([htmlContainer, htmlLayout, htmlHeader]) => {
         const wrapperContainer = document.createElement('div');
         wrapperContainer.innerHTML = htmlContainer;
 
         const wrapperLayout = document.createElement('div');
         wrapperLayout.innerHTML = htmlLayout;
+
         const wrapperHeader = document.createElement('div');
         wrapperHeader.innerHTML = htmlHeader;
-
+        return [wrapperContainer, wrapperLayout, wrapperHeader]
+      }).then(([wrapperContainer, wrapperLayout, wrapperHeader]) => {
+        const localCreator = {
+          [createContainer.name]: (args) => createContainer(document, wrapperContainer, args),
+          [createHeader.name]: (args) => createHeader(document, wrapperHeader, args),
+          [createLayout.name]: (args) => createLayout(document, wrapperLayout, args),
+        }
+        return localCreator;
+      }).then(creator => {
         const notebookId = UrlService.getParam('notebookId');
         const notebook = notebookClient.findItem(notebookId);
 
@@ -162,7 +165,7 @@
         const contentMeta = contentMetaClient.findItem(contentId);
         
         const simpleContainer = document.createElement('span');
-        simpleContainer.appendChild(createHeader(document, wrapperHeader, {
+        simpleContainer.appendChild(creator.createHeader({
           "icon": `${notebook.icon}`,
           actions: {
             // add: console.log,
@@ -183,13 +186,13 @@
           title: `${contentMeta.name}`
         }));
 
-        const editorRow = createContainer(document, wrapperContainer, {items: [editor] });
+        const editorRow = creator.createContainer({items: [editor] });
         simpleContainer.appendChild(editorRow);
 
         const current = session.getCurrentUser();
         
         loader.appendChild(
-          createLayout(document, wrapperLayout, {
+          creator.createLayout({
             content: simpleContainer,
             user: {
               name: current.name,
