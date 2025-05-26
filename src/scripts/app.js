@@ -119,16 +119,16 @@
         if (notebookID & contentID) {
           const nodeKey = 
             'contents_nodes_' 
-              + user 
+              + user.id
               + '_' 
               + notebookID 
               +'_'
               + contentID;
-          global.storageNode = new StorageManager(global.contentNodesClient, nodeKey);
+          global.storageNodes = new StorageManager(global.contentNodesClient, nodeKey);
         } else {
-          global.storageNode = new StorageManager(global.contentNodesClient, "");
+          global.storageNodes = new StorageManager(global.contentNodesClient, "");
         }
-        global.storageNode.load()
+        global.storageNodes.load()
     }
 
     global.session.onChangeUser(loadNotebooksForCurrentUser);
