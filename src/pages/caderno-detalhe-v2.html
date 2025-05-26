@@ -542,9 +542,7 @@
               create: (fromModal) => {
                 console.log("Create content", fromModal)
                 createNewContent(fromModal, (fromClient) => {
-                  const card = createContentCard(
-                    document,
-                    wrapperContent,
+                  const card = creator.createContentCard(
                     {
                       data: fromClient,
                       actions: {
