@@ -36,17 +36,25 @@
 
         Promise.all([
             fetch('../componentes/login-form/form.html').then(res => res.text()),
-        ]).then(([htmlForm]) => {
-                const wrapper = document.createElement('div');
-                wrapper.innerHTML = htmlForm;
+        ]).then(([html]) => {
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = html;
 
-
+        return [wrapper]
+      }).then(([wrapper]) => {
+        const localCreator = {
+          [createLoginForm.name]: (args) => createLoginForm(document, wrapper, args),
+          [createLoginField.name]: (args) => createLoginField(document, wrapper, args),
+          [createLoginButton.name]: (args) => createLoginButton(document, wrapper, args),
+        }
+        return localCreator;
+      }).then(creator => {
                 const memory = {
                     email: "",
                     password: "",
                 };
                 const fields = [
-                    createLoginField(document, wrapper, {
+                    creator.createLoginField({
                         placeholder: "Insira seu email",
                         type: "email",
                         name: "email",
@@ -57,7 +65,7 @@
                         }
                         }
                     }),
-                    createLoginField(document, wrapper, {
+                    creator.createLoginField({
                         placeholder: "Digite sua senha",
                         type: "password",
                         name: "senha",
@@ -71,7 +79,7 @@
                 ];
 
                 const buttons = [
-                    createLoginButton(document, wrapper, {
+                    creator.createLoginButton({
                         name: "Entrar",
                         isPrimary: true,
                         actions: {
@@ -90,7 +98,7 @@
                             }
                         }
                     }),
-                    createLoginButton(document, wrapper, {
+                    creator.createLoginButton({
                         name: "Cadastrar",
                         isOutline: true,
                         actions: {
@@ -102,7 +110,7 @@
                     }),
                 ]
 
-            preview.appendChild(createLoginForm(document, wrapper, { 
+            preview.appendChild(creator.createLoginForm({ 
                 withLogo: true,
                 title: "Login",
                 fields,

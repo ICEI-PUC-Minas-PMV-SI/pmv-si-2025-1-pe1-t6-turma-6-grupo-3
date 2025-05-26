@@ -37,9 +37,18 @@
         Promise.all([
             fetch('../componentes/login-form/form.html').then(res => res.text()),
         ]).then(([html]) => {
-                const wrapper = document.createElement('div');
-                wrapper.innerHTML = html;
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = html;
 
+        return [wrapper]
+      }).then(([wrapper]) => {
+        const localCreator = {
+          [createLoginForm.name]: (args) => createLoginForm(document, wrapper, args),
+          [createLoginField.name]: (args) => createLoginField(document, wrapper, args),
+          [createLoginButton.name]: (args) => createLoginButton(document, wrapper, args),
+        }
+        return localCreator;
+      }).then(creator => {
                 const memory = {
                     name: "",
                     email: "",
@@ -48,7 +57,7 @@
                 };
 
                 const fields = [
-                    createLoginField(document, wrapper, {
+                    creator.createLoginField({
                         placeholder: "Insira seu nome",
                         type: "text",
                         name: "name",
@@ -59,7 +68,7 @@
                         }
                         }
                     }),
-                    createLoginField(document, wrapper, {
+                    creator.createLoginField({
                         placeholder: "Insira seu nome Completo",
                         type: "text",
                         name: "full-name",
@@ -70,7 +79,7 @@
                         }
                         }
                     }),
-                    createLoginField(document, wrapper, {
+                    creator.createLoginField({
                         placeholder: "Insira seu email",
                         type: "email",
                         name: "email",
@@ -81,7 +90,7 @@
                         }
                         }
                     }),
-                    createLoginField(document, wrapper, {
+                    creator.createLoginField({
                         placeholder: "Digite sua senha",
                         type: "password",
                         name: "senha",
@@ -92,7 +101,7 @@
                         }
                         }
                     }),
-                    createLoginField(document, wrapper, {
+                    creator.createLoginField({
                         placeholder: "Repita sua senha",
                         type: "password",
                         name: "repeticao-senha",
@@ -106,7 +115,7 @@
                 ];
 
                 const buttons = [
-                    createLoginButton(document, wrapper, {
+                    creator.createLoginButton({
                         name: "Cadastrar",
                         isPrimary: true,
                         actions: {
@@ -128,7 +137,7 @@
                             }
                         }
                     }),
-                    createLoginButton(document, wrapper, {
+                    creator.createLoginButton({
                         name: "Entrar",
                         isOutline: true,
                         actions: {
@@ -140,7 +149,7 @@
                     }),
                 ]
 
-            preview.appendChild(createLoginForm(document, wrapper, { 
+            preview.appendChild(creator.createLoginForm({ 
                 withLogo: true,
                 title: "Cadastrar Novo Usuário",
                 fields,
