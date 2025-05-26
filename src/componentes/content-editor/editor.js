@@ -3,6 +3,7 @@ function FactoryCreateBlock(document, editor, {
     removeNode,
     updateNode,
     moveNode,
+    saveNodes,
 }) {
     function getBlock() {
         const block = document.createElement("div");
@@ -414,9 +415,11 @@ function FactoryCreateBlock(document, editor, {
         block.appendChild(menu);
 
         menuBtn.onclick = (e) => {
-        e.stopPropagation();
-        closeAllMenus();
-        menu.style.display = 'flex';
+            e.stopPropagation();
+            console.log("menuBtn.onclick")
+            saveNodes();
+            closeAllMenus();
+            menu.style.display = 'flex';
         };
 
         controls.appendChild(addBtn);
