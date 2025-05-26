@@ -12,8 +12,8 @@ class MockContentNodesClient {
      */
     reset(data = []) {
       this.items = new Map();
-      data.forEach(node => {
-        this.items.set(String(node.id), { ...node });
+      data.forEach((node, i) => {
+        this.items.set(String(node.id), { ...node, position: i });
       });
       this.nextId = this.items.size + 1;
     }
