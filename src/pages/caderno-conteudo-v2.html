@@ -37,93 +37,103 @@
   <script src="../scripts/app.js"></script>
   <script>
 
-     if (!session.isLogged()) {
+    if (!session.isLogged()) {
         window.location.href = LOGIN_URL;
     }
+    const notebookId = UrlService.getParam('notebookId');
+    const contentId = UrlService.getParam('contentId');
 
-    // Funções CRUD usando notebookClient e storage
-    function readContentsMeta(callback) {
-      return callback(contentMetaClient.getAll());
-    }
-    function createNotebook(data, callback) {
-      notebookClient.insertItem(data);
-      storageNB.save();
-      callback();
-    }
-    function updateNotebook(id, data, callback) {
-      notebookClient.updateItem(id, data);
-      storageNB.save();
-      callback();
-    }
-    function deleteNotebook(id, callback) {
-      notebookClient.deleteItem(id);
-      storageNB.save();
-      callback();
-    }
+    function mountEditor(document, editor) {
+      const memory = {
+        nodes: contentNodesClient.getAll(),
+        _nextId: 0
+      }
+
+      if (!memory.nodes.length){
+        memory.nodes.push({
+          type: "h1", // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
+          position: 0,
+          customStyle: ["center-text","bigger-text", "background-paper"],
+          id:  `${memory._nextId}`,
+          value: "Comece por aqui...",
+        })
+        memory._nextId = memory._nextId+1;
+        contentNodesClient.reset(memory.nodes);
+        storageNodes.save();
+      }
+      const [createBlock, setCaretToEnd] = FactoryCreateBlock(document, editor, {
+            removeNode: (id) => {
+              const index = memory.nodes.findIndex(node => node.id === id);
+              if (index == -1) {
+                return new Error("Node não encontrado. Delete não executado");
+              }
+              memory.nodes.splice(index, 1);
+              memory.nodes.forEach((n, i) => {
+                n.position = i;
+              });
+              contentNodesClient.reset(memory.nodes);
+              storageNodes.save();
+              return;
+            },
+            moveNode: (draggedId, targetId, after) => {
+              const fromIndex = memory.nodes.findIndex(n => n.id == draggedId);
+              if (fromIndex < 0) return;
+              const [moved] = memory.nodes.splice(fromIndex, 1);
+
+              const targetIndex = memory.nodes.findIndex(n => n.id == targetId);
+
+              let toIndex = after ? targetIndex + 1 : targetIndex;
+              
+              toIndex = Math.max(0, Math.min(memory.nodes.length, toIndex));
+
+              memory.nodes.splice(toIndex, 0, moved);
+
+              memory.nodes.forEach((n, idx) => { n.position = idx; });
+              contentNodesClient.reset(memory.nodes);
+              storageNodes.save();
+            },
+            addNewNode: (nodeType, position=0) => {
+                console.log(`addNewNode::type[${nodeType}]::pos[${position}]`);
+      
+
+                // 2) monta o novo node
+                const newNode = {
+                    type: nodeType,
+                    position: position,       // vai ser ajustado abaixo
+                    customStyle: "",
+                    id: `${memory._nextId}`,
+                    value: "",
+                };
+                memory._nextId = memory._nextId + 1;
+
+                // 3) garante que a posição está dentro dos limites
+                const idx = Math.max(0, Math.min(memory.nodes.length, position));
+
+                // 4) insere no array existente, em vez de recriar
+                memory.nodes.splice(idx, 0, newNode);
+
+                // 5) reatribui position pra todo mundo
+                memory.nodes.forEach((n, i) => {
+                    n.position = i;
+                });
+                contentNodesClient.reset(memory.nodes);
+                storageNodes.save();
+
+                return newNode;        
+          },
+            saveNodes: () => {
+              contentNodesClient.reset(memory.nodes);
+              storageNodes.save();
+            }
+        })
+      // 
+      window.onload = () => memory.nodes.forEach((node, i) =>  editor.appendChild(createBlock(node)));
+    };
 
       const loader = document.getElementById('loader');
-       const editor = document.createElement('div');
+      const editor = document.createElement('div');
 
-        let initial_nodes = {nodes: [
-          {
-            type: "h1", // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
-            position: 0,
-            customStyle: ["center-text","bigger-text", "background-paper"],
-            id: "0",
-            value: "Meu Titulo",
-          },
-          {
-            type: "paragraph", // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
-            position: 1,
-            customStyle: "",
-            id: "1",
-            value: "Uma descricao qualquer",
-          },
-          {
-            type: "unordered_list", // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
-            position: 2,
-            customStyle: "",
-            id: "2",
-            "value": "Açucar\tSal\tManteiga",
-          },
-          {
-            type: "ordered_list", // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
-            position: 3,
-            customStyle: "",
-            id: "3",
-            "value": "Item 1\tItem 2\tItem 3",
-          },
-          {
-            type: "unordered_list", // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
-            position: 4,
-            customStyle: "",
-            id: "4",
-            "value": "Item",
-          },
-          {
-            type: "ordered_action_list", // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
-            position: 5,
-            customStyle: "",
-            id: "5",
-            "value": "- Item\tx Item\t- Item",
-          },
-          {
-            type: "unordered_action_list", // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
-            position: 6,
-            customStyle: "",
-            id: "6",
-            "value": "- Item\tx Item\t- Item",
-          },
-          {
-            type: "image", // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
-            position: 7,
-            customStyle: "",
-            id: "7",
-            "value": "https://placehold.co/600x400/orange/white?text=Minha+Imagem&font=roboto",
-          },
-        ]
-      };
-        mountEditor(document, editor, initial_nodes);
+      mountEditor(document, editor);
       Promise.all([
         fetch('../componentes/notebook-card/card.html').then(res => res.text()),
         fetch('../componentes/content-card/card.html').then(res => res.text()),
@@ -167,10 +177,10 @@
             href: `/src/pages/caderno-detalhe-v2.html?notebookId=${notebookId}`
           },
           {
-            label: `${contentMeta.title}`
+            label: `${contentMeta.name}`
           }
           ],
-          title: `${contentMeta.title}`
+          title: `${contentMeta.name}`
         }));
 
         const editorRow = createContainer(document, wrapperContainer, {items: [editor] });
