@@ -471,7 +471,7 @@
         const viewContentAction = (e, data) => {
           e.preventDefault();
           e.stopPropagation();    
-          console.log(`VIEW CONTENT NODES: notebook[${{notebookId}}] content[${data.id}]`);
+          console.log(`VIEW CONTENT NODES: notebook[${notebookId}] content[${data.id}]`);
           window.location.assign(`caderno-conteudo-v2.html?notebookId=${notebookId}&contentId=${data.id}`);
         };
         
@@ -581,8 +581,8 @@
                     {
                       data: fromClient,
                       actions: {
-                        edit: () => editContentAction(fromClient),
-                        view: () => viewContentAction(fromClient),
+                        edit: (e) => editContentAction(e,fromClient),
+                        view: (e) => viewContentAction(e, fromClient),
                       }
                     },
                   );
