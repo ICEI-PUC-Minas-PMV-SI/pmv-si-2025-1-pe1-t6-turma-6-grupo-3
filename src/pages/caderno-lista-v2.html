@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="../componentes/content-card/card.css">
   <link rel="stylesheet" href="../componentes/base-modal/modal.css">
   <link rel="stylesheet" href="../componentes/icons-selector/selector.css">
+  <link rel="stylesheet" href="../componentes/tags-selector/selector.css">
 
   <script src="../componentes/base-container/create-container.js"></script>
   <script src="../componentes/notebook-card/create-card.js"></script>
@@ -25,6 +26,8 @@
   <script src="../componentes/base-modal/create-modal.js"></script>
   <script src="../componentes/icons-selector/create-selector.js"></script>
   <script src="../componentes/icons-selector/icons.js"></script>
+  <script src="../componentes/tags-selector/create-selector.js"></script>
+  <script src="../componentes/builder.js"></script>
 </head>
 <body>
   <div id="loader">
@@ -78,9 +81,9 @@
       callback();
     }
 
-    function createNotebookModal(wrapper, { create, update }, iconField) {
+    function createNotebookModal(creator, { create, update }, iconField) {
 
-      const id = createModalField(document, wrapper, {
+      const id = creator.createModalField({
         name: 'id',
         type: 'text',
         label: 'id',
@@ -93,7 +96,7 @@
 
       const icon = iconField;
 
-      const name = createModalField(document, wrapper, {
+      const name = creator.createModalField({
         name: 'name',
         type: 'text',
         customClass: ["col-md-10"],
@@ -104,7 +107,7 @@
         }
       });
 
-      const image = createModalField(document, wrapper, {
+      const image = creator.createModalField({
         name: 'image',
         type: 'text',
         label: 'Imagem',
@@ -114,7 +117,7 @@
         }
       });
 
-      const description = createModalTextarea(document, wrapper, {
+      const description = creator.createModalTextarea({
         name:        'description',
         label:       'Descrição',
         placeholder: 'Descreva em poucas palavaras os objetivos desse caderno...',
@@ -139,14 +142,14 @@
         description,
       ];
       
-      const btnCancelar = createModalButton(document, wrapper, {
+      const btnCancelar = creator.createModalButton({
         text: 'Cancelar',
         isOutline: true,
         actions: { click: () => hideModal(nootebookModal) }
       });
       
       
-      const btnNew = createModalButton(document, wrapper, {
+      const btnNew = creator.createModalButton({
         text: "Criar Caderno",
         isPrimary: true,
         actions: { click: () => {
@@ -159,7 +162,7 @@
         }}
       });
 
-      const btnEdit = createModalButton(document, wrapper, {
+      const btnEdit = creator.createModalButton({
         text: "Atualizar Caderno",
         isPrimary: true,
         actions: { click: () => {
@@ -176,7 +179,7 @@
       const editModalButtons = [btnCancelar, btnEdit];
 
       // 3) Cria o próprio modal
-      const nootebookModal = createModal(document, wrapper, {
+      const nootebookModal = creator.createModal({
         id:            'cadastroModal',
         title:         "Crie seu Novo Notebook",
         bodyElements:  fields,
@@ -193,17 +196,7 @@
     }
     const loader = document.getElementById('loader');
 
-    Promise.all([
-        fetch('../componentes/notebook-card/card.html').then(res => res.text()),
-        fetch('../componentes/content-card/card.html').then(res => res.text()),
-        fetch('../componentes/base-container/container.html').then(res => res.text()),
-        fetch('../componentes/base-layout/layout.html').then(res => res.text()),
-        fetch('../componentes/base-header/header.html').then(res => res.text()),
-        fetch('../componentes/base-modal/modal.html').then(res => res.text()),
-        fetch('../componentes/icons-selector/selector.html').then(res => res.text()),
-      ]).then((
-        [htmlNotebook, htmlContent, htmlContainer, htmlLayout, htmlHeader, htmlModal, htmlIconSelector]
-      ) => {
+    buildComponentsCreator(document,"..", "*").then(creator => {
         const viewNotebookAction = (notebook) => {
           console.log(`View NOTEBOOK: notebook[${notebook.id}`);
           window.location.assign(`caderno-detalhe-v2.html?notebookId=${notebook.id}`);
@@ -228,31 +221,8 @@
           });
           showModal(notebookModal);
         }
-        
-        const wrapperNotebook = document.createElement('div');
-        wrapperNotebook.innerHTML = htmlNotebook;
-
-        const wrapperContent = document.createElement('div');
-        wrapperContent.innerHTML = htmlContent;
-
-        const wrapperContainer = document.createElement('div');
-        wrapperContainer.innerHTML = htmlContainer;
-
-        const wrapperLayout = document.createElement('div');
-        wrapperLayout.innerHTML = htmlLayout;
-
-        const wrapperHeader = document.createElement('div');
-        wrapperHeader.innerHTML = htmlHeader;
-
-        const wrapperModal = document.createElement('div');
-        wrapperModal.innerHTML = htmlModal;
-
-        const wrapperIconsSel = document.createElement('div');
-        wrapperIconsSel.innerHTML = htmlIconSelector
-
-        
         const container = document.createElement('span');
-        container.appendChild(createHeader(document, wrapperHeader, {
+        container.appendChild(creator.createHeader({
           "icon": "journal-text",
           actions: {
             add: () => {
@@ -280,9 +250,7 @@
         }))
 
         const cards = readNotebooks(allNotebooks => allNotebooks.map(
-          notebook => createNotebookCard(
-            document,
-            wrapperNotebook,
+          notebook => creator.createNotebookCard(
             {
               data: notebook, 
               actions: {
@@ -297,9 +265,9 @@
         const [
           notebookModal, 
           newModalButtons, 
-          editModalButtons, 
+          editModalButtons,
         ] = createNotebookModal(
-            wrapperModal, 
+            creator, 
             { 
               create: (fromModal) => createNewNotebook(fromModal, (fromClient) => {
                 const card = createNotebookCard(document, wrapperNotebook, {
@@ -326,7 +294,7 @@
                 });
               })
             },
-            createIconSelector(document, wrapperIconsSel, {
+            creator.createIconSelector({
               name:         'icon',
               label:        'Ícone',
               popular:      ['alarm','heart','star'],
@@ -338,7 +306,7 @@
             })
           );
         
-        const notebooksRow = createContainer(document, wrapperContainer, {
+        const notebooksRow = creator.createContainer({
           id: containerID,
           items: cards,
         });
@@ -348,7 +316,7 @@
         const current = session.getCurrentUser();
 
         loader.appendChild(
-          createLayout(document, wrapperLayout, { 
+          creator.createLayout({ 
             content: container,
             user: {
               name: current.name,
