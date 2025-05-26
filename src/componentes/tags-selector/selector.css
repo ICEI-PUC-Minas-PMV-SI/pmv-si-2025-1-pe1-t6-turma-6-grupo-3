@@ -1,0 +1,93 @@
+.tag-input-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.tag-input-field .tags-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.tag-input-field .tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag-input-field .tag-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  color: #fff;
+  border-radius: 999px;
+  position: relative;
+}
+
+.tag-input-field .tag-pill .remove-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  font-weight: bold;
+  margin-left: 0.5rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.tag-input-field .tag-input {
+  flex-grow: 1;
+  min-width: 100px;
+  border: none;
+  outline: none;
+}
+
+.tag-input-field .tag-input::placeholder {
+  color: #999;
+}
+
+/* cursor pointer nas pills */
+.tag-pill {
+  cursor: pointer;
+}
+
+/* estilo do editor */
+.tag-editor {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.25rem;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0.5rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  z-index: 10000;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.tag-editor input[type="text"] {
+  width: 6rem;
+}
+
+.tag-editor input[type="color"] {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.tag-editor .editor-save-btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}

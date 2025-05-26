@@ -171,7 +171,22 @@ function updateModal(modalEl, {
     Object.entries(fieldValues).forEach(([name, value]) => {
       // encontra input ou textarea com esse name
       const field = modalEl.querySelector(`[name="${name}"]`);
-      if (field) {
+      if (!field) return;
+
+      // tenta achar o wrapper do componente
+      // (se você tiver usado data-element-type no wrapper, pode filtrar por ele)
+      const wrapper = field.closest('[data-element-type="icon-selector"], [data-element-type="tag-selector"]');
+      console.log("wrapper::", wrapper)
+      // se for um Icon Selector
+      if (wrapper?.updateValue) {
+        wrapper.updateValue(value);
+      }
+      // se for um Tag Input
+      else if (wrapper?.updateTags) {
+        wrapper.updateTags(value);
+      }
+      // caso contrário, input/textarea comum
+      else {
         field.value = value;
       }
     });

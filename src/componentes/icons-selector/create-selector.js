@@ -56,6 +56,12 @@ function createIconSelector(document, wrapper, {
   }
 
   function selectIcon(iconName) {
+    if (!iconName) {
+      preview.innerHTML = `<i class="bi bi-question-circle"></i>`;
+      inputEl.value = iconName;
+       if (actions.select) actions.select(iconName, fieldEl);
+       return;
+    }
     preview.innerHTML = `<i class="bi bi-${iconName}"></i>`;
     inputEl.value = iconName;
     box.classList.add('hidden');
@@ -77,6 +83,8 @@ function createIconSelector(document, wrapper, {
       box.classList.add('hidden');
     }
   });
+
+  inputEl.updateValue = selectIcon;
 
   // começa escondido
   box.classList.add('hidden');

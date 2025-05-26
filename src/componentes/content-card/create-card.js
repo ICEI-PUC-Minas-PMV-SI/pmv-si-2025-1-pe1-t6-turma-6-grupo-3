@@ -14,17 +14,16 @@ function createContentCard(document, wrapper, { data, actions }) {
     const tagsContainer = clone.querySelector('.tags-container');
     tagsContainer.innerHTML = '';  // limpa o template
     console.log("data.tags::", data.tags);
-    data.tags.split(", ").forEach(tag => {
+    data.tags.forEach(tag => {
       console.log("tag: ",  tag)
         const span = document.createElement('span');
         span.className = 'badge';
-        span.textContent = tag;
-        span.title       = tag;
-        // TODO: put it back when tag got color
-        // span.style.backgroundColor = tag.color;
-  //       span.style.color = getContrastWCAG(tag.color.replace(/^rgb\(|\)|\s+/g, c =>
-  //   ('0'+parseInt(c).toString(16)).slice(-2)
-  // )) || getContrastWCAG(tag.color.replace(/^#/,''));
+        span.textContent = tag.name;
+        span.title       = tag.name;
+        span.style.backgroundColor = tag.color;
+        span.style.color = getContrastWCAG(tag.color.replace(/^rgb\(|\)|\s+/g, c =>
+    ('0'+parseInt(c).toString(16)).slice(-2)
+  )) || getContrastWCAG(tag.color.replace(/^#/,''));
         tagsContainer.appendChild(span);
     });
 
@@ -93,16 +92,20 @@ function updateContentCard(document, {
     if (container) {
       container.innerHTML = '';
       // normaliza em array
-      const list = Array.isArray(tags)
-        ? tags
-        : String(tags).split(/\s*,\s*/).filter(Boolean);
-      list.forEach(tag => {
+      tags.forEach(tag => {
+      console.log("tag: ",  tag)
         const span = document.createElement('span');
         span.className = 'badge';
-        span.textContent = tag;
-        span.title       = tag;
-        container.appendChild(span);
-      });
+        span.textContent = tag.name;
+        span.title       = tag.name;
+        span.style.backgroundColor = tag.color;
+        span.style.color = getContrastWCAG(
+          tag.color.replace(/^rgb\(|\)|\s+/g, c =>
+            ('0'+parseInt(c).toString(16)).slice(-2)
+              )) || getContrastWCAG(tag.color.replace(/^#/,''));
+            container.appendChild(span);
+        });
+      
     }
   }
 
