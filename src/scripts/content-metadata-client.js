@@ -11,7 +11,7 @@ class MockContentMetadataClient {
     findItem(id) { return this.items.get(String(id)) || null; }
     insertItem(data) {
       // TODO: add validation
-      const newItem = { id: String(this.nextId++), ...data };
+      const newItem = { ...data, id: String(this.nextId++) };
       this.items.set(newItem.id, newItem);
       return [newItem, null];
     }
