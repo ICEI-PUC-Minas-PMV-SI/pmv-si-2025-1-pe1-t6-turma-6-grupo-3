@@ -9,8 +9,8 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    	<link rel="stylesheet" href="../componentes/form-login/form.css">
-        <script src="../componentes/form-login/create-form-login.js"></script>
+    	<link rel="stylesheet" href="../componentes/login-form/form.css">
+        <script src="../componentes/login-form/create-form-login.js"></script>
 </head>
 
 <body>
@@ -35,7 +35,7 @@
          const preview = document.getElementById('login');
 
         Promise.all([
-            fetch('../componentes/form-login/form.html').then(res => res.text()),
+            fetch('../componentes/login-form/form.html').then(res => res.text()),
         ]).then(([htmlForm]) => {
                 const wrapper = document.createElement('div');
                 wrapper.innerHTML = htmlForm;
