@@ -11,6 +11,7 @@
     />
     	<link rel="stylesheet" href="../componentes/login-form/form.css">
         <script src="../componentes/login-form/create-form-login.js"></script>
+        <script src="../componentes/login-form-builder.js"></script>
 </head>
 
 <body>
@@ -32,23 +33,9 @@
             window.location.href = HOME_URL;
         }
 
-         const preview = document.getElementById('login');
+        const preview = document.getElementById('login');
 
-        Promise.all([
-            fetch('../componentes/login-form/form.html').then(res => res.text()),
-        ]).then(([html]) => {
-        const wrapper = document.createElement('div');
-        wrapper.innerHTML = html;
-
-        return [wrapper]
-      }).then(([wrapper]) => {
-        const localCreator = {
-          [createLoginForm.name]: (args) => createLoginForm(document, wrapper, args),
-          [createLoginField.name]: (args) => createLoginField(document, wrapper, args),
-          [createLoginButton.name]: (args) => createLoginButton(document, wrapper, args),
-        }
-        return localCreator;
-      }).then(creator => {
+        LoginFormBuilder(document, "..").then(creator => {
                 const memory = {
                     name: "",
                     email: "",
