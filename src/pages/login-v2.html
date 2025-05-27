@@ -9,8 +9,9 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    	<link rel="stylesheet" href="../componentes/form-login/form.css">
-        <script src="../componentes/form-login/create-form-login.js"></script>
+    	<link rel="stylesheet" href="../componentes/login-form/form.css">
+        <script src="../componentes/login-form/create-form-login.js"></script>
+        <script src="../componentes/login-form-builder.js"></script>
 </head>
 
 <body>
@@ -34,19 +35,13 @@
 
          const preview = document.getElementById('login');
 
-        Promise.all([
-            fetch('../componentes/form-login/form.html').then(res => res.text()),
-        ]).then(([htmlForm]) => {
-                const wrapper = document.createElement('div');
-                wrapper.innerHTML = htmlForm;
-
-
+        LoginFormBuilder(document, "..").then(creator => {
                 const memory = {
                     email: "",
                     password: "",
                 };
                 const fields = [
-                    createLoginField(document, wrapper, {
+                    creator.createLoginField({
                         placeholder: "Insira seu email",
                         type: "email",
                         name: "email",
@@ -57,7 +52,7 @@
                         }
                         }
                     }),
-                    createLoginField(document, wrapper, {
+                    creator.createLoginField({
                         placeholder: "Digite sua senha",
                         type: "password",
                         name: "senha",
@@ -71,7 +66,7 @@
                 ];
 
                 const buttons = [
-                    createLoginButton(document, wrapper, {
+                    creator.createLoginButton({
                         name: "Entrar",
                         isPrimary: true,
                         actions: {
@@ -90,7 +85,7 @@
                             }
                         }
                     }),
-                    createLoginButton(document, wrapper, {
+                    creator.createLoginButton({
                         name: "Cadastrar",
                         isOutline: true,
                         actions: {
@@ -102,7 +97,7 @@
                     }),
                 ]
 
-            preview.appendChild(createLoginForm(document, wrapper, { 
+            preview.appendChild(creator.createLoginForm({ 
                 withLogo: true,
                 title: "Login",
                 fields,

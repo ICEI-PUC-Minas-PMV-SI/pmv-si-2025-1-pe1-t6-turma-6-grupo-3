@@ -9,8 +9,9 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    	<link rel="stylesheet" href="../componentes/form-login/form.css">
-        <script src="../componentes/form-login/create-form-login.js"></script>
+    	<link rel="stylesheet" href="../componentes/login-form/form.css">
+        <script src="../componentes/login-form/create-form-login.js"></script>
+        <script src="../componentes/login-form-builder.js"></script>
 </head>
 
 <body>
@@ -32,22 +33,9 @@
             window.location.href = HOME_URL;
         }
 
-         const preview = document.getElementById('login');
+        const preview = document.getElementById('login');
 
-        Promise.all([
-            fetch('../componentes/form-login/form.html').then(res => res.text()),
-            fetch('../componentes/form-login/form.html').then(res => res.text()),
-            fetch('../componentes/form-login/form.html').then(res => res.text()),
-        ]).then(([htmlForm, htmlField, htmlButton]) => {
-                const wrapperForm = document.createElement('div');
-                wrapperForm.innerHTML = htmlForm;
-
-                const wrapperField = document.createElement('div');
-                wrapperField.innerHTML = htmlField;
-
-                const wrapperButton = document.createElement('div');
-                wrapperButton.innerHTML = htmlButton;
-
+        LoginFormBuilder(document, "..").then(creator => {
                 const memory = {
                     name: "",
                     email: "",
@@ -56,7 +44,7 @@
                 };
 
                 const fields = [
-                    createLoginField(document, wrapperField, {
+                    creator.createLoginField({
                         placeholder: "Insira seu nome",
                         type: "text",
                         name: "name",
@@ -67,7 +55,7 @@
                         }
                         }
                     }),
-                    createLoginField(document, wrapperField, {
+                    creator.createLoginField({
                         placeholder: "Insira seu nome Completo",
                         type: "text",
                         name: "full-name",
@@ -78,7 +66,7 @@
                         }
                         }
                     }),
-                    createLoginField(document, wrapperField, {
+                    creator.createLoginField({
                         placeholder: "Insira seu email",
                         type: "email",
                         name: "email",
@@ -89,9 +77,9 @@
                         }
                         }
                     }),
-                    createLoginField(document, wrapperField, {
+                    creator.createLoginField({
                         placeholder: "Digite sua senha",
-                        type: "senha",
+                        type: "password",
                         name: "senha",
                         actions: {
                             blur: (e, el) => {
@@ -100,9 +88,9 @@
                         }
                         }
                     }),
-                    createLoginField(document, wrapperField, {
+                    creator.createLoginField({
                         placeholder: "Repita sua senha",
-                        type: "senha",
+                        type: "password",
                         name: "repeticao-senha",
                         actions: {
                             blur: (e, el) => {
@@ -114,7 +102,7 @@
                 ];
 
                 const buttons = [
-                    createLoginButton(document, wrapperButton, {
+                    creator.createLoginButton({
                         name: "Cadastrar",
                         isPrimary: true,
                         actions: {
@@ -136,7 +124,7 @@
                             }
                         }
                     }),
-                    createLoginButton(document, wrapperButton, {
+                    creator.createLoginButton({
                         name: "Entrar",
                         isOutline: true,
                         actions: {
@@ -148,7 +136,7 @@
                     }),
                 ]
 
-            preview.appendChild(createLoginForm(document, wrapperForm, { 
+            preview.appendChild(creator.createLoginForm({ 
                 withLogo: true,
                 title: "Cadastrar Novo Usuário",
                 fields,
