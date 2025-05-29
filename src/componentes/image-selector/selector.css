@@ -153,6 +153,9 @@ body {
 
 .image-wrapper:hover .image-controls {
   display: flex;
+  overflow: hidden;    
+  /* min-width: 400px;  
+  min-height: 80px;   */
 }
 
 .image-controls button {
@@ -195,7 +198,44 @@ body {
   font-size: 24px;
   cursor: pointer;
 }
-#editImageModal {
-  display: none;
-  /* outras propriedades para posicionar e estilizar */
+
+.image-wrapper .image-controls {
+  position: absolute;
+  right: 0;
+}
+
+.image-wrapper .image-controls button {
+  background-color: white;
+}
+.image-wrapper::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4); /* cinza escuro semi-transparente */
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+
+.image-wrapper:hover::before {
+  opacity: 1;
+}
+
+.image-wrapper  .edit-controls {
+  display: none !important;
+}
+
+.image-wrapper > .edit-controls:only-child {
+  display: block !important;
+}
+
+.image-wrapper .edit-controls:only-child {
+  display: block !important;
+  position: relative;
+  min-width: 400px;
+  z-index: 9999;
+  padding: 20px;
+}
+.image-wrapper .edit-controls:only-child button{
+ margin-top: 10px;
 }
