@@ -118,5 +118,5 @@
 
     global.session.onChangeUser(loadNotebooksForCurrentUser);
     loadNotebooksForCurrentUser(session.getCurrentUser());
-  })(window, INITIAL_ITEMS);
+  })(window);
   
