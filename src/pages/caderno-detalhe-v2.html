@@ -62,10 +62,13 @@
 
     // Funções CRUD usando notebookClient e storage
     function readContentsMeta(callback) {
-      return callback(contentMetaClient.getAll());
+      return callback(contentMetaClient.getAllFromNotebook(notebookId));
     }
     function createNewContent(data, cb) {
-      const [created, err] = contentMetaClient.insertItem(data);
+      const [created, err] = contentMetaClient.insertItem(
+        notebookId,
+        data,
+      );
       if (err) {
         return [null, err]
       }
@@ -74,7 +77,10 @@
     }
 
     function updateContent(data, callback) {
-      const [updated, err] = contentMetaClient.updateItem(data.id, data);
+      const [updated, err] = contentMetaClient.updateItem(
+        data.id,
+        data,
+      );
       if (err) {
         alert(err.message);
         return
@@ -83,14 +89,16 @@
       callback(updated);
     }
 
-    function deleteContent(id, callback) {
-      console.log("id to be deleted:", id);
-      const err = contentMetaClient.deleteItem(id);
+    function deleteContent(data, callback) {
+      console.log("id to be deleted: ",     data.id);
+      const err = contentMetaClient.deleteItem(
+        data.id
+      );
       if (err) {
         alert(err.message);
         return
       }
-      storageNB.save();
+      storageMeta.save();
       callback();
     }
 
@@ -464,7 +472,7 @@
           e.preventDefault();
           e.stopPropagation();    
           console.log(`VIEW CONTENT NODES: notebook[${notebookId}] content[${data.id}]`);
-          window.location.assign(`caderno-conteudo-v2.html?notebookId=${notebookId}&contentId=${data.id}`);
+          window.location.assign(`caderno-conteudo-v2.html?notebookId=${notebookId}&contentId=${data.content_id}`);
         };
         
         const notebookId = UrlService.getParam('notebookId');

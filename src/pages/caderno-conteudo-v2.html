@@ -40,9 +40,10 @@
     const contentId = UrlService.getParam('contentId');
 
     function mountEditor(document, editor, creator) {
+      const all = contentNodesClient.getAllFromNotebookContent(notebookId, contentId);
       const memory = {
-        nodes: contentNodesClient.getAll(),
-        _nextId: 0
+        nodes: contentNodesClient.getAllFromNotebookContent(notebookId, contentId),
+        _nextId: all.length +1
       }
 
       if (!memory.nodes.length){
@@ -50,11 +51,14 @@
           type: "h1", // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
           position: 0,
           customStyle: ["center-text","bigger-text", "background-paper"],
-          id:  `${memory._nextId}`,
+          id: contentNodesClient._build_key(notebookId, contentId, memory._nextId),
+          notebook_id: notebookId,
+          content_id: contentId,
           value: "Comece por aqui...",
         })
         memory._nextId = memory._nextId+1;
-        contentNodesClient.reset(memory.nodes);
+        contentNodesClient.resetOfNotebookContent(notebookId, contentId, memory.nodes);
+        console.log("memory::getAll", contentNodesClient.getAll())
         storageNodes.save();
       }
       const [createBlock, setCaretToEnd] = FactoryCreateBlock(document, editor, creator, {
@@ -67,7 +71,7 @@
               memory.nodes.forEach((n, i) => {
                 n.position = i;
               });
-              contentNodesClient.reset(memory.nodes);
+              contentNodesClient.resetOfNotebookContent(notebookId, contentId, memory.nodes);
               storageNodes.save();
               return;
             },
@@ -85,20 +89,22 @@
               memory.nodes.splice(toIndex, 0, moved);
 
               memory.nodes.forEach((n, idx) => { n.position = idx; });
-              contentNodesClient.reset(memory.nodes);
+            
+              contentNodesClient.resetOfNotebookContent(notebookId, contentId, memory.nodes);
               storageNodes.save();
             },
             addNewNode: (nodeType, position=0) => {
                 console.log(`addNewNode::type[${nodeType}]::pos[${position}]`);
-      
-
+    
                 // 2) monta o novo node
                 const newNode = {
                     type: nodeType,
                     position: position,       // vai ser ajustado abaixo
                     customStyle: "",
-                    id: `${memory._nextId}`,
+                    id: contentNodesClient._build_key(notebookId, contentId, memory._nextId),
                     value: "",
+                    notebook_id: notebookId,
+                    content_id: contentId,
                 };
                 memory._nextId = memory._nextId + 1;
 
@@ -112,13 +118,13 @@
                 memory.nodes.forEach((n, i) => {
                     n.position = i;
                 });
-                contentNodesClient.reset(memory.nodes);
+                contentNodesClient.resetOfNotebookContent(notebookId, contentId, memory.nodes);
                 storageNodes.save();
 
                 return newNode;        
           },
             saveNodes: () => {
-              contentNodesClient.reset(memory.nodes);
+              contentNodesClient.resetOfNotebookContent(notebookId, contentId, memory.nodes);
               storageNodes.save();
             }
         })
@@ -159,11 +165,10 @@
         }
         return localCreator;
       }).then(creator => {
-        const notebookId = UrlService.getParam('notebookId');
         const notebook = notebookClient.findItem(notebookId);
 
         const contentId =  UrlService.getParam('contentId');
-        const contentMeta = contentMetaClient.findItem(contentId);
+        const contentMeta = contentMetaClient.findItem(notebookId, contentId);
         
         const simpleContainer = document.createElement('span');
         simpleContainer.appendChild(creator.createHeader({

@@ -80,9 +80,10 @@
       contents: [],
   };
 
-    global.notebookClient = new MockNotebookClient(initial.notebooks);
-    global.contentMetaClient = new MockContentMetadataClient();
-    global.contentNodesClient = new MockContentNodesClient();
+    global.notebookClient = new MockNotebookClient(global.search, initial.notebooks);
+
+    global.contentMetaClient = new MockContentMetadataClient(global.search);
+    global.contentNodesClient = new MockContentNodesClient(global.search);
     global.userClient = new MockUserClient(initial.users);
     global.storageUser = new StorageManager(global.userClient, USER_LIST_KEY);
     global.session = new SessionManager(userClient, storageUser);
@@ -106,32 +107,16 @@
         global.storageNB = new StorageManager(global.notebookClient, notebookKey);
         global.storageNB.load();
 
-        const notebookID = UrlService.getParam("notebookId");
-        if (notebookID) {
-          const metaKey = 'contents_meta_' + user.id + '_' + notebookID;
-          global.storageMeta = new StorageManager(global.contentMetaClient, metaKey);
-        } else {
-          global.storageMeta = new StorageManager(global.contentMetaClient, "");
-        }
+        const metaKey = 'contents_meta_of_user_' + user.id ;
+        global.storageMeta = new StorageManager(global.contentMetaClient, metaKey);
         global.storageMeta.load();
 
-        const contentID = UrlService.getParam("contentId");
-        if (notebookID & contentID) {
-          const nodeKey = 
-            'contents_nodes_' 
-              + user.id
-              + '_' 
-              + notebookID 
-              +'_'
-              + contentID;
-          global.storageNodes = new StorageManager(global.contentNodesClient, nodeKey);
-        } else {
-          global.storageNodes = new StorageManager(global.contentNodesClient, "");
-        }
+        const nodeKey = 'contents_nodes_of_user_' + user.id
+        global.storageNodes = new StorageManager(global.contentNodesClient, nodeKey);
         global.storageNodes.load()
     }
 
     global.session.onChangeUser(loadNotebooksForCurrentUser);
     loadNotebooksForCurrentUser(session.getCurrentUser());
-  })(window, INITIAL_ITEMS);
+  })(window);
   

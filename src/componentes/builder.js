@@ -26,7 +26,6 @@ function buildComponentsCreator(
     const promises = fetch_address.map(([cp, add]) => 
         fetch(add).then(res => res.text())
         .then(html => {
-            console.log("html", html)
             const wrapper = document.createElement('div');
             wrapper.innerHTML = html;
             return wrapper;
