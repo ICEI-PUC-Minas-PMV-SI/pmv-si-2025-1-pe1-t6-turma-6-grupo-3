@@ -133,10 +133,8 @@ function FactoryCreateBlock(
             content.style.fontWeight = "normal";
             break;
         case "image": 
-            const img = creator.createImageSelector({
-                id: id,
-                url: value,
-            })
+            // todo: delegate update to function creator
+            const img = creator.createImageSelector({ id, value });
             content.appendChild(img);
             break;
         case "link_bookmark": 
@@ -374,6 +372,9 @@ function FactoryCreateBlock(
             }
             break;
         case "image": 
+            console.log("IMAGE", content.children[0]);
+            console.log("IMAGE.src", content.children[0].children[1].src);
+            value = content.children[0].children[1].children[1].src;
             break;
         case "link_bookmark": 
             break;
