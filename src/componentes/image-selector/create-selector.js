@@ -17,14 +17,14 @@ function createImageSelector(document, wrapper, node) {
   input.addEventListener("input", (e) => {
     console.log("VALUE FROM INPUT", e.target.value);
     img.children[1].src = e.target.value;
-    node.value = e.target.value;
+    // node.updateValue(e.target.value);
   })
 
 
   remove.addEventListener("click", () => {
     imgParent.removeChild(img);
     input.value = "";
-    node.value = "";
+    // node.updateValue("");
 
   })
 
@@ -38,7 +38,7 @@ function createImageSelector(document, wrapper, node) {
 
   clear.addEventListener("click", () => {
     input.value = "";
-    node.value = "";
+    // node.updateValue("");
   })
   if (!node.value) {
     imgParent.removeChild(img);
