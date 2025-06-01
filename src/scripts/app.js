@@ -80,6 +80,7 @@
       contents: [],
   };
 
+    global.search = new SearchClient({ bloomSizeBits: 50000 });
     global.notebookClient = new MockNotebookClient(global.search, initial.notebooks);
 
     global.contentMetaClient = new MockContentMetadataClient(global.search);
