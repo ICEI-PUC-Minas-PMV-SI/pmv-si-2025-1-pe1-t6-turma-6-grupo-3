@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="../componentes/base-layout/layout.css">
   <link rel="stylesheet" href="../componentes/base-container/container.css">
   <link rel="stylesheet" href="../componentes/content-editor/editor.css">
+  <link rel="stylesheet" href="../componentes/image-selector/selector.css">
 
   <script src="../componentes/base-container/create-container.js"></script>
   <script src="../componentes/base-layout/create-layout.js"></script>
@@ -16,6 +17,7 @@
 
   <script src="../componentes/content-editor/editor.js"></script>
   <script src="../componentes/content-editor/create-editor.js"></script>
+  <script src="../componentes/image-selector/create-selector.js"></script>
 </head>
 <body>
   <div id="loader"></div>
@@ -37,7 +39,7 @@
     const notebookId = UrlService.getParam('notebookId');
     const contentId = UrlService.getParam('contentId');
 
-    function mountEditor(document, editor) {
+    function mountEditor(document, editor, creator) {
       const memory = {
         nodes: contentNodesClient.getAll(),
         _nextId: 0
@@ -55,7 +57,7 @@
         contentNodesClient.reset(memory.nodes);
         storageNodes.save();
       }
-      const [createBlock, setCaretToEnd] = FactoryCreateBlock(document, editor, {
+      const [createBlock, setCaretToEnd] = FactoryCreateBlock(document, editor, creator, {
             removeNode: (id) => {
               const index = memory.nodes.findIndex(node => node.id === id);
               if (index == -1) {
@@ -120,21 +122,21 @@
               storageNodes.save();
             }
         })
-      // 
-      window.onload = () => memory.nodes.forEach((node, i) =>  editor.appendChild(createBlock(node)));
+      
+      memory.nodes.forEach((node, i) =>  editor.appendChild(createBlock(node)));
     };
 
       const loader = document.getElementById('loader');
       const editor = document.createElement('div');
 
-      mountEditor(document, editor);
       // not using original creator here because we are using less components
       // so I'm manually building an small version of the creator
       Promise.all([
         fetch('../componentes/base-container/container.html').then(res => res.text()),
         fetch('../componentes/base-layout/layout.html').then(res => res.text()),
         fetch('../componentes/base-header/header.html').then(res => res.text()),
-      ]).then(([htmlContainer, htmlLayout, htmlHeader]) => {
+        fetch('../componentes/image-selector/selector.html').then(res => res.text()),
+      ]).then(([htmlContainer, htmlLayout, htmlHeader, htmlImgSel]) => {
         const wrapperContainer = document.createElement('div');
         wrapperContainer.innerHTML = htmlContainer;
 
@@ -143,12 +145,17 @@
 
         const wrapperHeader = document.createElement('div');
         wrapperHeader.innerHTML = htmlHeader;
-        return [wrapperContainer, wrapperLayout, wrapperHeader]
-      }).then(([wrapperContainer, wrapperLayout, wrapperHeader]) => {
+
+        const wrapperImg = document.createElement('div');
+        wrapperImg.innerHTML = htmlImgSel;
+
+        return [wrapperContainer, wrapperLayout, wrapperHeader, wrapperImg]
+      }).then(([wrapperContainer, wrapperLayout, wrapperHeader, wrapperImg]) => {
         const localCreator = {
           [createContainer.name]: (args) => createContainer(document, wrapperContainer, args),
           [createHeader.name]: (args) => createHeader(document, wrapperHeader, args),
           [createLayout.name]: (args) => createLayout(document, wrapperLayout, args),
+          [createImageSelector.name]: (args) => createImageSelector(document, wrapperImg, args),
         }
         return localCreator;
       }).then(creator => {
@@ -179,6 +186,7 @@
           ],
           title: `${contentMeta.name}`
         }));
+        mountEditor(document, editor, creator);
 
         const editorRow = creator.createContainer({items: [editor] });
         simpleContainer.appendChild(editorRow);

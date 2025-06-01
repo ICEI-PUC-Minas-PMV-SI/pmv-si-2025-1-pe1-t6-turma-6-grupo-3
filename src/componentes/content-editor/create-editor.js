@@ -1,6 +1,7 @@
-function mountEditor(document, editor, memory) {
-      const [createBlock, setCaretToEnd] = FactoryCreateBlock(document, editor, {
-            removeNode: (id) => {
+function mountEditor(document, editor,  memory, creator) {
+      const [createBlock, setCaretToEnd] = FactoryCreateBlock(document, editor, creator, {
+          saveNodes: () => console.log(memory), 
+          removeNode: (id) => {
               const index = memory.nodes.findIndex(node => node.id === id);
               if (index == -1) {
                 return new Error("Node não encontrado. Delete não executado");
@@ -51,6 +52,11 @@ function mountEditor(document, editor, memory) {
                 return newNode;        
           },
         })
-        
-      window.onload = () => memory.nodes.forEach((node, i) =>  editor.appendChild(createBlock(node)));
+
+    memory.nodes.forEach((node, i) => {
+      console.log("node", node);
+      editor.appendChild(createBlock(node));
+    });
+
+  return { createBlock, setCaretToEnd };
 };

@@ -14,18 +14,26 @@ function createContentCard(document, wrapper, { data, actions }) {
     const tagsContainer = clone.querySelector('.tags-container');
     tagsContainer.innerHTML = '';  // limpa o template
     console.log("data.tags::", data.tags);
-    data.tags.forEach(tag => {
-      console.log("tag: ",  tag)
-        const span = document.createElement('span');
-        span.className = 'badge';
-        span.textContent = tag.name;
-        span.title       = tag.name;
-        span.style.backgroundColor = tag.color;
-        span.style.color = getContrastWCAG(tag.color.replace(/^rgb\(|\)|\s+/g, c =>
-    ('0'+parseInt(c).toString(16)).slice(-2)
-  )) || getContrastWCAG(tag.color.replace(/^#/,''));
-        tagsContainer.appendChild(span);
-    });
+
+    if (data.tags) {
+      data.tags.forEach(tag => {
+        console.log("tag: ",  tag)
+          const span = document.createElement('span');
+          span.className = 'badge';
+          span.textContent = tag.name;
+          span.title       = tag.name;
+          span.style.backgroundColor = tag.color;
+          span.style.color = getContrastWCAG(
+              tag.color.replace(
+                /^rgb\(|\)|\s+/g, c => ('0'+parseInt(c).toString(16)).slice(-2)
+              )
+          ) ||
+            getContrastWCAG(tag.color.replace(/^#/,''));
+
+          tagsContainer.appendChild(span);
+      });
+    }
+
 
 
     clone.querySelector('.content-icon i').className = `bi bi-${data.icon}`;
