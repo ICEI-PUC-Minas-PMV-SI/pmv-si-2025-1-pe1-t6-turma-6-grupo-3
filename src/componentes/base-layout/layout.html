@@ -17,6 +17,8 @@
   <script src="../notebook-card/create-card.js"></script>
   <script src="../content-card/create-card.js"></script>
   <script src="./create-layout.js"></script>
+  <script src="../search-input/create-input.js"></script>
+  <script src="../../scripts/search-client.js"></script>
 </head>
 <body>
   <template id="base-layout">
@@ -79,7 +81,7 @@
     <!-- ===== CONTEÚDO PRINCIPAL DA SIDEBAR ===== -->
     <div class="sidebar-content">
       <!-- Seção de pesquisa -->
-      <div class="search-section mb-1">
+      <!-- <div class="search-section mb-1">
         <h6 class="search-title mb-2 mt-1">Pesquisa</h6>
         <div class="search-container px-2">
           <div class="input-group">
@@ -89,7 +91,8 @@
             <input type="text" class="form-control border-start-0" placeholder="Digite a sua busca">
           </div>
         </div>
-      </div>
+      </div> -->
+      <div data-sub-component="header::sidebar::search"></div>
 
       <!-- Seção do menu principal -->
       <h6 class="section-title mt-4">Menu</h6>
@@ -172,11 +175,10 @@
         description: 'Entenda modelos relacionais, linguagem SQL e boas práticas de normalização.',
         image: 'https://placehold.co/600x400/orange/white?text=Banco+de+Dados&font=roboto',
         icon: 'database',
-        tags: "foo bar"
-        // tags: [
-        //   { title: 'Dados',       color: '#0dcaf0' },  // info
-        //   { title: 'SQL',         color: '#6610f2' }   // purple
-        // ]
+        tags: [
+          { name: 'Dados',       color: '#0dcaf0' },
+          { name: 'Lógica',      color: '#fd7e14' }
+        ]
       },
       {
         name: 'Lógica de Programação em JavaScript',
@@ -184,11 +186,10 @@
         image: 'https://placehold.co/600x400/orange/white?text=Banco+de+Dados&font=roboto',
         description: 'Aprenda estruturas de controle, funções e manipulação de arrays.',
         icon: 'bi bi-code-slash',
-        tags: "foo bar"
-        // tags: [
-        //   { title: 'Lógica',      color: '#fd7e14' },  // orange
-        //   { title: 'Programação', color: '#6f42c1' }   // purple-dark
-        // ]
+         tags: [
+          { name: 'Dados',       color: '#0dcaf0' },
+          { name: 'Lógica',      color: '#fd7e14' }
+        ]
       },
       {
         name: 'Infraestrutura de TI',
@@ -196,33 +197,69 @@
         description: 'Conheça redes, servidores e protocolos essenciais para sistemas corporativos.',
         image: 'https://placehold.co/600x400/orange/white?text=Banco+de+Dados&font=roboto',
         icon: 'server',
-        tags: ""
-
-        // tags: [
-        //   { title: 'TI',          color: '#198754' }   // success/green
-        // ]
+        tags: [
+          { name: 'Dados',       color: '#0dcaf0' },
+          { name: 'Lógica',      color: '#fd7e14' }
+        ]
       },
       {
         name: 'Análise de Dados Avançada',
-        title: 'Análise de Dados Avançada',
         description: 'Técnicas de visualização, estatística descritiva e interpretação de grandes volumes de dados.',
         image: 'https://placehold.co/600x400/orange/white?text=Banco+de+Dados&font=roboto',
         icon: 'bar-chart-line',
-        tags: ""
-        // tags: [
-        //   { title: 'Dados',       color: '#0dcaf0' },
-        //   { title: 'Lógica',      color: '#fd7e14' }
-        // ]
+        tags: [
+          { name: 'Dados',       color: '#0dcaf0' },
+          { name: 'Lógica',      color: '#fd7e14' }
+        ]
       },
     ];
+
+    const searchClient = new SearchClient({
+      bloomSizeBits: 50000,
+      fuzzyMaxDistance: 2
+    });
+
+    // Exemplo: indexar alguns itens (cada item precisa de `id`, `type`, `localization`, `terms` e `label`)
+    const sampleItems = [
+      {
+        id: "nb_4",
+        type: "notebook",
+        localization: { notebook_id: "4" },
+        terms: extractTerms("Algoritmos Complexidade Linha Gráfico"),
+        label: "Algoritmos e Complexidade"
+      },
+      {
+        id: "cm_1",
+        type: "content-meta",
+        localization: { notebook_id: "1", content_id: "1" },
+        terms: extractTerms("teste 1"),
+        label: "teste 1"
+      },
+      {
+        id: "cm_4",
+        type: "content-meta",
+        localization: { notebook_id: "1", content_id: "4" },
+        terms: extractTerms("teste 4"),
+        label: "teste 4"
+      },
+      {
+        id: "cn_7",
+        type: "content-node",
+        localization: { notebook_id: "2", content_id: "7", content_node: "n-2" },
+        terms: extractTerms("Node Search Example"),
+        label: "Node Example"
+      }
+    ];
+    sampleItems.forEach(item => searchClient.addItem(item));
 
       const preview = document.getElementById('preview-container');
 
       Promise.all([
         fetch('../notebook-card/card.html').then(res => res.text()),
         fetch('../content-card/card.html').then(res => res.text()),
-        fetch('../base-container/container.html').then(res => res.text())
-      ]).then(([htmlNotebook, htmlContent, htmlContainer]) => {
+        fetch('../base-container/container.html').then(res => res.text()),
+        fetch('../search-input/input.html').then(res => res.text())
+      ]).then(([htmlNotebook, htmlContent, htmlContainer, htmlSearch]) => {
         const wrapperNotebook = document.createElement('div');
         wrapperNotebook.innerHTML = htmlNotebook;
 
@@ -232,6 +269,9 @@
         const wrapperContainer = document.createElement('div');
         wrapperContainer.innerHTML = htmlContainer;
 
+         const wrapperSearch = document.createElement('div');
+        wrapperSearch.innerHTML = htmlSearch;
+
         const container = document.createElement('span');
 
         const cards = exemplos.map(e => createNotebookCard(document, wrapperNotebook, {data: e}));
@@ -239,10 +279,19 @@
        
         const contents = exemplos.map(e => createContentCard(document, wrapperContent, {data: e}));
         const contentsRow = createContainer(document, wrapperContainer, {items: contents});
-        
+        const preview = document.getElementById('preview-container');
+
+        const searchInput = createSearchInput(
+          document, 
+          wrapperSearch, 
+          { onSelect: console.log, search: (term) => searchClient.search(term) },
+        );
         container.appendChild(notebooksRow);
         container.appendChild(contentsRow);
-        preview.appendChild(createLayout(document, document, { content: container }));
+        preview.appendChild(createLayout(
+          document, 
+          document, 
+          { content: container, user: {name: "teste"}, searchInput }));
       });
   </script>
 </body>

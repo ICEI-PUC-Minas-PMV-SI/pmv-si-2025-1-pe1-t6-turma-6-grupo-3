@@ -27,6 +27,7 @@
   <script src="../componentes/icons-selector/create-selector.js"></script>
   <script src="../componentes/icons-selector/icons.js"></script>
   <script src="../componentes/tags-selector/create-selector.js"></script>
+  <script src="../componentes/search-input/create-input.js"></script>
   <script src="../componentes/builder.js"></script>
 </head>
 <body>
@@ -315,7 +316,7 @@
         container.appendChild(notebookModal);
 
         const current = session.getCurrentUser();
-
+      
         loader.appendChild(
           creator.createLayout({ 
             content: container,
@@ -326,7 +327,18 @@
                 session.signout();
                 window.location.assign("/src/pages/login-v2.html");
               },
-            }
+            },
+            searchInput: creator.createSearchInput({
+              onSelect: (item) => {
+                if (item.type === "notebook") {
+                  window.location.assign(`/src/pages/caderno-detalhe-v2.html?notebookId=${item.localization.notebook_id}`);
+                  return
+                }
+                window.location.assign(`/src/pages/caderno-conteudo-v2.html?notebookId=${item.localization.notebook_id}&contentId=${item.localization.content_id}`);
+                return
+              },
+              search: term => search(term)
+            })
           }));
       });
   </script>

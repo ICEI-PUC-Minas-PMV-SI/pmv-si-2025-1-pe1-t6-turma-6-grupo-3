@@ -18,6 +18,8 @@
   <script src="../componentes/content-editor/editor.js"></script>
   <script src="../componentes/content-editor/create-editor.js"></script>
   <script src="../componentes/image-selector/create-selector.js"></script>
+  <script src="../componentes/search-input/create-input.js"></script>
+
 </head>
 <body>
   <div id="loader"></div>
@@ -197,7 +199,8 @@
         fetch('../componentes/base-layout/layout.html').then(res => res.text()),
         fetch('../componentes/base-header/header.html').then(res => res.text()),
         fetch('../componentes/image-selector/selector.html').then(res => res.text()),
-      ]).then(([htmlContainer, htmlLayout, htmlHeader, htmlImgSel]) => {
+        fetch('../componentes/search-input/input.html').then(res => res.text()),
+      ]).then(([htmlContainer, htmlLayout, htmlHeader, htmlImgSel, htmlSrchInp]) => {
         const wrapperContainer = document.createElement('div');
         wrapperContainer.innerHTML = htmlContainer;
 
@@ -210,13 +213,17 @@
         const wrapperImg = document.createElement('div');
         wrapperImg.innerHTML = htmlImgSel;
 
-        return [wrapperContainer, wrapperLayout, wrapperHeader, wrapperImg]
-      }).then(([wrapperContainer, wrapperLayout, wrapperHeader, wrapperImg]) => {
+        const wrapperSearch = document.createElement('div');
+        wrapperSearch.innerHTML = htmlSrchInp;
+
+        return [wrapperContainer, wrapperLayout, wrapperHeader, wrapperImg, wrapperSearch]
+      }).then(([wrapperContainer, wrapperLayout, wrapperHeader, wrapperImg, wrapperSearch]) => {
         const localCreator = {
           [createContainer.name]: (args) => createContainer(document, wrapperContainer, args),
           [createHeader.name]: (args) => createHeader(document, wrapperHeader, args),
           [createLayout.name]: (args) => createLayout(document, wrapperLayout, args),
           [createImageSelector.name]: (args) => createImageSelector(document, wrapperImg, args),
+          [createSearchInput.name]: (args) => createSearchInput(document, wrapperSearch, args),
         }
         return localCreator;
       }).then(creator => {
@@ -263,7 +270,18 @@
                 session.signout();
                 window.location.assign("/src/pages/login-v2.html");
               },
-            }
+            },
+            searchInput: creator.createSearchInput({
+              onSelect: (item) => {
+                if (item.type === "notebook") {
+                  window.location.assign(`/src/pages/caderno-detalhe-v2.html?notebookId=${item.localization.notebook_id}`);
+                  return
+                }
+                window.location.assign(`/src/pages/caderno-conteudo-v2.html?notebookId=${item.localization.notebook_id}&contentId=${item.localization.content_id}`);
+                return
+              },
+              search: term => search(term)
+            })
           })
         );
       });
