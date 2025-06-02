@@ -21,6 +21,7 @@
 </head>
 <body>
   <div id="loader"></div>
+  <script src="../scripts/search-client.js"></script>
   <script src="../scripts/notebooks-client.js"></script>
   <script src="../scripts/content-metadata-client.js"></script>
   <script src="../scripts/content-nodes-client.js"></script>
@@ -124,7 +125,61 @@
                 return newNode;        
           },
             saveNodes: () => {
+              const oldNodes = contentNodesClient.getAllFromNotebookContent(notebookId, contentId);
               contentNodesClient.resetOfNotebookContent(notebookId, contentId, memory.nodes);
+              const updates = oldNodes.map((oldData) => {
+                const newData = contentNodesClient.findItem(oldData.id);
+                if (!newData) {
+                  return {oldData}
+                }
+                return {oldData, newData};
+              })
+              
+              const newNodes = contentNodesClient.getAllFromNotebookContent(notebookId, contentId);
+              if (newNodes.length > oldNodes.length) {
+                newNodes.filter(newNode => {
+                  return !oldNodes.some(oldNode => newNode.id === oldNode.idx)
+                }).forEach(item => {
+                  updates.push({newData: item});
+                })
+              }
+              const updatesItems = updates.map(({newData, oldData}) => {
+                if (newData && oldData) {
+                  const newItem = {
+                    type: "content-node",
+                    localization: { notebook_id: newData.notebook_id, content_id: newData.content_id, node_id: newData.id },
+                    terms: extractTerms(`${newData.value}`),
+                  };
+
+                  const oldItem = {
+                    type: "content-node",
+                    localization: { notebook_id: oldData.notebook_id, content_id: oldData.content_id, node_id: oldData.id },
+                    terms: extractTerms(`${oldData.value}`),
+                  };
+                  return { oldItem, newItem };
+                }
+
+                if (newData) {
+                  const newItem = {
+                    type: "content-node",
+                    localization: { notebook_id: newData.notebook_id, content_id: newData.content_id, node_id: newData.id },
+                    terms: extractTerms(`${newData.value}`),
+                  };
+
+                  return { newItem };
+                }
+
+                if (oldData) {
+                  const oldItem = {
+                    type: "content-node",
+                    localization: { notebook_id: oldData.notebook_id, content_id: oldData.content_id, node_id: oldData.id },
+                    terms: extractTerms(`${oldData.value}`),
+                  };
+                  return { oldItem };
+                }
+              });
+              
+              _search.updateMany(updatesItems);
               storageNodes.save();
             }
         })
