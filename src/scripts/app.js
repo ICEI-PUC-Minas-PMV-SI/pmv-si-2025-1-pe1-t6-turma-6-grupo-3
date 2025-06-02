@@ -122,6 +122,7 @@
         global.notebookClient.getAll().forEach(notebook => {
             const newItem = {
               type: "notebook",
+              label: notebook.name,
               localization: { notebook_id: notebook.id },
               terms: extractTerms(`${notebook.icon} ${notebook.name} ${notebook.description}`),
             };
@@ -132,6 +133,7 @@
         global.notebookClient.on("remove", oldData => {
             const toRemoveItem = {
               type: "notebook",
+              label: oldData.name,
               localization: { notebook_id: oldData.id },
               terms: extractTerms(`${oldData.icon} ${oldData.name} ${oldData.description}`),
             };
@@ -141,6 +143,7 @@
         global.contentMetaClient.on("insert", newData => {
             const newItem = {
               type: "notebook",
+              label: newData.name,
               localization: { notebook_id: newData.id },
               terms: extractTerms(`${newData.icon} ${newData.name} ${newData.description}`),
             };
@@ -150,6 +153,7 @@
         global.contentMetaClient.on("update", ([oldData, newData]) => {
             const toRemoveItem = {
               type: "notebook",
+              label: oldData.name,
               localization: { notebook_id: oldData.id },
               terms: extractTerms(`${oldData.icon} ${oldData.name} ${oldData.description}`),
             };
@@ -157,6 +161,7 @@
 
             const newItem = {
               type: "notebook",
+              label: newData.name,
               localization: { notebook_id: newData.id },
               terms: extractTerms(`${newData.icon} ${newData.name} ${newData.description}`),
             };
@@ -167,6 +172,7 @@
         global.contentMetaClient.getAll().forEach(meta => {
             const newItem = {
               type: "content-meta",
+              label: meta.name,
               localization: { notebook_id: meta.notebook_id, content_id: meta.content_id },
               terms: extractTerms(`${meta.icon} ${meta.name} ${meta.tags.map(({name}) => name).join(" ")}`),
             };
@@ -176,6 +182,7 @@
         global.contentMetaClient.on("remove", oldData => {
             const toRemoveItem = {
               type: "content-meta",
+              label: oldData.name,
               localization: { notebook_id: oldData.notebook_id, content_id: oldData.content_id },
               terms: extractTerms(`${oldData.icon} ${oldData.name} ${oldData.tags.map(({name}) => name).join(" ")}`),
             };
@@ -185,6 +192,7 @@
         global.contentMetaClient.on("insert", newData => {
            const newItem = {
               type: "content-meta",
+              label: newData.name,
               localization: { notebook_id: newData.notebook_id, content_id: newData.content_id },
               terms: extractTerms(`${newData.icon} ${newData.name} ${newData.tags.map(({name}) => name).join(" ")}`),
             };
@@ -194,6 +202,7 @@
         global.contentMetaClient.on("update", ([oldData, newData]) => {
             const toRemoveItem = {
               type: "content-meta",
+              label: oldData.name,
               localization: { notebook_id: oldData.notebook_id, content_id: oldData.content_id },
               terms: extractTerms(`${oldData.icon} ${oldData.name} ${oldData.tags.map(({name}) => name).join(" ")}`),
             };
@@ -201,6 +210,7 @@
 
             const newItem = {
               type: "content-meta",
+              label: newData.name,
               localization: { notebook_id: newData.notebook_id, content_id: newData.content_id },
               terms: extractTerms(`${newData.icon} ${newData.name} ${newData.tags.map(({name}) => name).join(" ")}`),
             };
@@ -211,6 +221,7 @@
         global.contentNodesClient.getAll().forEach(node => {
             const newItem = {
               type: "content-node",
+              label: `${node.type} | ${node.value}`,
               localization: { notebook_id: node.notebook_id, content_id: node.content_id, node_id: node.id  },
               terms: extractTerms(`${node.value}}`),
             };
@@ -219,6 +230,7 @@
         global.contentNodesClient.on("remove", oldData => {
             const toRemoveItem = {
               type: "content-node",
+              label: `${oldData.type} | ${oldData.value}`,
               localization: { notebook_id: oldData.notebook_id, content_id: oldData.content_id, node_id: oldData.id },
               terms: extractTerms(`${oldData.value}`),
             };
@@ -228,6 +240,7 @@
         global.contentNodesClient.on("insert", newData => {
            const newItem = {
               type: "content-node",
+              label: `${newData.type} | ${newData.value}`,
               localization: { notebook_id: newData.notebook_id, content_id: newData.content_id, node_id: newData.id },
               terms: extractTerms(`${newData.value}`),
             };
@@ -237,6 +250,7 @@
         global.contentNodesClient.on("update", ([oldData, newData]) => {
             const toRemoveItem = {
               type: "content-node",
+              label: `${oldData.type} | ${oldData.value}`,
               localization: { notebook_id: oldData.notebook_id, content_id: oldData.content_id, node_id: oldData.id },
               terms: extractTerms(`${oldData.value}`),
             };
@@ -244,6 +258,7 @@
 
             const newItem = {
               type: "content-node",
+              label: `${newData.type} | ${newData.value}`,
               localization: { notebook_id: newData.notebook_id, content_id: newData.content_id, node_id: newData.id },
               terms: extractTerms(`${newData.value}`),
             };
