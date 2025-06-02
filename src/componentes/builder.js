@@ -8,6 +8,7 @@ const map = {
     // "login-form": [createLoginForm], // not used on pages after login
     "notebook-card": [createNotebookCard],
     "tags-selector": [createTagInput],
+    "search-input": [createSearchInput],
 };
 
 function buildComponentsCreator(
