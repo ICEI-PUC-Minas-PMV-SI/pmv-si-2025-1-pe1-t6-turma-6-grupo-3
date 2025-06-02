@@ -152,6 +152,72 @@ class SearchClient {
     }
   }
 
+   /**
+   * Atualiza vários itens de uma única vez:
+   * - Cada elemento de `updates` é um objeto { oldItem, newItem }.
+   * - Remove referências de oldItem, adiciona referências de newItem a indexMap/allTerms.
+   * - No final, reconstrói o BloomFilter apenas uma vez a partir de allTerms.
+   *
+   * @param {Array<{oldItem: Item, newItem: Item}>} updates
+   */
+  updateMany(updates) {
+    console.log("updateMany::updates", updates)
+    if (!Array.isArray(updates) || updates.length === 0) return;
+
+    // 1) Para cada par { oldItem, newItem }, removemos referências de oldItem de indexMap/allTerms
+    for (const { oldItem } of updates) {
+      if (!oldItem || !oldItem.terms) continue;
+      for (const rawTerm of oldItem.terms) {
+        const term = rawTerm.toString().toLowerCase();
+        if (!this.indexMap.has(term)) continue;
+
+        // Filtra a lista removendo exatamente esse oldItem
+        const lista = this.indexMap.get(term);
+        const filtered = lista.filter(existing =>
+          !SearchClient._isSameItem(existing, oldItem)
+        );
+
+        if (filtered.length === 0) {
+          // Se ninguém mais usa esse termo, remove a chave
+          this.indexMap.delete(term);
+          this.allTerms.delete(term);
+        } else {
+          this.indexMap.set(term, filtered);
+          // Se ainda existeem outros itens, a chave permanece em allTerms
+        }
+      }
+    }
+
+    // 2) Para cada par { oldItem, newItem }, adicionamos referências de newItem
+    for (const { newItem } of updates) {
+      if (!newItem || !newItem.terms) continue;
+      for (const rawTerm of newItem.terms) {
+        const term = rawTerm.toString().toLowerCase();
+
+        // Garante que allTerms tenha esse termo
+        this.allTerms.add(term);
+
+        // Insere newItem em indexMap[term] (evita duplicata)
+        if (!this.indexMap.has(term)) {
+          this.indexMap.set(term, []);
+        }
+        const lista = this.indexMap.get(term);
+        const exists = lista.some(existing =>
+          SearchClient._isSameItem(existing, newItem)
+        );
+        if (!exists) {
+          lista.push(newItem);
+        }
+      }
+    }
+
+    // 3) Reconstrói o BloomFilter uma única vez com todos os termos que restam em allTerms
+    this.bloom = new BloomFilter(this.bloomSizeBits);
+    for (const term of this.allTerms) {
+      this.bloom.add(term);
+    }
+  }
+
   /**
    * (Nova) Reseta todo o índice e reconstrói a partir de um array de itens.
    * @param {Array<Item>} newItems
@@ -170,6 +236,31 @@ class SearchClient {
     }
   }
 
+   /**
+   * Adds a single term for an existing item.
+   * - Updates only that term in the BloomFilter and indexMap.
+   */
+  addTermToItem(item, rawTerm) {
+    const term = rawTerm.toString().toLowerCase();
+
+    // 1) Mark in BloomFilter
+    this.bloom.add(term);
+
+    // 2) Ensure term is in allTerms
+    this.allTerms.add(term);
+
+    // 3) Add item under this term in indexMap
+    if (!this.indexMap.has(term)) {
+      this.indexMap.set(term, []);
+    }
+    const list = this.indexMap.get(term);
+    const alreadyExists = list.some(existing =>
+      SearchClient._isSameItem(existing, item)
+    );
+    if (!alreadyExists) {
+      list.push(item);
+    }
+  }
 }
 
 /**
