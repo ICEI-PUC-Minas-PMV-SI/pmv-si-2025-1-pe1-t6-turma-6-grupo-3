@@ -80,11 +80,12 @@
       contents: [],
   };
 
-    global.search = new SearchClient({ bloomSizeBits: 50000 });
-    global.notebookClient = new MockNotebookClient(global.search, initial.notebooks);
+    global._search = new SearchClient({ bloomSizeBits: 50000 });
+    global.search = (term) => global._search.search(term);
+    global.notebookClient = new MockNotebookClient(initial.notebooks);
 
-    global.contentMetaClient = new MockContentMetadataClient(global.search);
-    global.contentNodesClient = new MockContentNodesClient(global.search);
+    global.contentMetaClient = new MockContentMetadataClient();
+    global.contentNodesClient = new MockContentNodesClient();
     global.userClient = new MockUserClient(initial.users);
     global.storageUser = new StorageManager(global.userClient, USER_LIST_KEY);
     global.session = new SessionManager(userClient, storageUser);
@@ -115,6 +116,139 @@
         const nodeKey = 'contents_nodes_of_user_' + user.id
         global.storageNodes = new StorageManager(global.contentNodesClient, nodeKey);
         global.storageNodes.load()
+
+        ///////////////////// SEARCH INDEX
+        //////////////////// NOTEBOOK
+        global.notebookClient.getAll().forEach(notebook => {
+            const newItem = {
+              type: "notebook",
+              localization: { notebook_id: notebook.id },
+              terms: extractTerms(`${notebook.icon} ${notebook.name} ${notebook.description}`),
+            };
+            global._search.addItem(newItem);
+        })
+
+
+        global.notebookClient.on("remove", oldData => {
+            const toRemoveItem = {
+              type: "notebook",
+              localization: { notebook_id: oldData.id },
+              terms: extractTerms(`${oldData.icon} ${oldData.name} ${oldData.description}`),
+            };
+            global._search.removeItem(toRemoveItem);
+        });
+
+        global.contentMetaClient.on("insert", newData => {
+            const newItem = {
+              type: "notebook",
+              localization: { notebook_id: newData.id },
+              terms: extractTerms(`${newData.icon} ${newData.name} ${newData.description}`),
+            };
+            global._search.addItem(newItem);
+        });
+
+        global.contentMetaClient.on("update", ([oldData, newData]) => {
+            const toRemoveItem = {
+              type: "notebook",
+              localization: { notebook_id: oldData.id },
+              terms: extractTerms(`${oldData.icon} ${oldData.name} ${oldData.description}`),
+            };
+            global._search.removeItem(toRemoveItem);
+
+            const newItem = {
+              type: "notebook",
+              localization: { notebook_id: newData.id },
+              terms: extractTerms(`${newData.icon} ${newData.name} ${newData.description}`),
+            };
+            global._search.addItem(newItem);
+        });
+
+        //////////////////////////// META
+        global.contentMetaClient.getAll().forEach(meta => {
+            const newItem = {
+              type: "content-meta",
+              localization: { notebook_id: meta.notebook_id, content_id: meta.content_id },
+              terms: extractTerms(`${meta.icon} ${meta.name} ${meta.tags.map(({name}) => name).join(" ")}`),
+            };
+            global._search.addItem(newItem);
+        });
+
+        global.contentMetaClient.on("remove", oldData => {
+            const toRemoveItem = {
+              type: "content-meta",
+              localization: { notebook_id: oldData.notebook_id, content_id: oldData.content_id },
+              terms: extractTerms(`${oldData.icon} ${oldData.name} ${oldData.tags.map(({name}) => name).join(" ")}`),
+            };
+            global._search.removeItem(toRemoveItem);
+        });
+
+        global.contentMetaClient.on("insert", newData => {
+           const newItem = {
+              type: "content-meta",
+              localization: { notebook_id: newData.notebook_id, content_id: newData.content_id },
+              terms: extractTerms(`${newData.icon} ${newData.name} ${newData.tags.map(({name}) => name).join(" ")}`),
+            };
+            global._search.addItem(newItem);
+        });
+
+        global.contentMetaClient.on("update", ([oldData, newData]) => {
+            const toRemoveItem = {
+              type: "content-meta",
+              localization: { notebook_id: oldData.notebook_id, content_id: oldData.content_id },
+              terms: extractTerms(`${oldData.icon} ${oldData.name} ${oldData.tags.map(({name}) => name).join(" ")}`),
+            };
+            global._search.removeItem(toRemoveItem);
+
+            const newItem = {
+              type: "content-meta",
+              localization: { notebook_id: newData.notebook_id, content_id: newData.content_id },
+              terms: extractTerms(`${newData.icon} ${newData.name} ${newData.tags.map(({name}) => name).join(" ")}`),
+            };
+            global._search.addItem(newItem);
+        });
+        
+        ////////////////////////// NODES
+        global.contentNodesClient.getAll().forEach(node => {
+            const newItem = {
+              type: "content-node",
+              localization: { notebook_id: node.notebook_id, content_id: node.content_id, node_id: node.id  },
+              terms: extractTerms(`${node.value}}`),
+            };
+            global._search.addItem(newItem);
+        });
+        global.contentNodesClient.on("remove", oldData => {
+            const toRemoveItem = {
+              type: "content-node",
+              localization: { notebook_id: oldData.notebook_id, content_id: oldData.content_id, node_id: oldData.id },
+              terms: extractTerms(`${oldData.value}`),
+            };
+            global._search.removeItem(toRemoveItem);
+        });
+
+        global.contentNodesClient.on("insert", newData => {
+           const newItem = {
+              type: "content-node",
+              localization: { notebook_id: newData.notebook_id, content_id: newData.content_id, node_id: newData.id },
+              terms: extractTerms(`${newData.value}`),
+            };
+            global._search.addItem(newItem);
+        });
+
+        global.contentNodesClient.on("update", ([oldData, newData]) => {
+            const toRemoveItem = {
+              type: "content-node",
+              localization: { notebook_id: oldData.notebook_id, content_id: oldData.content_id, node_id: oldData.id },
+              terms: extractTerms(`${oldData.value}`),
+            };
+            global._search.removeItem(toRemoveItem);
+
+            const newItem = {
+              type: "content-node",
+              localization: { notebook_id: newData.notebook_id, content_id: newData.content_id, node_id: newData.id },
+              terms: extractTerms(`${newData.value}`),
+            };
+            global._search.addItem(newItem);
+        });
     }
 
     global.session.onChangeUser(loadNotebooksForCurrentUser);
