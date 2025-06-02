@@ -2,8 +2,9 @@ class MockContentNodesClient {
     /**
      * @param {Array<Object>} initialData - lista inicial de nós {id, type, value}
      */
-    constructor(search, initialData = []) {
+    constructor(initialData = []) {
       this.reset(initialData);
+      this.callbacks = {};
     }
 
     /**
@@ -65,6 +66,8 @@ class MockContentNodesClient {
         value: data.value,
       };
       this.items.set(node.id, node);
+      this._emit("insert", newItem);
+
       return node;
     }
 
@@ -88,6 +91,7 @@ class MockContentNodesClient {
         content_id,
       }
       this.items.set(key, newNode);
+      this._emit("update", [oldItem, newItem]);
       
       return newNode;
     }
@@ -97,8 +101,23 @@ class MockContentNodesClient {
      * @param {string|number} id
      * @returns {boolean} true se removido, false caso não exista
      */
-    deleteItem(notebook_id, content_id, node_id) {
-      const key = `notebook_${notebook_id}_content_${content_id}_node_${String(node_id)}`;
-      return this.items.delete(key);
+    deleteItem(id) {
+      const oldItem = this.findItem(id);
+      
+      this.items.delete(key);
+      this._emit("remove", oldItem);
+    }
+
+    _emit(event, data) {
+      if(this.callbacks[event]) {
+        this.callbacks[event].forEach( cb => cb(data))
+      }
+    }
+    on(event, cb) {
+      if(this.callbacks[event]) {
+        this.callbacks[event] = [...this.callbacks[event], cb];
+      } else {
+         this.callbacks[event] = [cb];
+      }
     }
 }
