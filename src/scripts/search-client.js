@@ -86,10 +86,15 @@ class SearchClient {
    */
   search(term) {
     const exatos = this.searchExact(term);
-    if (exatos.length > 0) {
+    if (exatos.length >= 5) {
       return exatos;
     }
-    return this.searchFuzzy(term);
+    const fuzzy = this.searchFuzzy(term)
+    const filtrados = fuzzy.filter(fItem =>
+      !exatos.some(eItem => SearchClient._isSameItem(eItem, fItem))
+    );
+
+    return [...exatos, ...filtrados];
   }
 
   /**
@@ -97,10 +102,10 @@ class SearchClient {
    */
   static _isSameItem(a, b) {
     if (a.type !== b.type) return false;
-    if (a.localization.notebookId !== b.localization.notebookId) return false;
-    if (a.localization.user !== b.localization.user) return false;
-    if ((a.localization.contentId || null) !== (b.localization.contentId || null)) return false;
-    if ((a.localization.contentNode || null) !== (b.localization.contentNode || null)) return false;
+    if (a.localization.notebook_id !== b.localization.notebook_id) return false;
+    // if (a.localization.user !== b.localization.user) return false;
+    if ((a.localization.content_id || null) !== (b.localization.content_id || null)) return false;
+    if ((a.localization.node_id || null) !== (b.localization.node_id || null)) return false;
     return true;
   }
 
