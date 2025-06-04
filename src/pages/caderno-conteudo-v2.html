@@ -239,6 +239,20 @@
           actions: {
             // add: console.log,
             // filter: console.log,
+            share: () => {
+             const user = session.getCurrentUser();
+             console.log("user", user)
+              const link = share.getLink(
+               {
+                name: user.name,
+                email: user.email,
+               },
+                notebook,
+                contentMeta,
+                contentNodesClient.getAllFromNotebookContent(notebookId, contentId),
+              );
+              navigator.clipboard.writeText(link);
+            },
           },
           breadcrumbs: [{
             label: "Home",
