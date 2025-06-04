@@ -8,6 +8,7 @@
   /* border-color: #145af1; */
   text-decoration: none !important;
   text-transform: capitalize;
+  margin-top: 10px;
 }
 
 .ec-day,
@@ -26,7 +27,6 @@
 
 .ec-start {
   color: #145af1;
-  font-family: Poppins !important;
   padding-bottom: 40px;
   font-weight: normal;
 }
@@ -59,14 +59,31 @@ h2 {
   padding: 3px 5px 3px 5px !important;
 }
 
-.ec-mon {
+.ec-tue{
   background-color: white !important;
+
 }
 
-.ec-day time[datetime="2025-06-02"] {
+.ec-day time[datetime="2025-06-03"] {
   background-color: #145af1 !important;
   color: white;
   border-radius: 20px;
   padding: 5px 10px;
   display: inline-block;
 }
+
+.ec-title {
+  position: absolute;
+  left: 35%;
+  transform: translateX(0px);
+}
+
+.ec * {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* .ec-day-head {
+  background-color: transparent !important;
+} */
+
