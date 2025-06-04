@@ -19,6 +19,17 @@ class MockContentNodesClient {
       this.nextId = this.items.size + 1;
     }
 
+    copyOfNotebookContent(notebook_id, content_id, data = []) {
+      const same = Array.from(this.items.values()).filter(
+        node => `${node.notebook_id}-${node.content_id}` != `${notebook_id}-${content_id}`
+      )
+      if (same.length) {
+        return this.reset([...data, ...same]);
+      }
+      const old = Array.from(this.items.values());
+      this.reset([...data, ...old]);
+    }
+
     resetOfNotebookContent(notebook_id, content_id, data = []) {
       const same = Array.from(this.items.values()).filter(
         node => `${node.notebook_id}-${node.content_id}` != `${notebook_id}-${content_id}`
