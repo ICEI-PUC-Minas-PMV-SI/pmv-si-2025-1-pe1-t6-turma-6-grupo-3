@@ -55,6 +55,13 @@ function createHeader(document, wrapper, {
       addBtn.style.display = 'none';
     }
 
+    // — Botão “Adicionar”
+    const shareBtn = clone.querySelector('[data-action="share"]');
+    if (actions.share) {
+      shareBtn.addEventListener('click', actions.share);
+    } else {
+      shareBtn.style.display = 'none';
+    }
     // — Botão “Filter”
     const filterBtn = clone.querySelector('[data-action="filter"]');
     if (actions.filter) {
