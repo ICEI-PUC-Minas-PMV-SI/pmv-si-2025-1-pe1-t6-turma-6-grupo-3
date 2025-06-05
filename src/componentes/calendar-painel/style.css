@@ -1,23 +1,24 @@
+/* Dom, Seg, Ter, Qua, Qui, Sex, Sab */
 .ec-header {
+  padding-top: 20px;
   border-bottom-style: none;
   border-bottom-color: rgba(255, 255, 255, 0);
 }
 
-.ec-day {
-  border: 0px solid hsla(86, 100%, 50%, 0);
-  /* border-color: #145af1; */
+/* .ec-day {
   text-decoration: none !important;
   text-transform: capitalize;
   margin-top: 10px;
-}
+} */
 
-.ec-day,
+/* .ec-day,
 .ec-bg-events {
   height: 30px;
   width: 30px;
   display: block;
-}
+} */
 
+/* Alinhando dias */
 .ec-day-grid .ec-day-head {
   display: block;
   text-align: center;
@@ -31,59 +32,72 @@
   font-weight: normal;
 }
 
+/* Título */
 h2:first-letter {
   text-transform: uppercase;
   font-weight: normal;
 }
 
 h2 {
-  font-size: 30px;
+  font-size: 25px;
   font-weight: normal;
-  border-bottom: 2px solid #bdbdbd;
-  padding-bottom: 10px;
-  padding-left: 90px;
-  padding-right: 90px;
-}
-
-.ec-button {
-  border-radius: 20px;
-  padding: 5px 20px 5px 20px;
-  color: #2c2d31;
-  border-color: #bdbdbd;
-}
-
-.ec-prev,
-.ec-next {
-  border: none;
-  border-radius: 20px !important;
-  padding: 3px 5px 3px 5px !important;
-}
-
-.ec-tue{
-  background-color: white !important;
-
-}
-
-.ec-day time[datetime="2025-06-03"] {
-  background-color: #145af1 !important;
-  color: white;
-  border-radius: 20px;
-  padding: 5px 10px;
-  display: inline-block;
+  border-bottom: 3px solid #bdbdbd !important;
+  padding-bottom: 10px !important;
+  padding-left: 60px;
+  padding-right: 60px;
+  font-family: "Poppins", sans-serif !important;
 }
 
 .ec-title {
   position: absolute;
-  left: 35%;
-  transform: translateX(0px);
+  left: 50%;
+  transform: translateX(-50%);
 }
 
-.ec * {
+/* Buttons */
+.ec-button {
+  border-radius: 20px;
+  padding: 5px 20px 5px 20px;
+  color: #2c2d31;
+  border-color: #bdbdbd !important;
+  border: 1px solid #bdbdbd !important;
+}
+
+/* Buttons < > */
+/* .ec-prev,
+.ec-next {
   border: none !important;
-  box-shadow: none !important;
+  border-radius: 20px !important;
+  padding: 3px 5px 3px 5px !important;
+} */
+
+/* Dia 3 - bola azul */
+.ec-tue {
+  background-color: white !important;
+}
+.ec-day time[datetime="2025-06-03"] {
+  background-color: #145af1 !important;
+  color: white;
+  border-radius: 20px;
+  padding: 0px 10px;
+  display: inline-block;
+}
+
+/* Págia inteira - removedo as bordas e colocando fonte Poppins */
+.ec * {
+  border: none;
+  box-shadow: none;
+  font-family: "Poppins", sans-serif !important;
 }
 
 /* .ec-day-head {
   background-color: transparent !important;
 } */
 
+/* Reduz o calendário todo proporcionalmente */
+#ec {
+  transform: scale(0.5); /* 90% do tamanho original */
+  transform-origin: top center; /* Mantém alinhado no topo e centralizado */
+  max-width: 850px;
+  margin: 0 auto;
+}
