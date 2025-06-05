@@ -8,6 +8,7 @@ const map = {
     // "login-form": [createLoginForm], // not used on pages after login
     "notebook-card": [createNotebookCard],
     "tags-selector": [createTagInput],
+    "search-input": [createSearchInput],
 };
 
 function buildComponentsCreator(
@@ -26,7 +27,6 @@ function buildComponentsCreator(
     const promises = fetch_address.map(([cp, add]) => 
         fetch(add).then(res => res.text())
         .then(html => {
-            console.log("html", html)
             const wrapper = document.createElement('div');
             wrapper.innerHTML = html;
             return wrapper;

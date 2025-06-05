@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="../componentes/base-layout/layout.css">
   <link rel="stylesheet" href="../componentes/base-container/container.css">
   <link rel="stylesheet" href="../componentes/content-editor/editor.css">
+  <link rel="stylesheet" href="../componentes/image-selector/selector.css">
 
   <script src="../componentes/base-container/create-container.js"></script>
   <script src="../componentes/base-layout/create-layout.js"></script>
@@ -16,19 +17,24 @@
 
   <script src="../componentes/content-editor/editor.js"></script>
   <script src="../componentes/content-editor/create-editor.js"></script>
+  <script src="../componentes/image-selector/create-selector.js"></script>
+  <script src="../componentes/search-input/create-input.js"></script>
+
 </head>
 <body>
   <div id="loader"></div>
-  <script src="../scripts/notebooks-client.js"></script>
-  <script src="../scripts/content-metadata-client.js"></script>
-  <script src="../scripts/content-nodes-client.js"></script>
-  <script src="../scripts/user-client.js"></script>
-  <!-- <script src="../scripts/icons-selector/icons.js"></script>
-  <script src="../scripts/icons-selector/lib.js"></script> -->
-  <script src="../scripts/storage.js"></script>
-  <script src="../scripts/session-manager.js"></script>
-  <script src="../scripts/url-service.js"></script>
-  <script src="../scripts/app.js"></script>
+  <script src="../app/search-client.js"></script>
+  <script src="../app/share-engine.js"></script>
+  <script src="../app/notebooks-client.js"></script>
+  <script src="../app/content-metadata-client.js"></script>
+  <script src="../app/content-nodes-client.js"></script>
+  <script src="../app/user-client.js"></script>
+  <!-- <script src="../app/icons-selector/icons.js"></script>
+  <script src="../app/icons-selector/lib.js"></script> -->
+  <script src="../app/storage.js"></script>
+  <script src="../app/session-manager.js"></script>
+  <script src="../app/url-service.js"></script>
+  <script src="../app/app.js"></script>
   <script>
 
     if (!session.isLogged()) {
@@ -37,10 +43,11 @@
     const notebookId = UrlService.getParam('notebookId');
     const contentId = UrlService.getParam('contentId');
 
-    function mountEditor(document, editor) {
+    function mountEditor(document, editor, creator) {
+      const all = contentNodesClient.getAllFromNotebookContent(notebookId, contentId);
       const memory = {
-        nodes: contentNodesClient.getAll(),
-        _nextId: 0
+        nodes: contentNodesClient.getAllFromNotebookContent(notebookId, contentId),
+        _nextId: all.length +1
       }
 
       if (!memory.nodes.length){
@@ -48,14 +55,17 @@
           type: "h1", // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
           position: 0,
           customStyle: ["center-text","bigger-text", "background-paper"],
-          id:  `${memory._nextId}`,
+          id: contentNodesClient._build_key(notebookId, contentId, memory._nextId),
+          notebook_id: notebookId,
+          content_id: contentId,
           value: "Comece por aqui...",
         })
         memory._nextId = memory._nextId+1;
-        contentNodesClient.reset(memory.nodes);
+        contentNodesClient.resetOfNotebookContent(notebookId, contentId, memory.nodes);
+        console.log("memory::getAll", contentNodesClient.getAll())
         storageNodes.save();
       }
-      const [createBlock, setCaretToEnd] = FactoryCreateBlock(document, editor, {
+      const [createBlock, setCaretToEnd] = FactoryCreateBlock(document, editor, creator, {
             removeNode: (id) => {
               const index = memory.nodes.findIndex(node => node.id === id);
               if (index == -1) {
@@ -65,7 +75,7 @@
               memory.nodes.forEach((n, i) => {
                 n.position = i;
               });
-              contentNodesClient.reset(memory.nodes);
+              contentNodesClient.resetOfNotebookContent(notebookId, contentId, memory.nodes);
               storageNodes.save();
               return;
             },
@@ -83,20 +93,22 @@
               memory.nodes.splice(toIndex, 0, moved);
 
               memory.nodes.forEach((n, idx) => { n.position = idx; });
-              contentNodesClient.reset(memory.nodes);
+            
+              contentNodesClient.resetOfNotebookContent(notebookId, contentId, memory.nodes);
               storageNodes.save();
             },
             addNewNode: (nodeType, position=0) => {
                 console.log(`addNewNode::type[${nodeType}]::pos[${position}]`);
-      
-
+    
                 // 2) monta o novo node
                 const newNode = {
                     type: nodeType,
                     position: position,       // vai ser ajustado abaixo
                     customStyle: "",
-                    id: `${memory._nextId}`,
+                    id: contentNodesClient._build_key(notebookId, contentId, memory._nextId),
                     value: "",
+                    notebook_id: notebookId,
+                    content_id: contentId,
                 };
                 memory._nextId = memory._nextId + 1;
 
@@ -110,31 +122,86 @@
                 memory.nodes.forEach((n, i) => {
                     n.position = i;
                 });
-                contentNodesClient.reset(memory.nodes);
+                contentNodesClient.resetOfNotebookContent(notebookId, contentId, memory.nodes);
                 storageNodes.save();
 
                 return newNode;        
           },
             saveNodes: () => {
-              contentNodesClient.reset(memory.nodes);
+              const oldNodes = contentNodesClient.getAllFromNotebookContent(notebookId, contentId);
+              contentNodesClient.resetOfNotebookContent(notebookId, contentId, memory.nodes);
+              const updates = oldNodes.map((oldData) => {
+                const newData = contentNodesClient.findItem(oldData.id);
+                if (!newData) {
+                  return {oldData}
+                }
+                return {oldData, newData};
+              })
+              
+              const newNodes = contentNodesClient.getAllFromNotebookContent(notebookId, contentId);
+              if (newNodes.length > oldNodes.length) {
+                newNodes.filter(newNode => {
+                  return !oldNodes.some(oldNode => newNode.id === oldNode.idx)
+                }).forEach(item => {
+                  updates.push({newData: item});
+                })
+              }
+              const updatesItems = updates.map(({newData, oldData}) => {
+                if (newData && oldData) {
+                  const newItem = {
+                    type: "content-node",
+                    localization: { notebook_id: newData.notebook_id, content_id: newData.content_id, node_id: newData.id },
+                    terms: extractTerms(`${newData.value}`),
+                  };
+
+                  const oldItem = {
+                    type: "content-node",
+                    localization: { notebook_id: oldData.notebook_id, content_id: oldData.content_id, node_id: oldData.id },
+                    terms: extractTerms(`${oldData.value}`),
+                  };
+                  return { oldItem, newItem };
+                }
+
+                if (newData) {
+                  const newItem = {
+                    type: "content-node",
+                    localization: { notebook_id: newData.notebook_id, content_id: newData.content_id, node_id: newData.id },
+                    terms: extractTerms(`${newData.value}`),
+                  };
+
+                  return { newItem };
+                }
+
+                if (oldData) {
+                  const oldItem = {
+                    type: "content-node",
+                    localization: { notebook_id: oldData.notebook_id, content_id: oldData.content_id, node_id: oldData.id },
+                    terms: extractTerms(`${oldData.value}`),
+                  };
+                  return { oldItem };
+                }
+              });
+              
+              _search.updateMany(updatesItems);
               storageNodes.save();
             }
         })
-      // 
-      window.onload = () => memory.nodes.forEach((node, i) =>  editor.appendChild(createBlock(node)));
+      
+      memory.nodes.forEach((node, i) =>  editor.appendChild(createBlock(node)));
     };
 
       const loader = document.getElementById('loader');
       const editor = document.createElement('div');
 
-      mountEditor(document, editor);
       // not using original creator here because we are using less components
       // so I'm manually building an small version of the creator
       Promise.all([
         fetch('../componentes/base-container/container.html').then(res => res.text()),
         fetch('../componentes/base-layout/layout.html').then(res => res.text()),
         fetch('../componentes/base-header/header.html').then(res => res.text()),
-      ]).then(([htmlContainer, htmlLayout, htmlHeader]) => {
+        fetch('../componentes/image-selector/selector.html').then(res => res.text()),
+        fetch('../componentes/search-input/input.html').then(res => res.text()),
+      ]).then(([htmlContainer, htmlLayout, htmlHeader, htmlImgSel, htmlSrchInp]) => {
         const wrapperContainer = document.createElement('div');
         wrapperContainer.innerHTML = htmlContainer;
 
@@ -143,20 +210,28 @@
 
         const wrapperHeader = document.createElement('div');
         wrapperHeader.innerHTML = htmlHeader;
-        return [wrapperContainer, wrapperLayout, wrapperHeader]
-      }).then(([wrapperContainer, wrapperLayout, wrapperHeader]) => {
+
+        const wrapperImg = document.createElement('div');
+        wrapperImg.innerHTML = htmlImgSel;
+
+        const wrapperSearch = document.createElement('div');
+        wrapperSearch.innerHTML = htmlSrchInp;
+
+        return [wrapperContainer, wrapperLayout, wrapperHeader, wrapperImg, wrapperSearch]
+      }).then(([wrapperContainer, wrapperLayout, wrapperHeader, wrapperImg, wrapperSearch]) => {
         const localCreator = {
           [createContainer.name]: (args) => createContainer(document, wrapperContainer, args),
           [createHeader.name]: (args) => createHeader(document, wrapperHeader, args),
           [createLayout.name]: (args) => createLayout(document, wrapperLayout, args),
+          [createImageSelector.name]: (args) => createImageSelector(document, wrapperImg, args),
+          [createSearchInput.name]: (args) => createSearchInput(document, wrapperSearch, args),
         }
         return localCreator;
       }).then(creator => {
-        const notebookId = UrlService.getParam('notebookId');
         const notebook = notebookClient.findItem(notebookId);
 
         const contentId =  UrlService.getParam('contentId');
-        const contentMeta = contentMetaClient.findItem(contentId);
+        const contentMeta = contentMetaClient.findItem(notebookId, contentId);
         
         const simpleContainer = document.createElement('span');
         simpleContainer.appendChild(creator.createHeader({
@@ -179,6 +254,7 @@
           ],
           title: `${contentMeta.name}`
         }));
+        mountEditor(document, editor, creator);
 
         const editorRow = creator.createContainer({items: [editor] });
         simpleContainer.appendChild(editorRow);
@@ -195,7 +271,18 @@
                 session.signout();
                 window.location.assign("/src/pages/login-v2.html");
               },
-            }
+            },
+            searchInput: creator.createSearchInput({
+              onSelect: (item) => {
+                if (item.type === "notebook") {
+                  window.location.assign(`/src/pages/caderno-detalhe-v2.html?notebookId=${item.localization.notebook_id}`);
+                  return
+                }
+                window.location.assign(`/src/pages/caderno-conteudo-v2.html?notebookId=${item.localization.notebook_id}&contentId=${item.localization.content_id}`);
+                return
+              },
+              search: term => search(term)
+            })
           })
         );
       });
