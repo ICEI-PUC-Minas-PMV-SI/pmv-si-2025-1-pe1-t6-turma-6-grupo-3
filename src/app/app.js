@@ -79,7 +79,7 @@
       ],
       contents: [],
   };
-    global.share = new ShareEngine("http://127.0.0.1:5500/src/pages/caderno-shared.html");
+    global.share = new ShareEngine(window.location.origin + "/src/pages/caderno-shared.html");
 
     global._search = new SearchClient({ bloomSizeBits: 50000 });
     global.search = (term) => global._search.search(term);
