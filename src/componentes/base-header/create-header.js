@@ -55,6 +55,14 @@ function createHeader(document, wrapper, {
       addBtn.style.display = 'none';
     }
 
+    // — Botão “Adicionar”
+    const shareBtn = clone.querySelector('[data-action="share"]');
+    if (actions.share) {
+      shareBtn.addEventListener('click', actions.share);
+    } else {
+      shareBtn.style.display = 'none';
+    }
+
     // — Botão “Filter”
     const filterBtn = clone.querySelector('[data-action="filter"]');
     if (actions.filter) {
@@ -63,11 +71,19 @@ function createHeader(document, wrapper, {
       filterBtn.style.display = 'none';
     }
 
+    // — Botão "Copy"
+    const copyBtn = clone.querySelector('[data-action="copy"]');
+    if (actions.copy) {
+      copyBtn.addEventListener('click', actions.copy);
+    } else {
+      copyBtn.style.display = 'none';
+    }
 
     // — Settings dropdown
     const settingsEl = clone.querySelector('[data-sub-component="header::settings"]');
     const toggleBtn = settingsEl.querySelector('button');
     const settingsMenu = clone.querySelector('[data-sub-component="header::settings::menu"]');
+    const feedbackEl = clone.querySelector('[data-sub-component="header::buttons::feedback"]');
     settingsMenu.innerHTML = '';
 
     if (settingsButtons.length > 0) {
@@ -104,6 +120,19 @@ function createHeader(document, wrapper, {
         settingsMenu.classList.remove('show');
       }
     });
+
+    clone.feedback = (msg) => {
+      console.log("FEEDBACK:enter")
+      console.log(msg);
+      feedbackEl.innerText = msg;
+      feedbackEl.style.display = "block";
+      feedbackEl.style.right = 0;
+      setTimeout(() => {
+        console.log("FEEDBACK:out")
+        feedbackEl.style.display = "none";
+        feedbackEl.style.right = 0;
+      }, 10200);
+    }
 
     return clone;
   }

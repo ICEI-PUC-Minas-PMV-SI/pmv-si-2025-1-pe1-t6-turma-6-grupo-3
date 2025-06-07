@@ -1,7 +1,8 @@
 function FactoryCreateBlock(
-    doc,
+    document,
     editor,
     creator,
+    editable,
     {
         addNewNode,
         removeNode,
@@ -11,30 +12,19 @@ function FactoryCreateBlock(
     }
 ) {
     function getBlock() {
-        const block = doc.createElement("div");
+        const block = document.createElement("div");
         block.className = "block";
         return block;
     }
 
     function getControls() {
-        const controls = doc.createElement("div");
+        const controls = document.createElement("div");
         controls.className = "block-controls";
         return controls;
     }
 
-    function getAddBtn() {
-        const addBtn = doc.createElement("button");
-        addBtn.textContent = "+";
-        addBtn.onclick = () => {
-        const newBlock = createBlock();
-        editor.insertBefore(newBlock, block.nextSibling);
-        newBlock.querySelector(".content").focus();
-        };
-        return addBtn
-    }
-
     function getMenuBtn(){
-        const menuBtn = doc.createElement("button");
+        const menuBtn = document.createElement("button");
         menuBtn.className = "menuBtn";
         menuBtn.title = "Arraste para mover\nClique para abrir o menu";
         menuBtn.textContent = "⋮⋮";
@@ -53,7 +43,7 @@ function FactoryCreateBlock(
     function getActionListElement(listType, value, onUpdateCheckbox) {
         const items = value.split("\t");
 
-        const list = doc.createElement(listType);
+        const list = document.createElement(listType);
         if (listType === "ul") {
             list.style.listStyle = "none";
             list.style.paddingLeft = "0";
@@ -63,7 +53,7 @@ function FactoryCreateBlock(
             let checked = false;
             let label   = txt;
 
-            if (txt.startsWith("x")) {
+            if (txt.startsWith("+")) {
                 checked = true;
                 label   = txt.slice(1);
             } else if (txt.startsWith("-")) {
@@ -72,10 +62,10 @@ function FactoryCreateBlock(
             }
             label = label.trim();
 
-            const li = doc.createElement("li");
+            const li = document.createElement("li");
             li.classList.add("d-flex", "align-items-center", "mb-2");
 
-            const input = doc.createElement("input");
+            const input = document.createElement("input");
             input.type = "checkbox";
             input.checked = checked;
             input.classList.add("form-check-input", "me-2");
@@ -84,7 +74,7 @@ function FactoryCreateBlock(
                 onUpdateCheckbox(i, e.target.checked);
             });
 
-            const span = doc.createElement("span");
+            const span = document.createElement("span");
             span.textContent = label;
 
             li.append(input, span);
@@ -145,25 +135,25 @@ function FactoryCreateBlock(
     function getMenu({actions}) {
         const {deleteMe, addNewBlock} = actions;
 
-        const menu = doc.createElement("div");
+        const menu = document.createElement("div");
         menu.className = "menu";
 
 
-        const addSeparator = doc.createElement("button");
+        const addSeparator = document.createElement("button");
         addSeparator.textContent = "+ Adicionar";
         addSeparator.disabled = true;
         menu.appendChild(addSeparator);
-        // const colorPickerBtn = doc.createElement("div");
+        // const colorPickerBtn = document.createElement("div");
         // colorPickerBtn.className = "color-picker";
 
-        // const colorLabel = doc.createElement("span");
+        // const colorLabel = document.createElement("span");
         // colorLabel.textContent = "🎨 Cor do bloco:";
 
-        // const colorInput = doc.createElement("input");
+        // const colorInput = document.createElement("input");
         // colorInput.type = "color";
         // colorInput.value = "#ffffff";
 
-        // const colorIndicator = doc.createElement("div");
+        // const colorIndicator = document.createElement("div");
         // colorIndicator.className = "color-indicator";
         // colorIndicator.style.backgroundColor = "#ffffff";
 
@@ -176,11 +166,15 @@ function FactoryCreateBlock(
         // colorPickerBtn.appendChild(colorInput);
         // colorPickerBtn.appendChild(colorIndicator);
 
-        const addTitleBtn = doc.createElement("button");
+        const addTitleBtn = document.createElement("button");
         addTitleBtn.textContent = "🔠 Título H1";
         addTitleBtn.style.paddingLeft = "20px";
+        addTitleBtn.onclick = () => {
+         addNewBlock("h1");
+        };
+        menu.appendChild(addTitleBtn);
 
-        const addImageBtn = doc.createElement("button");
+        const addImageBtn = document.createElement("button");
         addImageBtn.textContent = "🖼️ Imagem";
         addImageBtn.style.paddingLeft = "20px";
 
@@ -189,7 +183,7 @@ function FactoryCreateBlock(
         };
         menu.appendChild(addImageBtn);
 
-        const addParagraphBtn = doc.createElement("button");
+        const addParagraphBtn = document.createElement("button");
         addParagraphBtn.textContent = "📜 Parágrafo";
         addParagraphBtn.style.paddingLeft = "20px";
         addParagraphBtn.onclick = () => {
@@ -198,7 +192,7 @@ function FactoryCreateBlock(
         menu.appendChild(addParagraphBtn);
 
 
-        const addBulletListBtn = doc.createElement("button");
+        const addBulletListBtn = document.createElement("button");
         addBulletListBtn.textContent = "• Lista com Marcadores";
         addBulletListBtn.style.paddingLeft = "20px";
         addBulletListBtn.onclick = () => {
@@ -207,7 +201,7 @@ function FactoryCreateBlock(
         menu.appendChild(addBulletListBtn);
 
 
-        const addOrderedListBtn = doc.createElement("button");
+        const addOrderedListBtn = document.createElement("button");
         addOrderedListBtn.textContent = "1️⃣ Lista Ordenada";
         addOrderedListBtn.style.paddingLeft = "20px";
         addOrderedListBtn.onclick = () => {
@@ -216,7 +210,7 @@ function FactoryCreateBlock(
         menu.appendChild(addOrderedListBtn);
 
 
-        const addActionListBtn = doc.createElement("button");
+        const addActionListBtn = document.createElement("button");
         addActionListBtn.textContent = "✅ Checklist Simples";
         addActionListBtn.style.paddingLeft = "20px";
         addActionListBtn.onclick = () => {
@@ -225,7 +219,7 @@ function FactoryCreateBlock(
         menu.appendChild(addActionListBtn);
 
 
-        const addOrderedActionListBtn = doc.createElement("button");
+        const addOrderedActionListBtn = document.createElement("button");
         addOrderedActionListBtn.textContent = "☑️ Checklist Ordenado";
         addOrderedActionListBtn.style.paddingLeft = "20px";
         addOrderedActionListBtn.onclick = () => {
@@ -235,12 +229,12 @@ function FactoryCreateBlock(
 
 
 
-        const deleteBtn = doc.createElement("button");
+        const deleteBtn = document.createElement("button");
         deleteBtn.textContent = "🗑️ Excluir bloco";
         deleteBtn.onclick = deleteMe;
         menu.appendChild(deleteBtn);
 
-        // const numberListBtn = doc.createElement("button");
+        // const numberListBtn = document.createElement("button");
         // numberListBtn.textContent = "1️⃣ Lista Numerada";
         // numberListBtn.onclick = () => {
         //   removeCheckbox();
@@ -249,7 +243,7 @@ function FactoryCreateBlock(
         //   content.style.fontWeight = "normal";
         // };
 
-        // const duplicateBtn = doc.createElement("button");
+        // const duplicateBtn = document.createElement("button");
         // duplicateBtn.textContent = "📋 Duplicar";
         // duplicateBtn.onclick = () => {
         //   const copy = createBlock();
@@ -259,11 +253,11 @@ function FactoryCreateBlock(
         //   copy.querySelector(".content").focus();
         // };
 
-        // const commentBtn = doc.createElement("button");
+        // const commentBtn = document.createElement("button");
         // commentBtn.textContent = "💬 Adicionar Comentário";
         // commentBtn.onclick = () => {
         //   if (!block.querySelector(".comment")) {
-        //     const comment = doc.createElement("div");
+        //     const comment = document.createElement("div");
         //     comment.className = "comment";
         //     comment.contentEditable = true;
         //     comment.textContent = "";
@@ -272,41 +266,41 @@ function FactoryCreateBlock(
         //   }
         // };
 
-        // const addImageBtn = doc.createElement("button");
+        // const addImageBtn = document.createElement("button");
         // addImageBtn.textContent = "🖼️ Adicionar Imagem";
         // addImageBtn.onclick = () => {
         //   const imageUrl = prompt("Digite a URL da imagem:");
         //   if (imageUrl) {
-        //     const img = doc.createElement("img");
+        //     const img = document.createElement("img");
         //     img.src = imageUrl;
         //     img.style.width = "100%";
         //     block.appendChild(img);
         //   }
         // };
 
-        // const removeImageBtn = doc.createElement("button");
+        // const removeImageBtn = document.createElement("button");
         // removeImageBtn.textContent = "❌ Remover Imagem";
         // removeImageBtn.onclick = () => {
         //   const img = block.querySelector("img");
         //   if (img) img.remove();
         // };
 
-        // const boldBtn = doc.createElement("button");
+        // const boldBtn = document.createElement("button");
         // boldBtn.textContent = "🅱️ Negrito";
         // boldBtn.onclick = () => {
-        //   doc.execCommand("bold");
+        //   document.execCommand("bold");
         // };
 
-        // const italicBtn = doc.createElement("button");
+        // const italicBtn = document.createElement("button");
         // italicBtn.textContent = "𝓘 Itálico";
         // italicBtn.onclick = () => {
-        //   doc.execCommand("italic");
+        //   document.execCommand("italic");
         // };
 
-        // const underlineBtn = doc.createElement("button");
+        // const underlineBtn = document.createElement("button");
         // underlineBtn.textContent = "🖋️ Sublinhado";
         // underlineBtn.onclick = () => {
-        //   doc.execCommand("underline");
+        //   document.execCommand("underline");
         // };
 
         
@@ -329,9 +323,9 @@ function FactoryCreateBlock(
     }
 
     function getContent({onBlur, onEnterPress, onBackspacePress}){
-        const content = doc.createElement("div");
+        const content = document.createElement("div");
         content.className = "content";
-        content.contentEditable = true;
+        content.contentEditable = editable;
 
         content.addEventListener("keydown", e => {
             if (e.key === "Enter") {
@@ -385,7 +379,7 @@ function FactoryCreateBlock(
     // helper: posiciona o caret no fim de um elemento
     function setCaretToEnd(el) {
         el.focus();  // garante que o contenteditable esteja ativo
-        const range = doc.createRange();
+        const range = document.createRange();
         range.selectNodeContents(el);
         range.collapse(false);      // false = colapsa no fim do conteúdo
 
@@ -400,49 +394,98 @@ function FactoryCreateBlock(
         
         const block = getBlock();
         block.dataset.id = node.id;
-        const menu = getMenu({
-            actions: {
-                // id => delete no dado
-                deleteMe: () => {
-                    console.log("DELETE NODE: ", node.id)
-                    err = removeNode(node.id);
-                    if (err) {
-                        alert(err.message)
-                        return
-                    }
-                    block.remove();
-                },
-                addNewBlock: (nodeType) => {
-                   const new_node = addNewNode(nodeType, node.position+1);
-                   const new_block = createBlock(new_node);
-                   insertBeforeBlock(new_block, true);
-                    console.log("ELEMENTS: ", editor.childNodes[new_node.position].children[2].children[0])
-                    setCaretToEnd(editor.childNodes[new_node.position].children[2].children[0]);
-                },
-            }
-        });
+       
+        if (editable) {
+             const menu = getMenu({
+                actions: {
+                    // id => delete no dado
+                    deleteMe: () => {
+                        console.log("DELETE NODE: ", node.id)
+                        err = removeNode(node.id);
+                        if (err) {
+                            alert(err.message)
+                            return
+                        }
+                        block.remove();
+                    },
+                    addNewBlock: (nodeType) => {
+                    const new_node = addNewNode(nodeType, node.position+1);
+                    const new_block = createBlock(new_node);
+                    insertBeforeBlock(new_block, true);
+                        console.log("ELEMENTS: ", editor.childNodes[new_node.position].children[2].children[0])
+                        setCaretToEnd(editor.childNodes[new_node.position].children[2].children[0]);
+                    },
+                }
+            });
+            block.appendChild(menu);
 
-        const controls = getControls();
+            const controls = getControls();
+            const menuBtn = getMenuBtn();
+            controls.appendChild(menuBtn);
+            block.appendChild(controls);
 
-        const addBtn = getAddBtn();
+            menuBtn.onclick = (e) => {
+                e.stopPropagation();
+                console.log("menuBtn.onclick")
+                saveNodes();
+                closeAllMenus();
+                menu.style.display = 'flex';
+            };
 
-        const menuBtn = getMenuBtn();
+             menuBtn.addEventListener('dragstart', e => {
+                draggedBlock = block;
+                block.style.opacity = "0.5";
+                menuBtn.style.cursor = "grabbing";
+                // informar qual bloco está sendo arrastado
+                e.dataTransfer.setData('text/plain', node.id);
+                e.dataTransfer.effectAllowed = 'move';
 
-        block.appendChild(menu);
+            });
 
-        menuBtn.onclick = (e) => {
-            e.stopPropagation();
-            console.log("menuBtn.onclick")
-            saveNodes();
-            closeAllMenus();
-            menu.style.display = 'flex';
-        };
+            menuBtn.addEventListener('dragend', () => {
+                draggedBlock = null;
+                block.classList.remove('dragging');
+                block.style.opacity = "1";
+                menuBtn.style.cursor = "grab";
+            });
 
-        controls.appendChild(addBtn);
-        controls.appendChild(menuBtn);
-        block.appendChild(controls);
+            block.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                const rect = block.getBoundingClientRect();
+                const midpoint = rect.top + rect.height / 2;
 
-        const inner = doc.createElement("div");
+                block.classList.remove('drag-over-top', 'drag-over-bottom');
+
+                if (e.clientY < midpoint) {
+                    block.classList.add('drag-over-top');
+                } else {
+                    block.classList.add('drag-over-bottom');
+                }
+            });
+
+            block.addEventListener('dragleave', () => {
+                block.classList.remove('drag-over-top', 'drag-over-bottom');
+            });
+
+            block.addEventListener('drop', (e) => {
+                console.log("DROP: ", e)
+                e.preventDefault();
+                block.classList.remove('drag-over-top', 'drag-over-bottom');
+                const draggedId = e.dataTransfer.getData('text/plain');
+                const targetId  = block.dataset.id;
+                const { top, height } = block.getBoundingClientRect();
+                const after = (e.clientY - top) > height/2;
+                moveNode(draggedId, targetId, after);
+                const draggedEl = editor.querySelector(`.block[data-id="${draggedId}"]`);
+                insertBeforeBlock(draggedEl, after);
+            });
+
+            document.addEventListener('click', () => {
+                menu.style.display = 'none';
+            });
+        }
+
+        const inner = document.createElement("div");
         inner.className = "inner";
         const onUpdateCheckbox = (i, checked) => {
             updateValueFromContent();
@@ -502,58 +545,7 @@ function FactoryCreateBlock(
         inner.appendChild(content);
         block.appendChild(inner);
 
-        
-
-        menuBtn.addEventListener('dragstart', e => {
-            draggedBlock = block;
-            block.style.opacity = "0.5";
-            menuBtn.style.cursor = "grabbing";
-            // informar qual bloco está sendo arrastado
-            e.dataTransfer.setData('text/plain', node.id);
-            e.dataTransfer.effectAllowed = 'move';
-        });
-
-        menuBtn.addEventListener('dragend', () => {
-            draggedBlock = null;
-            block.classList.remove('dragging');
-            block.style.opacity = "1";
-            menuBtn.style.cursor = "grab";
-        });
-
-        block.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            const rect = block.getBoundingClientRect();
-            const midpoint = rect.top + rect.height / 2;
-
-            block.classList.remove('drag-over-top', 'drag-over-bottom');
-
-            if (e.clientY < midpoint) {
-                block.classList.add('drag-over-top');
-            } else {
-                block.classList.add('drag-over-bottom');
-            }
-        });
-
-        block.addEventListener('dragleave', () => {
-            block.classList.remove('drag-over-top', 'drag-over-bottom');
-        });
-
-        block.addEventListener('drop', (e) => {
-            console.log("DROP: ", e)
-            e.preventDefault();
-            block.classList.remove('drag-over-top', 'drag-over-bottom');
-            const draggedId = e.dataTransfer.getData('text/plain');
-            const targetId  = block.dataset.id;
-            const { top, height } = block.getBoundingClientRect();
-            const after = (e.clientY - top) > height/2;
-            moveNode(draggedId, targetId, after);
-            const draggedEl = editor.querySelector(`.block[data-id="${draggedId}"]`);
-            insertBeforeBlock(draggedEl, after);
-        });
-
-        doc.addEventListener('click', () => {
-            menu.style.display = 'none';
-        });
+    
         function insertBeforeBlock(targetEl, after){
             editor.insertBefore(
                targetEl,
@@ -565,7 +557,7 @@ function FactoryCreateBlock(
     }
 
     function closeAllMenus() {
-        doc.querySelectorAll('.menu').forEach(menu => {
+        document.querySelectorAll('.menu').forEach(menu => {
             menu.style.display = 'none';
         });
     }
