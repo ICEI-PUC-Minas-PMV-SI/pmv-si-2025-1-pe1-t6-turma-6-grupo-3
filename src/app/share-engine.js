@@ -3,7 +3,58 @@ class ShareEngine {
         this.shared_page = shared_page;   
     }
 
-    // encode
+    parseToMD(user, notebook, meta, nodes) {
+        return `
+---------
+user_name: ${user.name}
+user_email: ${user.email}
+
+notebook_name: ${notebook.name}
+notebook_icon: ${notebook.icon}
+notebook_description:
+  ${notebook.description}
+
+content_name: ${meta.name}
+content_icon: ${meta.icon}
+content_tags:
+${meta.tags.map(t => `  - ${t.name} | ${t.color}`).join("\n")}
+---------
+
+${nodes.map(n => {
+    switch(n.type) {
+        case "h1": 
+            return `# ${n.value}\n`
+        
+        case "paragraph": 
+            return `${n.value}\n`;
+        
+        case "unordered_list": 
+            return `${n.value.split("\t").map(value => `- ${value}`).join('\n')}\n`
+        
+        case "ordered_list": 
+            return `${n.value.split("\t").map(value => `1. ${value}`).join('\n')}\n`
+        
+        case "ordered_action_list": 
+            return `${n.value.split("\t").map(action_value => {
+                const action = action_value[0] === '-';
+                const value = action_value.slice(2);
+                return `- ${action ? "[x]" : "[ ]"} ${value}`
+            }).join('\n')}\n`
+
+        case "unordered_action_list": 
+            return `${n.value.split("\t").map(action_value => {
+                const action = action_value[0] === '-';
+                const value = action_value.slice(2);
+                return `1. ${action ? "[x]" : "[ ]"} ${value}`
+            }).join('\n')}\n`
+
+        case "image": 
+            const [url, alt] = n.value.split("\t")
+            return `![${alt ? alt : "image"}](${url})\n`
+    }
+}).join("\n")}`
+}
+
     getLink(user, notebook, meta, nodes) {
         const bulk = {
             user,
