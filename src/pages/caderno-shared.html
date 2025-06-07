@@ -120,21 +120,17 @@
         return localCreator;
       }).then(creator => {
         const notebook = bulk.notebook;
-
-    
+        const user = bulk.user;
         const contentMeta = bulk.content.meta;
-        
+        const nodes = bulk.content.nodes;
         const simpleContainer = document.createElement('span');
         simpleContainer.appendChild(creator.createHeader({
           "icon": `${notebook.icon}`,
           actions: {
             // add: console.log,
-            // filter: console.log,
-            share: () => {
-              const link = share.getLink(notebook, contentMeta, contentNodesClient.getAllFromNotebookContent(notebookId, contentId));
-              navigator.clipboard.writeText(link);
-              const data = share.fromLink(bulk);
-              console.log("Data", data);
+            copy: () => {
+              const text = share.parseToMD(user, notebook, contentMeta, nodes);
+              navigator.clipboard.writeText(text);
             },
           },
           breadcrumbs: [{
@@ -143,7 +139,7 @@
           },
           {
             label: `${notebook.name}`,
-            href: `/src/pages/caderno-detalhe-v2.html?notebookId=${notebook.id}`
+            href: `#`
           },
           {
             label: `${contentMeta.name}`
