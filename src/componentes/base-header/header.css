@@ -41,6 +41,20 @@
     ;
 }
 
+.feedback {
+  display: none;
+  position: absolute;
+  color: white;
+  top: 100px;
+  right: -600;
+  padding: 10px;
+  background-color: green;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: right 0.5s ease-in-out, opacity 0.5s;
+  font-weight: bolder;
+  border-radius: 10px 0px 0 10px;
+}
+
 .gap-1 {
     gap: 1rem !important;
 }
