@@ -1,5 +1,10 @@
 function mountEditor(document, editor,  memory, creator) {
-      const [createBlock, setCaretToEnd] = FactoryCreateBlock(document, editor, creator, {
+      const [createBlock, setCaretToEnd] = FactoryCreateBlock(
+        document, 
+        editor, 
+        creator, 
+        true,
+        {
           saveNodes: () => console.log(memory), 
           removeNode: (id) => {
               const index = memory.nodes.findIndex(node => node.id === id);
@@ -10,6 +15,7 @@ function mountEditor(document, editor,  memory, creator) {
               return;
             },
             moveNode: (draggedId, targetId, after) => {
+              console.log("moveNode: ",draggedId, targetId, after)
               const fromIndex = memory.nodes.findIndex(n => n.id == draggedId);
               if (fromIndex < 0) return;
               const [moved] = memory.nodes.splice(fromIndex, 1);
