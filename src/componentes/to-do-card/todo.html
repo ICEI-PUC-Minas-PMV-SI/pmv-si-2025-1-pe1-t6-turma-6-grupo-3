@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-do</title>
+    <link rel="stylesheet" href="todo.css">
+</head>
+
+<body>
+    <!-- Container dos botões -->
+    <div class="container-botoes">
+        <button type="button" class="btcalendario">Calendário</button>
+
+        <div class="centro">
+            <button class="seta-esquerda">&lt;</button>
+            <span class="texto-central">Hoje</span>
+            <button class="seta-direita">&gt;</button>
+        </div>
+
+        <button type="button" id="btCriarTarefa" class="btaddtarefa">✛ Criar tarefa</button>
+    </div>
+
+    <!-- Container das tasks -->
+    <div id="container-tasks">
+        <!-- Bloco inicial de task -->
+        <div class="task">
+            <input type="checkbox" class="checkb">
+            <p>Exemplo...</p>
+            <button title="Editar" class="abrirModal">✏️</button>
+            <button title="Excluir" class="excluir">🗑️</button>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span id="closeModal" class="close">&times;</span>
+            <h2>Editar tarefa</h2>
+
+            <label for="inputEditar">Titulo da tarefa:</label>
+            <input type="text" id="inputEditar">
+
+            <br><br>
+
+            <button id="salvarEdicao">Salvar</button>
+        </div>
+    </div>
+
+    <script src="todo.js"></script>
+</body>
+
+</html>

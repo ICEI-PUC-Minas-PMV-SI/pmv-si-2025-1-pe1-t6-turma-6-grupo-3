@@ -1,0 +1,139 @@
+body {
+    background-color: rgb(255, 255, 255);
+    font-family: sans-serif;
+    font-size: medium;
+}
+
+.btaddtarefa {
+    border: none;
+    outline: none;
+    background: #0e6eff;
+    border-radius: 8px;
+    box-shadow: 0 3px rgb(216, 216, 216);
+    width: 120px;
+    height: 30px;
+    color: white;
+    cursor: pointer;
+}
+
+.btcalendario {
+    border: none;
+    outline: none;
+    background: rgb(246, 246, 246);
+    border-radius: 8px;
+    box-shadow: 0 3px rgb(216, 216, 216);
+    width: 120px;
+    height: 30px;
+    color: rgb(0, 0, 0);
+    cursor: pointer;
+    font-size: medium;
+    font-style: oblique;
+}
+
+
+.task {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    background-color: rgb(246, 246, 246);
+    width: 1110px;
+    height: 45px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 40px;
+}
+
+.checkb {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    margin-left: -28px;
+}
+
+.abrirModal {
+    margin-left: auto;
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+
+.excluir {
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+
+/* Modal fundo */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+}
+
+/* Modal conteúdo */
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+    position: relative;
+}
+
+/* Botão fechar */
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.container-botoes {
+    position: relative;
+    /* base de referência para o elemento absoluto */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* alinha verticalmente */
+    width: 1110px;
+    margin: 40px auto;
+}
+
+/* Esse é o elemento centralizado */
+.centro {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: bold;
+    /* só pra destacar */
+    font-style: oblique;
+}
+
+.seta-esquerda,
+.seta-direita {
+  background-color: rgb(246, 246, 246); /* mesma cor do botão de calendário */
+  border: none;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* volume sutil */
+  font-size: 18px;
+  cursor: pointer;
+  padding: 6px 12px;
+  transition: background-color 0.2s ease;
+}
+.seta-esquerda:hover,
+.seta-direita:hover {
+  background-color: rgb(230, 230, 230); /* leve efeito no hover */
+}
+
+.texto-central {
+    font-weight: bold;
+    font-size: 16px;
+}
