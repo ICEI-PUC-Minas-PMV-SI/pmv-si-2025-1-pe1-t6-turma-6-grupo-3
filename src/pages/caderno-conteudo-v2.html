@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <link rel="stylesheet" href="../componentes/base-layout/layout.css">
+  <link rel="stylesheet" href="../componentes/base-header/header.css">
   <link rel="stylesheet" href="../componentes/base-container/container.css">
   <link rel="stylesheet" href="../componentes/content-editor/editor.css">
   <link rel="stylesheet" href="../componentes/image-selector/selector.css">
@@ -65,7 +66,7 @@
         console.log("memory::getAll", contentNodesClient.getAll())
         storageNodes.save();
       }
-      const [createBlock, setCaretToEnd] = FactoryCreateBlock(document, editor, creator, {
+      const [createBlock, setCaretToEnd] = FactoryCreateBlock(document, editor, creator, true, {
             removeNode: (id) => {
               const index = memory.nodes.findIndex(node => node.id === id);
               if (index == -1) {
@@ -234,11 +235,21 @@
         const contentMeta = contentMetaClient.findItem(notebookId, contentId);
         
         const simpleContainer = document.createElement('span');
-        simpleContainer.appendChild(creator.createHeader({
+        const header = creator.createHeader({
           "icon": `${notebook.icon}`,
           actions: {
-            // add: console.log,
-            // filter: console.log,
+            copy: () => {
+              const user = session.getCurrentUser();
+              const text = share.parseToMD(
+                {
+                  name: user.name,
+                  email: user.email,
+                },
+                notebook, contentMeta, contentNodesClient.getAllFromNotebookContent(notebookId, contentId));
+              console.log("TEXT", text)
+              navigator.clipboard.writeText(text);
+              header.feedback("Texto Copiado para Área de transferência!")
+            },
             share: () => {
              const user = session.getCurrentUser();
              console.log("user", user)
@@ -252,6 +263,8 @@
                 contentNodesClient.getAllFromNotebookContent(notebookId, contentId),
               );
               navigator.clipboard.writeText(link);
+              header.feedback("Link Copiado para Área de transferência!")
+
             },
           },
           breadcrumbs: [{
@@ -267,7 +280,8 @@
           }
           ],
           title: `${contentMeta.name}`
-        }));
+        });
+        simpleContainer.appendChild(header);
         mountEditor(document, editor, creator);
 
         const editorRow = creator.createContainer({items: [editor] });
