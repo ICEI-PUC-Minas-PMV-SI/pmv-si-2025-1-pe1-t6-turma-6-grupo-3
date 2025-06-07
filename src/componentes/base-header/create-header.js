@@ -131,7 +131,7 @@ function createHeader(document, wrapper, {
         console.log("FEEDBACK:out")
         feedbackEl.style.display = "none";
         feedbackEl.style.right = 0;
-      }, 10200);
+      }, 1200);
     }
 
     return clone;
