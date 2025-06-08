@@ -4,6 +4,13 @@ function FactoryCreateBlock(
     creator,
     editable,
     {
+        currentNotebookId,
+        currentContentId,
+        onGoToNode,
+        search,
+        getNotebook,
+        getContentMeta,
+        getContentNode,
         addNewNode,
         removeNode,
         updateNode,
@@ -11,6 +18,16 @@ function FactoryCreateBlock(
         saveNodes,
     }
 ) {
+
+    console.log("bookmark args in editor", {
+        currentNotebookId,
+        currentContentId,
+        onGoToNode,
+        search,
+        getNotebook,
+        getContentMeta,
+        getContentNode,
+    })
     function getBlock() {
         const block = document.createElement("div");
         block.className = "block";
@@ -85,7 +102,7 @@ function FactoryCreateBlock(
     }
     
 
-    function render({type, position, customStyle, id, value},{ onUpdateCheckbox }, content) {
+    function render({type, position, customStyle, id, value},{ onUpdateCheckbox, onSelectBookmark }, content) {
         content.style.cssText = '';
         content.innerHTML = '';
         switch(type) {
@@ -127,7 +144,21 @@ function FactoryCreateBlock(
             const img = creator.createImageSelector({ id, value });
             content.appendChild(img);
             break;
-        case "link_bookmark": 
+        case "bookmark-internal": 
+            const bookmark = creator.createInternalBookmarkSelector({
+                currentContentId,
+                currentNotebookId,
+                selected: value,
+                id,
+                onSelect: (item) => onSelectBookmark(item),
+                onGoToNode,
+                search,
+                getNotebook,
+                getContentMeta,
+                getContentNode,
+            });
+            content.contentEditable = false;
+            content.appendChild(bookmark);
             break;
         }
     }
@@ -182,6 +213,15 @@ function FactoryCreateBlock(
          addNewBlock("image");
         };
         menu.appendChild(addImageBtn);
+
+        const addBookmarkBtn = document.createElement("button");
+        addBookmarkBtn.textContent = "🔗 Link Interno";
+        addBookmarkBtn.style.paddingLeft = "20px";
+
+        addBookmarkBtn.onclick = () => {
+         addNewBlock("bookmark-internal");
+        };
+        menu.appendChild(addBookmarkBtn);
 
         const addParagraphBtn = document.createElement("button");
         addParagraphBtn.textContent = "📜 Parágrafo";
@@ -366,11 +406,12 @@ function FactoryCreateBlock(
             }
             break;
         case "image": 
-            console.log("IMAGE", content.children[0]);
-            console.log("IMAGE.src", content.children[0].children[1].src);
             value = content.children[0].children[1].children[1].src;
             break;
-        case "link_bookmark": 
+        case "bookmark-internal":
+            console.log("VALUE BOOKMARK", content)
+            const raw = content.children[0].value;
+            value =  raw && JSON.parse(raw);
             break;
         } 
         return value;
@@ -427,6 +468,7 @@ function FactoryCreateBlock(
             menuBtn.onclick = (e) => {
                 e.stopPropagation();
                 console.log("menuBtn.onclick")
+                updateValueFromContent();
                 saveNodes();
                 closeAllMenus();
                 menu.style.display = 'flex';
@@ -491,16 +533,25 @@ function FactoryCreateBlock(
             updateValueFromContent();
         };
         const updateValueFromContent = () => {
-            const new_value = extractValueFromContent(node, content)
-                .replaceAll(/\r?\n/g, '')
-                .replace(/\t+$/, '')
-                .replace(/\t- +$/, '');
+            
+            const couldBeText = extractValueFromContent(node, content)
+            if (typeof couldBeText === typeof ""){
+                couldBeText.replaceAll(/\r?\n/g, '')
+                    .replace(/\t+$/, '')
+                    .replace(/\t- +$/, '');
+            }
+            const new_value = couldBeText;
+             
             console.log('updateValueFromContent||NodeType: ', node.type);
             console.log('updateValueFromContent||OldValue: ', node.value);
             console.log('updateValueFromContent||NewValue: ', new_value);
             node.value = new_value;
             console.log('updateValueFromContent||node: ', node);
         };
+
+        const onSelectBookmark = () => {
+            updateValueFromContent()
+        }
         const content = getContent({
             onBlur: e => {
                 updateValueFromContent()
@@ -516,7 +567,7 @@ function FactoryCreateBlock(
                     e.preventDefault();
                     updateValueFromContent();
                     node.value = `${node.value}\t`;
-                    render({type, position, customStyle, id, value: node.value}, {onUpdateCheckbox},  content);
+                    render({type, position, customStyle, id, value: node.value}, {onUpdateCheckbox, onSelectBookmark},  content);
                     lastItem = content.childNodes[0].lastElementChild;
                     setCaretToEnd(lastItem);
                     break;
@@ -525,7 +576,7 @@ function FactoryCreateBlock(
                     e.preventDefault();
                     updateValueFromContent();
                     node.value = `${node.value}\t-`;
-                    render({type, position, customStyle, id, value: node.value}, {onUpdateCheckbox},  content);
+                    render({type, position, customStyle, id, value: node.value}, {onUpdateCheckbox, onSelectBookmark},  content);
                     lastItem = content.childNodes[0].lastElementChild;
                     setCaretToEnd(lastItem);
                 break;
@@ -539,7 +590,7 @@ function FactoryCreateBlock(
             id, 
             value: node.value
         }, 
-        {onUpdateCheckbox}, 
+        {onUpdateCheckbox, onSelectBookmark }, 
         content,
         );
         inner.appendChild(content);

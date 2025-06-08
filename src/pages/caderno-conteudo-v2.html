@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="../componentes/base-container/container.css">
   <link rel="stylesheet" href="../componentes/content-editor/editor.css">
   <link rel="stylesheet" href="../componentes/image-selector/selector.css">
+  <link rel="stylesheet" href="../componentes/bookmark-selector/selector.css">
 
   <script src="../componentes/base-container/create-container.js"></script>
   <script src="../componentes/base-layout/create-layout.js"></script>
@@ -19,6 +20,7 @@
   <script src="../componentes/content-editor/editor.js"></script>
   <script src="../componentes/content-editor/create-editor.js"></script>
   <script src="../componentes/image-selector/create-selector.js"></script>
+  <script src="../componentes/bookmark-selector/create-selector.js"></script>
   <script src="../componentes/search-input/create-input.js"></script>
 
 </head>
@@ -44,7 +46,7 @@
     const notebookId = UrlService.getParam('notebookId');
     const contentId = UrlService.getParam('contentId');
 
-    function mountEditor(document, editor, creator) {
+    function mountEditor(document, editor, creator, search) {
       const all = contentNodesClient.getAllFromNotebookContent(notebookId, contentId);
       const memory = {
         nodes: contentNodesClient.getAllFromNotebookContent(notebookId, contentId),
@@ -67,6 +69,13 @@
         storageNodes.save();
       }
       const [createBlock, setCaretToEnd] = FactoryCreateBlock(document, editor, creator, true, {
+            currentNotebookId: notebookId,
+            currentContentId: contentId,
+            search,
+            onGoToNode: console.log,
+            getNotebook: (id) => notebookClient.findItem(id),
+            getContentMeta: (notebook_id, content_id) => contentMetaClient.findItem(notebook_id, content_id),
+            getContentNode: (notebook_id, content_id, node_id) => contentNodesClient.findItem(notebook_id, content_id, node_id),
             removeNode: (id) => {
               const index = memory.nodes.findIndex(node => node.id === id);
               if (index == -1) {
@@ -201,8 +210,9 @@
         fetch('../componentes/base-layout/layout.html').then(res => res.text()),
         fetch('../componentes/base-header/header.html').then(res => res.text()),
         fetch('../componentes/image-selector/selector.html').then(res => res.text()),
+        fetch('../componentes/bookmark-selector/selector.html').then(res => res.text()),
         fetch('../componentes/search-input/input.html').then(res => res.text()),
-      ]).then(([htmlContainer, htmlLayout, htmlHeader, htmlImgSel, htmlSrchInp]) => {
+      ]).then(([htmlContainer, htmlLayout, htmlHeader, htmlImgSel, htmlBookmarkSel, htmlSrchInp]) => {
         const wrapperContainer = document.createElement('div');
         wrapperContainer.innerHTML = htmlContainer;
 
@@ -214,18 +224,23 @@
 
         const wrapperImg = document.createElement('div');
         wrapperImg.innerHTML = htmlImgSel;
+        
+        const wrapperBookmark = document.createElement('div');
+        wrapperBookmark.innerHTML = htmlBookmarkSel;
 
         const wrapperSearch = document.createElement('div');
         wrapperSearch.innerHTML = htmlSrchInp;
 
-        return [wrapperContainer, wrapperLayout, wrapperHeader, wrapperImg, wrapperSearch]
-      }).then(([wrapperContainer, wrapperLayout, wrapperHeader, wrapperImg, wrapperSearch]) => {
+        return [wrapperContainer, wrapperLayout, wrapperHeader, wrapperImg, wrapperBookmark, wrapperSearch]
+      }).then(([wrapperContainer, wrapperLayout, wrapperHeader, wrapperImg, wrapperBookmark, wrapperSearch]) => {
         const localCreator = {
           [createContainer.name]: (args) => createContainer(document, wrapperContainer, args),
           [createHeader.name]: (args) => createHeader(document, wrapperHeader, args),
           [createLayout.name]: (args) => createLayout(document, wrapperLayout, args),
           [createImageSelector.name]: (args) => createImageSelector(document, wrapperImg, args),
           [createSearchInput.name]: (args) => createSearchInput(document, wrapperSearch, args),
+          [createInternalBookmarkSelector.name]: (args) =>
+            createInternalBookmarkSelector(document, wrapperBookmark, args)
         }
         return localCreator;
       }).then(creator => {
@@ -282,7 +297,7 @@
           title: `${contentMeta.name}`
         });
         simpleContainer.appendChild(header);
-        mountEditor(document, editor, creator);
+        mountEditor(document, editor, creator, (term) => search(term));
 
         const editorRow = creator.createContainer({items: [editor] });
         simpleContainer.appendChild(editorRow);

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Internal Bookmark Selector</title>
+
+    <!-- Poppins Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Bootstrap Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7"
+      crossorigin="anonymous"
+    />
+
+     <link rel="stylesheet" href="selector.css" />
+
+
+
+    <!-- Custom CSS (opcional) -->
+    <style>
+      
+    </style>
+  </head>
+
+  <body class="p-4">
+    <!-- TEMPLATE DO SELECTOR INTERNO -->
+    <template id="internal-bookmark-selector-template">
+      <input type="text" data-sub-component-type="selector::value-holder" class="d-none">
+      <div class="bookmark-wrapper">
+        <!-- Input de busca -->
+        <div class="mb-2 edit-controls">
+          <div class="input-group">
+            <span class="input-group-text bg-white border-end-0 pe-1">
+              <i class="bi bi-search" style="color: #145af1;"></i>
+            </span>
+            <input
+              type="text"
+              class="form-control border-start-0"
+              placeholder="Buscar cadernos, conteúdos ou nós..."
+              data-sub-component-type="internal-search-input"
+              autocomplete="off"
+            />
+             <ul
+              class="list-group mb-3"
+              style=""
+              data-sub-component-type="internal-search-results"
+            ></ul>
+          </div>
+        </div>
+        <div
+          class="bookmark-display"
+          data-sub-component-type="internal-bookmark-display"
+        >
+        <div class="bookmark-controls">
+          <button title="Editar Bookmark" data-action="edit">✏️</button>
+          <button title="Remover Bookmark" data-action="remove">❌</button>
+        </div>
+          <!-- Notebook -->
+         <div
+            class="d-flex align-items-start display-content"
+            data-sub-component-type="display-notebook"
+          >
+          <!-- Imagem do caderno, empurrada para a direita -->
+            <img
+              src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAJQA8wMBIgACEQEDEQH/xAAcAAAABwEBAAAAAAAAAAAAAAAAAgMEBQYHAQj/xAA8EAABAwMCBQEFBwMDAwUAAAABAAIDBAUREiEGEzFBUWEUIjJxgQcVI1KRobFCwdFTcvAzYvEWJEOisv/EABkBAAMBAQEAAAAAAAAAAAAAAAABAwIEBf/EACQRAAICAgIBBQADAAAAAAAAAAABAhEDEiExBBMiMkFRBUJx/9oADAMBAAIRAxEAPwCxO4cpBPz2xgHyEd1ujjp3hrck53UDbONYJZmwyOMb3O04I2V11xCm50mzT1U8uP1FTCM6IumgfBZ3hzSDpKhuCpXP9oDuzlcWCGpp+XGcjHQd0hQ2aKkdK5rA3UeyouEkYa5siqdw++qkf9oTrT/7p/8AtCbi3zsvU8/Vjm4wpeGk1vMjhjZDmo9gk2RU8OZCcdkpZ6f8dxwM6kaTDXkZTqzt/EJ9U6QWyba/MOnwFFzW8VMpcQP0Uo0fhu8ZRItn4Srg0Va38O8niMVWdgDstChYGswOyptxubrbXczGY84ICsdruMVbE2WOTI6dVlccGn+kk4bJNh3RjjBwcojfiWhCy4V0Y8lc0jyUAFyVzKPpXCxABcoLuj5rulABV3K7p9SuaR5KABkoLuFwtQAFxAtx3KCACkIuEc/VFx6lAhN7msHvbBMau5U9O0l8jW7dymHGFcaC1zSscdQb7vzWKXC811W5xqJXO9FiU9TLZoldxjSR1crWz5APYoLKfaH/AJP5QUdpmRWljAukJP8ArD+VqnFr5YuGi6F+lzWA5VBFnroq+Fz6d+OaD+60LiuMu4aeNJ+DouyhEb9nNbUVcMjqp2osdjI8KcN+Z9+OoAcOxnB8Kv8A2ZtLWVDcbly7URgcdsdjfQeqVDTLtJURM05ADn7D1S0QBZ89lVr9JI2427Q4gF+CM+ikKmulgEDRndyy42bUh1V20u1PHldtkDoCdWeqUZcWkNDz12TqOoY5wa3HTKYcCrnFsbsJh7bpn0+FIOA0kFUviKtdRzB7PKKBj+9htQ12e6jLTdZbRNg5fET0HZRkt4newYjJyl6KOWp+JmM9llxQKRpVvr21cLHtOxGU+1Ku2amkp4mNG+Qp5jnYAI3RHo1/g4Y7I2R03a7Sd0fnjw5JyQ6YoXfP9EBlI+0Hrj911tQzPvZHr2RvH9CmLFFzhGBBQ6LQjgOUF1BABdS4DlGykZXaBlABnyBvUhJtna84BCrfEV3dS+7H1KgqG/1IqQ57ss8KbyxRnY0QODkHEDOSq8y/x6RqGPqmMnFEb6kQNGC7oSl6sX0O0MftJkPsLGMdjU7f1CzRtLHLJsr3xtLrpQ55y89PRZ9TS6KjAPrup5JUybHf3fCguulOorijuxG0ew07j8I+qUqaKOph5T2gt8IwaQjtJ8OXo2U1GdBZYaJzjCwMB32CaTcPwy3RtYQeYBhTjST5Smo9wixalculkdU1VK8HHJdnp1RK+2TvdFpGdJVn1A9Qu6GuwSOiVhqVKallaASzoU6tzHCcBwOMKxPhY7q0JH2djTlo/ZOwoaVeQ12PCqd3pDOIyW6veV35IkBBHVNZrcw6fd6HslYUVq2WeE5L2e94wpYW6GPBa0A+ieSUjmEmPI2SGmpadxkJdjJOjaAwA7YTovxgApjC8sj3Bz4UTxTxNDYaXQwNlrpBmKJ3QDy70UZyd6orFKrZNVtdTUEPOraiOBnl7sf+VWqrj+0ROxTx1VT6tAaP3WZ3G5VNyrTJWzvqal39Ld8D0H9ITGrudJQnTVVGZP8ASgIc/wCp7f8AN1rSMfkJbS6NKn+0RzSOVbGgHpzKjf8AQNQpuP5HvxV2mUxn+qn1Ej6Eb/qso/8AWTaYkUVui/3yye8f0H90tTcfVxlDDQU789Qx7gf4WJL8ibSX9pG10fHViY7RNUzwM65np3saPqRhWW33KhuUIlt9ZBUxkZ1RSB230WGWnjOguDhDUA0spOAJAC0n5hTMlppZJxU0zpKSr6tqaN/LeD2O3X6rMc2nEkaeHbmLNjIz3P0KGn/uP6rMLXx5crBLHT8VltZb3ENZdImaXRntzWjbHqP07rSo6iKop45qeRskMjdTHsOQ4eQuhST5RBqnTDPla3umddWRMiJLtsdVHXqWeNpcx2yptdWVMji0vfjwoZMrTqjLYa7VTaqpcS4nfCZxMDTkJHL84dlK6wGYJXC25MwgT1eGkKEmqntmD29WnIKNXSFr8B2xKDQwAnSMeqpixuwYLxcTXUzWaveA3OVC26m51eWZA2ykrnzPaRy9mnfYrkE1RTytlaASOuFWXfIibdaptR95qCjHcRVOo/glBb9JC4N4e7SzIXaaQvBygWZByu07dJPhdRYUe8hwA6JTI0Z7pN7M7lKBg07HKAOtOQjAorG7Fd0+qQBtlxyAb6oOQByMI+2cpMZ8rm4PUoAV2KI+NunJGyAPzVdvd6rpK2W1cNQx1NxiaDPLK/TDS5zjUe7iN9I3xjPVPoKseX26W6zUjai41ccDC7Dcn3nnw0dSfQLG75VTXS51tynlkpaVzyWukxzCwfCMH4dvqrtDwHUyVTq29XaOqucgwZpBnSOulv5W7nYKh/ajY6+2T0VHHM2ennDnaIWnVkY+IeN1C7lwXUUo2yqV98e8PpLUDT0v9Twfff6l3X+6joKbmEH825Kc0lHM/MTKculcdLGOH9/CtQ4a0SRuikiMelmtufiIA1Y8DOVdL8JNr7K/S2xr3NAbknADR3K0nh/g2loacSzM1VDh7xx09AovhXh8/fWqpljdHD7zSHZ+mPOVpbZbeadz2VEJY3Ac7WPdJ6ZUclvgtiUVyzHON+HmUjhUQtxG44Ix0UpwDdpqiB9BUP1Ph+DPXB7FWjigW6utFU2nqqeVzWk6GuBOyz7hOcUt+hx/8rdOR5G4/cLEvdDk2uJcGi1UMNRC+OZjZI3tw5jhkEHqEz4Eu9Rw9xDUcMSSSS0czDPRhxzy/wAzR6f4T8bs0kbYUbwdSm9faBWXANDqa2wcgOx8Uju30Gf1UvHbtoPIrWzQrhWRuiIPQqoVUrDLpBySp2/M0xaWA58pjRWUShsjwc5V3Bvs5WiK9lkkOWMLvVN6yjqGM1cvYLRbfRQxt06BsO4R56ancCCxrs/0kJeguydGQSUk0gLy3ISHLlkGhpLT0C0C429sb5GRM90+FEC0OB16QPono0acUV+ksE9W1z27uG24TwcI1Lo3H3c46BXGwsbSBzJAAfKnJJYNHRp9cKco32aUE+jEJ7VVRzPYYDlpwgtKqvZjUPJA6+EFakZ9FluJXIXe9sCkXzsb1cESKraDnIVTVD4nKUBAb5UZJXNB2K46v2G6VodMkw8YOyAkHkBRPtjsHBXPaXlLZBqyXMrUlJUt8lRokkK77zupRsPUkGVLVx1S0bhMmtPlG0HyjYeos6pe8EQty/Hu+h9UytFvp7PbxBlz55JHSzubnVNK45c4+f8AACkaNoaHYOk43KjL3fKS0U8tRO9rWs+J7uwUpyKY4kbxBw3SXnWI7nW0U+kjTHKQ0fTbdZzf+DrpZ3CtqzJcKaBukSNe54YPLmdvnurvR8TWTi2i0Q1b4pnZDJACyRh9Mjcfsom9S8WUkBtxfSVFDVSNpxWsBDgHEAam5269tv4ThKn0ayQtWUKitbrhUzSUminJBdJJITy429yRspdltidGOTFWTt7Svm5LXfJp3wn9TYai0cTstVVOySF0AnPLBa2UA7AgnsQpGtqo4oidJyRu4hXs45IrzaRtPzHU75oap0ZBileHCVp66XZwfkmraGkoLJST0ctHLPM4RmmdLgMJdjLwDnA65I7pC43A1Mrog3LOu4wM+VYpI4Lh9m4kjoWCojlMctRj3nAEtLifXZDaNRTkuPoTpX+0mqt8ltt5mgYQ+SjfnScevz7ZVRtZ0XOlcS3Zzein+Dq6C0XqSK4S8uE0jWsdyyTIST7zz9MZVcbhtwc6P+id7QR3AcVzyR1Q5imzROIK+Sjt7YqJvNr6twgpYm7lz3bK98H8PM4dsUFCHa5ca55OuuQ7kqvcC8PyT1TeI7s5kk5bpooQciFnn/cf4V+B8p4oKCJ5JOTI+ppRN1aR9EaCPlDGE+IBSb2bKpKhAk5904PlJEHUTqdn0SxafCTdlMQi+JrtyuGNgGyOSk3FADeohDxgKLraKYxnRI4KXc5JPILSCigrmyqmjqc9UFY9LPCCNDfqsaiaR3VxSjCfJSTAnDApGwwbnuUsxiKwJdqAOsalQxFalmoA41qVDVwI4I8FMQA1G0nuV1q6U0AR8nLlje7GjOHBcqzbzE588bHMd11NyMLlQNcRAG6iBA8NcJahwZ+UgYKjN0y0FaICu+0fhm21TqSOMv5XxNgp9QB/Tql7Fe6DjG+00tHJJGKRjpTTEYy4bAuHpk4VL+0Kz2+mmddIydU4DJWs2aXjOHfp1+Sk/sYMcFmutVFK01rqkMA6kMaAf0Jcf0WqjVi910W7j2yVFypqe62tmuvo8tMQO8sZxqA9e4+RCz8V3MaYJnYxsWSAhzfmOq0Ka71kcgdE7VGD7zWj3khXQWPiZo++LbHLI3bmbte301DdEMyQTwtmZXKajhDo6TFRVP6ADOD59B/Ks8g+4OBHUkrx+I0NcXD4nE5J/lWi0cFWG2h5t8LsSO1nmuLiPTJ7JHjKxw3K3RxzDVHFI1zmfmAzsfTonKdtMUYUmjMaOV1Ay43R+iRk0QZHq3AaB/nKgrTVMlDOY3Emd3DofVPeOamOmMVnpA1jW4y1nRo8KItjOW8e+074T7VsHV6o337Oaz2mytjLgeVjSQexVsAG2STlZlwrwxWChhrrRcZKKu5YkLXbxSb7BwV8sdRcp6Z4vNIynqI36QYn5bIPzDx8lpdEn3RJg4RsglI6vQrocU7AW0A90jJGuh5b1CO2RrhjByizLQyliym72EKUMeodMJnLpGcndOxDF2wSDz6pxM9g7pq5zHHAWgE9/K6jcl3n9lxOzNDWMpww7JqwpxGoF6HDClmlNmlLNKYDhqUaUi1HBQAuCjBx8pFpylAgQqCjZBCR1IwJQAq3Gd+iibpTx5L2vf8ALO38KXiB0l3bGFFXt7YqeQ+ijPllsfBjf2h3OWqrW0mWthhGwb+b1+mFUeH73X8PXA1dC/DsYfG74ZW+CtH4nYLmI2SFjoWtw1jmjbA656rNbrRClkeIcua3qfCsoUqJPJbtG/Ub2VlHBXNZofNE2VrmHLXNcM/3Rai5RatJA1dyBhUfgjjCJ3DcVvuRdHJSDRFM3O7ANgcdCBspnnsmbzYZQ9h6OacrmlBpnXCaasnaetLD+G86Se5S12qJRZK6eNokfHC54ae+N1CUR5jxk9OqtdvijfDy3jUxwIc3yCN1lPkc1Ss80SvlmqJK2tdmV7s5PlTPBtBDcLoxtdKIqZpy5xbnUfCUltfsdfWUEjQ72eokhDnDdwa4gH9MKQsvszJRGS1pb+YrtcbRxKXJu9pFK2kYaR7Swj6nCe5wf8rMqe9OojTwE41HIweqsEPE72ThsnvsDRkevzT1pGNrZbdfzRmbplaLtSXEaG4bN+TOc/Lyi110hopg17sb9lh8FYQc3SJUNPjC4Gs1YLt0lDVxyw6g4kY6qJnmqnVwEWdA6+6nfBmMbdMk66ujpmHUQP7qGNQZ36gcBOqmkkqsa8BFiooYBkuJITMtoZSNfJs0ZKEFC/Vqkdp9E6qK6mp27kZ7YUVU3V78iPYditGSZ1Rt2Pb1QVYNTITkvOUEAPBG4jIDhhKMfpGFKVxjjpHkDoCs2m4kk5zxggBx7qU2onb4+CWf4l6ZIDsU7ije74RkLPBxFIR8JV+4Sq/aqJkjupWYSUnRTyfDlghsx22CX8pSrad+NxhSLXtx0RnSNEbvkrann7MinZjOD2XeY3yqxxHdpKa4COLphRjb/OoPIketj/j55Ippl/pxznYHZCrzThjNX4kpw1oO6r3DV51ulfUEBrBkklS9undcql1e74ANEY8ef+eqeyas5MuCWHJoyUbhkYaM7DuqzxTU4o5cdQCrLK/REVnX2jXB9JanuhIEj5GsYTvuSsLmSRnpNkBA0ymeQ7hjQwZ89SqPWwzTXV8FK4PDt3Nccgf4V6n10lhBefxiNUjvJKh+GbRPUmepDTzZQTkj4W9l2SOSI54P4f5lK2R+MuJyR809nsk1nqDy9Qhe7Uwg9D+VXjh+y/d9LTRv/wBJSNxoxJRzxhmtzmO06uxxt+6xKOyNxlq7RVKS4W5rY4zK0T5DXBrTsfXAVxtrQ2PLRnbYrFrY32Wj9re8xTAAg43c8ncZ9Dn9EuL3V1kBpwJc/CxrCTq+QCl6CfNlXnfVD/jejjp+K66WJzXNqCyXYjAOkNI/+ufqq5T0ME0c3MjYSJR18KxXHh24UlhFzq4eU1jgDESNQDtskDYbqIZiGGQuI3x09dleNVRzu7EqNjfvNkMf/TjGTvnGdyrBHUGU6GnGT75/sq1bX6nVUv8AW92B9Tj+FPUrXBowSHY6gIkOCLDRyupdEvMDC13unO4+SukNBTXWGKpkcHuwCceVntNG2PVJNuSNs77qz8LVj3Us5Y46S/8AssNWUUnHot8cVPAwAYAHlIzXCniyAcn0CiZZC74iT9U3cU6MWPai7uAPKb9T2UPU11TITqlOD2CPIm725KYhuXHO+c+qGrPVHdGAMpPU0HdAHEF3mt8IIAd1N55tO+PD9weypLra98zjyn7klaGKSHPwpRtJCTkMUpe7s6MWaeL4lDgtDyP+i76qz2Gae3xiPlkNVhipogPhCXEUO3upJJdGsnkZMkdZMax18zm7NK66qqCCMHBT+NsY6NRywE7BatkKRV6yxG4z8x7iCkDwhj4XZVxDNPQBGzvjHRZ0TLLycqVJlTisL6QFrDgvIarPRQMpqeOFnRgxkd1DV98gZdKaJjsxAkPd2ydv2U3qDQSsTVDU5TdyfISskww77LNOOiam52ihwCHzPldkZ2YB/dyv1XKTqVC4ie1t+jmkdpbBTE5IzjU52f8A8hGLmYsvEBnxA7nRRUsTHPc/JcMdGhaJZbLFQWqlp+W3mOaHyuxuXEdPkFVOAab76iNxnbkTzEMGOkbTjH1IytM93WHHsMAYXYzkQ3q4gxsWnPujCSfGSMhxTibLzgA4HlDAA09UBZn/ABfwe+rY6a3ytYHy63QvbkBx6lp7d9kpwbwsLQzXUaX1Dty7Gw+SvFWB7MTp6AFNA/Bb4wuXM2pHThScRK5UEVfQ1FHMcRzxlhPXGe/06rAbm6ejpqyCV+JYpSzB2Puuwf4XonZwJ9Fjf2vWR0Nd7XAwltZ0x/qbZ/Xr+qMMq4DLG+St8MsmewzSkaD8Of5VqinZCzU1uPV3f5KItsboYGRRBoLGgE46J463c33jO9z+26tdkkPQXTPBcSWnsCrVwyMUco6fiKkUr5KeTQ87tKu9ie1tK9zT8Ts/skNkq4HzlJHOV3mlJSylaMHHpIkeVxxcQU3dqPlABppANspqXZOy5NkDqkGuOUAL7oJLmu8LqYi1paMIIKJQctALUbAHRBBAxWPonDAMIIIExQgKq8eXSpttoHshax08zYnOxuAeuPVBBaMopszyTjAGDjb54V5sVZLV21rpsFzToyO4A/lBBSydFYAq3locQsk4/uFSKzlNfhsjw12B2Dc4/VBBLD8jef4Gn/ZnG2Hhmn5YxiMYVzx6ldQXYzkEpmj1RYt37riCBHao5YR2wVFE+61BBcvkfR1eP9i8ZOFC8dU0c/Clxe/IfBCZY3Dq1w6IIKce0Ul0ZHb6udgzzC7PZwyrRROElNrcxodjsEEF0nORE/vVL8+VbOFfeopc9nLiCAZN9kk7qggtGAABB7R4QQQAzqWNx0TRrR4QQQAbSPCCCCYj/9k="
+              alt="Thumbnail"
+              class="thumbnail ms-3"
+              data-sub-component-type="notebook-image"
+              style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px;"
+            />
+            <!-- Ícone do caderno (permanece à esquerda) -->
+           
+
+            <!-- Caixa de texto: título + descrição -->
+            <div class="flex-grow-1" style="margin-left: 10px;">
+              <h5 class="mb-1">
+                <i
+                  class="bi bi-folder "
+                  data-sub-component-type="notebook-icon"
+                ></i>
+                <span data-sub-component-type="notebook-title">
+                  Meu título bem longo
+                </span>
+              </h5>
+              <p
+                data-sub-component-type="notebook-description"
+                class="mb-0 text-muted"
+              >
+                Minha descrição bastante longa
+              </p>
+            </div>
+
+          </div>
+
+
+          <!-- Content -->
+          <div
+            class="d-flex align-items-center gap-2 display-content"
+            data-sub-component-type="display-content"
+          >
+            <i
+              class="bi bi-alarm"
+              data-sub-component-type="content-icon"
+              style="font-size: 60px;"
+            ></i>
+            <div>
+              <h5 data-sub-component-type="content-title" class="mb-1"> Meu titulo Longo</h5>
+              <div data-sub-component-type="content-tags" class="mb-1 d-flex gap-1"> 
+                <span class="badge" title="teste 1" style="background-color: rgb(122, 215, 51); color: rgb(0, 0, 0);">teste 1</span><span class="badge" title="teste 2" style="background-color: rgb(97, 19, 210); color: rgb(255, 255, 255);">teste 2</span><span class="badge" title="teste 3" style="background-color: rgb(243, 196, 200); color: rgb(0, 0, 0);">teste 3</span>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Node de outro documento -->
+          <div
+            class="d-flex align-items-center  gap-2 display-content"
+            data-sub-component-type="display-node-foreign"
+
+          >
+            
+            <i
+              class="bi bi-alarm"
+              data-sub-component-type="node-foreign-content-icon"
+              style="font-size: 60px;"
+            ></i>
+            <div>
+              <h5 data-sub-component-type="node-foreign-content-title" class="mb-1">
+                Meu titulo Longo
+              </h5>
+              <div data-sub-component-type="node-foreign-content-tags" class="mb-1 d-flex gap-1"> 
+                <span class="badge" title="teste 1" style="background-color: rgb(122, 215, 51); color: rgb(0, 0, 0);">teste 1</span><span class="badge" title="teste 2" style="background-color: rgb(97, 19, 210); color: rgb(255, 255, 255);">teste 2</span><span class="badge" title="teste 3" style="background-color: rgb(243, 196, 200); color: rgb(0, 0, 0);">teste 3</span>
+              </div>
+              <small class="text-muted node-go-box" >
+                <span> 
+                  <span data-sub-component-type="node-foreign-type">H1</span>[<strong data-sub-component-type="node-foreign-position">2</strong>]
+                </span>:
+                <span data-sub-component-type="node-foreign-value">Meu Titulo...</span>
+              </small>
+            </div>
+          </div>
+
+          <!-- Node do documento atual -->
+          <div
+            class="d-flex align-items-center display-content"
+            data-sub-component-type="display-node-current"
+            style="display: none"
+          >
+            <div
+              class="node-go-box"
+              data-sub-component-type="node-go-box"
+            >
+              Ir para nó:  
+                <span data-sub-component-type="node-current-type">H1</span>[<strong data-sub-component-type="node-current-position">2</strong>]: <span data-sub-component-type="node-current-value">Meu Titulo...</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <!-- Lista de resultados -->
+      
+
+        <!-- Área de exibição do item selecionado -->
+        
+      </div>
+    </template>
+
+    <!-- CONTAINER ONDE INSERIMOS O COMPONENTE -->
+    <div id="preview-container"></div>
+
+
+    <!-- SUA LÓGICA EM JAVASCRIPT -->
+     <script src="../../app/search-client.js"></script>
+     <script src="./create-selector.js"></script>
+    <script>
+      // ------------------------------------------------------------
+      // 1) Instanciar e indexar itens de exemplo internos
+      // ------------------------------------------------------------
+      const searchClient = new SearchClient();
+
+      // Exemplo: índice de cadernos
+      const notebooks = [
+        {
+          id: "1",
+          name: "Introdução ao Desenvolvimento de Software II",
+          description:
+            "Visão geral dos conceitos fundamentais do desenvolvimento de software.",
+          icon: "code-square",
+          image: "",
+          createdAt: "2025-04-01T09:00:00.000Z",
+          updatedAt: "2025-05-28T22:47:54.765Z",
+        },
+        {
+          id: "2",
+          name: "Algoritmos Avançados",
+          description: "Estudo de algoritmos complexos e análise de desempenho.",
+          icon: "cpu-fill",
+          image: "",
+          createdAt: "2025-03-10T10:00:00.000Z",
+          updatedAt: "2025-05-20T12:30:00.000Z",
+        },
+      ];
+      notebooks.forEach((nb) =>
+        searchClient.addItem({
+          ...nb,
+          type: "notebook",
+          localization: { notebook_id: nb.id },
+          terms: extractTerms(nb.name + " " + nb.description),
+        })
+      );
+
+      // Exemplo: índice de conteúdo
+      const contents = [
+        {
+          icon: "cloud-arrow-down-fill",
+          tags: [{ name: "sereia", color: "#1b16e2" }],
+          id: "notebook_3_content_1",
+          name: "dragon",
+          content_id: "1",
+          notebook_id: "3",
+        },
+        {
+          icon: "file-earmark-text-fill",
+          tags: [
+            { name: "backend", color: "#28a745" },
+            { name: "api", color: "#fd7e14" },
+          ],
+          id: "notebook_1_content_5",
+          name: "RESTful APIs",
+          content_id: "5",
+          notebook_id: "1",
+        },
+      ];
+      contents.forEach((ct) =>
+        searchClient.addItem({
+          ...ct,
+          type: "content",
+          localization: {
+            notebook_id: ct.notebook_id,
+            content_id: ct.content_id,
+          },
+          terms: extractTerms(ct.name + " " + ct.tags.map((t) => t.name).join(" ")),
+        })
+      );
+
+      // Exemplo: índice de nós
+      const nodes = [
+        {
+          type: "h1",
+          position: 0,
+          customStyle: ["center-text", "bigger-text", "background-paper"],
+          id: "notebook_3_content_1_node_1",
+          notebook_id: "3",
+          content_id: "1",
+          value: "Título Principal do Documento",
+        },
+        {
+          type: "p",
+          position: 2,
+          customStyle: ["italic"],
+          id: "notebook_1_content_5_node_2",
+          notebook_id: "1",
+          content_id: "5",
+          value: "Parágrafo de introdução ao RESTful API",
+        },
+      ];
+      nodes.forEach((nd) =>
+        searchClient.addItem({
+          ...nd,
+          label: nd.value.slice(0, 20) + "...",
+          type: "node",
+          localization: {
+            notebook_id: nd.notebook_id,
+            content_id: nd.content_id,
+            node_id: nd.id,
+          },
+          terms: extractTerms(nd.value),
+        })
+      );
+
+      
+      const wrapper = document
+
+      // const 
+
+      // ------------------------------------------------------------
+      // 3) Insere o componente no preview-container
+      // ------------------------------------------------------------
+      const preview = document.getElementById("preview-container");
+      preview.appendChild(
+        createInternalBookmarkSelector(document, wrapper, {
+          currentNotebookId: "1",
+          currentContentId: "5",
+          selected: {type: "notebook", localization: {notebook_id: "1"}},
+          onGoToNode: (nodeId) => {
+            console.log("Ir para nó com ID:", nodeId);
+          },
+          search: (arg) => searchClient.search(arg),
+          getNotebook: (...args) =>console.log("getNotebook", args) || ({
+            id: "2",
+            name: "Algoritmos Avançados",
+            description: "Estudo de algoritmos complexos e análise de desempenho.",
+            icon: "app-indicator",
+            image: "data:image/png;base64,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",
+            createdAt: "2025-03-10T10:00:00.000Z",
+            updatedAt: "2025-05-20T12:30:00.000Z",
+          }),
+          getContentMeta: (...args) => console.log("getContentMeta", args) || ({
+            icon: "apple",
+            tags: [
+              { name: "backend", color: "#28a745" },
+              { name: "api", color: "#fd7e14" },
+            ],
+            id: "notebook_1_content_5",
+            name: "RESTful APIs",
+            content_id: "5",
+            notebook_id: "1",
+          }), 
+          getContentNode: (...args) => console.log("getContentNode", args) || ({
+            type: "h1",
+            position: 0,
+            customStyle: ["center-text", "bigger-text", "background-paper"],
+            id: "notebook_3_content_1_node_1",
+            notebook_id: "3",
+            content_id: "1",
+            value: "Título Principal do Documento",
+          }),
+        })
+      );
+    </script>
+  </body>
+</html>

@@ -1,0 +1,107 @@
+.bookmark-wrapper {
+  position: relative;
+  display: block;
+}
+
+.bookmark-wrapper .display-content {
+  display: block;
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.bookmark-controls {
+  position: absolute;
+  right: 5px;
+  padding: 0 4px;
+  display: none;
+  gap: 5px;
+}
+
+.bookmark-wrapper::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4); /* cinza escuro semi-transparente */
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+
+.bookmark-wrapper:hover::before {
+  opacity: 0.75;
+}
+
+.bookmark-wrapper:hover .bookmark-controls {
+  display: flex;
+  overflow: hidden;    
+  /* min-width: 400px;  
+  min-height: 80px;   */
+}
+
+.bookmark-wrapper:hover  .display-content{
+   cursor: pointer;
+}
+
+.edit-controls ul{
+  position: absolute;
+  max-height: 200px;
+  overflow-y: auto;
+  display: block;
+  top: 42px;
+}
+.bookmark-controls button {
+  background-color: rgba(0,0,0,0.7);
+  color: white;
+  border: none;
+  padding: 4px 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+.bookmark-wrapper  .edit-controls {
+  display: none !important;
+}
+.bookmark-controls button:hover {
+  background-color: rgba(255,255,255,0.9);
+}
+
+.bookmark-wrapper > .edit-controls:only-child {
+  display: block !important;
+}
+
+.bookmark-wrapper .edit-controls:only-child {
+  display: block !important;
+  position: relative;
+  min-width: 400px;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.bookmark-wrapper .edit-controls:only-child button{
+ margin-top: 10px;
+}
+
+.bookmark-display {
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 12px;
+      }
+      .bookmark-display img.thumbnail {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 4px;
+        margin-right: 12px;
+      }
+      .node-go-box {
+        border: 1px dashed #145af1;
+        border-radius: 4px;
+        padding: 8px;
+        cursor: pointer;
+        background-color: #f0f8ff;
+        display: inline-block;
+      }
+      .node-go-box:hover {
+        background-color: #e0f0ff;
+      }
