@@ -435,7 +435,13 @@ function FactoryCreateBlock(
         
         const block = getBlock();
         block.dataset.id = node.id;
-       
+       const addNewBlock = (nodeType) => {
+        const new_node = addNewNode(nodeType, node.position+1);
+        const new_block = createBlock(new_node);
+        insertBeforeBlock(new_block, true);
+            console.log("ELEMENTS: ", editor.childNodes[new_node.position].children[2].children[0])
+            setCaretToEnd(editor.childNodes[new_node.position].children[2].children[0]);
+        }
         if (editable) {
              const menu = getMenu({
                 actions: {
@@ -449,13 +455,7 @@ function FactoryCreateBlock(
                         }
                         block.remove();
                     },
-                    addNewBlock: (nodeType) => {
-                    const new_node = addNewNode(nodeType, node.position+1);
-                    const new_block = createBlock(new_node);
-                    insertBeforeBlock(new_block, true);
-                        console.log("ELEMENTS: ", editor.childNodes[new_node.position].children[2].children[0])
-                        setCaretToEnd(editor.childNodes[new_node.position].children[2].children[0]);
-                    },
+                    addNewBlock,
                 }
             });
             block.appendChild(menu);
@@ -562,6 +562,12 @@ function FactoryCreateBlock(
             onEnterPress: e => {
                 let lastItem;
                 switch (node.type) {
+                case "h1":
+                    addNewBlock("h1");
+                    break;
+                case "paragraph":
+                    addNewBlock("paragraph");
+                    break;
                 case "ordered_list": 
                 case "unordered_list": 
                     e.preventDefault();

@@ -273,7 +273,7 @@
             creator, 
             { 
               create: (fromModal) => createNewNotebook(fromModal, (fromClient) => {
-                const card = createNotebookCard(document, wrapperNotebook, {
+                const card = creator.createNotebookCard({
                   data: fromClient,
                   actions: {
                     edit: () => editNotebookAction(fromClient),

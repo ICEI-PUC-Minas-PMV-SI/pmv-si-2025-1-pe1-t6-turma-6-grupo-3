@@ -56,7 +56,7 @@
       };
       this.items.set(key, newItem);
       this._emit("update", [oldItem, newItem]);
-      return [item, null];
+      return [newItem, null];
     }
 
     // deleta um notebook

@@ -113,7 +113,7 @@
         return
       }
       storageNB.save();
-      callback();
+      callback(updated);
     }
     function deleteNotebook(id, callback) {
       console.log("id to be deleted:", id);
@@ -633,7 +633,6 @@
             creator, 
             {
               update: (fromModal) => updateNotebook(fromModal, (fromClient) => {
-                console.log("PAGE HEADER", pageHeader)
                 updateHeader(
                   document.getElementById('cabecalho-principal'), 
                   { title: fromClient.name, icon: fromClient.icon },

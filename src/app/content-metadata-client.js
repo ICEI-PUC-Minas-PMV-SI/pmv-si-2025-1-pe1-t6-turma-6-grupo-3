@@ -56,14 +56,13 @@ class MockContentMetadataClient {
         notebook_id: oldContent.notebook_id,
       };
       this.items.set(key, newContent);
-      this._emit("update", [oldItem, newItem]);
+      this._emit("update", [oldContent, newContent]);
 
       return [newContent, null];
     }
 
     deleteItem(id) {
-      const oldItem = this.findItem(id);
-
+      const oldItem = this.items.get(id);
       this.items.delete(String(id));
       this._emit("remove", oldItem);
 
