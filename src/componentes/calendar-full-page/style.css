@@ -56,8 +56,8 @@ h2 {
 .ec-body {
   color: #2c2d31 !important;
   font-family: "Poppins", sans-serif !important;
-  border: 30px solid #f7f7f7;
-  border-bottom: 2px solid #f7f7f7;
+  /* border: 30px solid #f7f7f7;
+  border-bottom: 2px solid #f7f7f7; */
   padding: 10px;
   border-bottom-right-radius: 20px;
   border-bottom-left-radius: 20px;
@@ -76,4 +76,25 @@ h2 {
   background-color: white;
   padding: 20px;
   border-radius: 10px;
+}
+
+/* Dia atual - bola azul */
+div.ec-today {
+  background-color: white !important;
+  text-align: right;
+}
+
+.ec-day-head {
+  background-color: white !important;
+  color: rgb(0, 0, 0);
+  border-radius: 20px;
+  padding: 0px 10px;
+  display: inline-block;
+}
+.ec-today > .ec-day-head {
+  background-color: #145af1 !important;
+  color: white;
+  border-radius: 20px;
+  padding: 0px 10px;
+  display: inline-block;
 }

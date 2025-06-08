@@ -71,11 +71,12 @@ h2 {
   padding: 3px 5px 3px 5px !important;
 } */
 
-/* Dia 3 - bola azul */
-.ec-tue {
+/* Dia atual - bola azul */
+.ec-today {
   background-color: white !important;
+  text-align: center;
 }
-.ec-day time[datetime="2025-06-03"] {
+.ec-today > .ec-day-head {
   background-color: #145af1 !important;
   color: white;
   border-radius: 20px;
@@ -96,8 +97,8 @@ h2 {
 
 /* Reduz o calendário todo proporcionalmente */
 #ec {
-  transform: scale(0.5);
-  transform-origin: top center;
+  transform: scale(0.5); /* 90% do tamanho original */
+  transform-origin: top center; /* Mantém alinhado no topo e centralizado */
   max-width: 850px;
   margin: 0 auto;
 }

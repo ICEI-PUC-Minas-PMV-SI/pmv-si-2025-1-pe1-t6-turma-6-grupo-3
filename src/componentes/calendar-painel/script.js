@@ -1,6 +1,9 @@
 let ec = EventCalendar.create(document.getElementById("ec"), {
   view: "dayGridMonth",
   locale: "pt-BR",
+  buttonText: {
+    today: "Hoje",
+  },
   events: [
     // your list of events
   ],

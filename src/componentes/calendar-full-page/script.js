@@ -2,7 +2,7 @@ let ec = EventCalendar.create(document.getElementById("ec"), {
   view: "dayGridMonth",
   locale: "pt-BR",
   buttonText: {
-    today: "Criar",
+    today: "Hoje",
   },
   events: [
     // your list of events
