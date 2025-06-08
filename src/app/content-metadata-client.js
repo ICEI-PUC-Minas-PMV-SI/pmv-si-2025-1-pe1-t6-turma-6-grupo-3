@@ -62,8 +62,7 @@ class MockContentMetadataClient {
     }
 
     deleteItem(id) {
-      const oldItem = this.findItem(id);
-
+      const oldItem = this.items.get(id);
       this.items.delete(String(id));
       this._emit("remove", oldItem);
 
