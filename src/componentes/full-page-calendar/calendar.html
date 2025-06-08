@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calendário EventCalendar</title>
+
+  <!-- CSS do calendário -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@event-calendar/build@4.3.0/dist/event-calendar.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="calendar.css">
+  <link rel="stylesheet" href="../base-modal/modal.css">
+
+
+  <!-- JavaScript do calendário -->
+  <script src="https://cdn.jsdelivr.net/npm/@event-calendar/build@4.3.0/dist/event-calendar.min.js"></script>
+  <script src="../base-modal/create-modal.js"></script>
+</head>
+
+<body>
+  <!-- Div onde o calendário será renderizado -->
+  <div id="preview" style="height: 600px; padding: 0px 30px 0px 30px;"></div>
+  <div id="modal"></div>
+  <script src="create-calendar.js"></script>
+  <script>
+
+    function createEventModal(creator, { create, update }) {
+      const id = creator.createModalField({
+        name: 'id',
+        type: 'text',
+        label: 'id',
+        customClass: ["hidden"],
+        placeholder: 'Dê um nome claro ao seu Caderno',
+        actions: {
+          input: (e, el) => console.log('digitou nome:', el.value)
+        }
+      });
+
+
+      const name = creator.createModalField({
+        name: 'name',
+        type: 'text',
+        customClass: ["col-md-10"],
+        label: 'Título',
+        placeholder: 'Dê um nome claro ao seu Caderno',
+        actions: {
+          input: (e, el) => console.log('digitou nome:', el.value)
+        }
+      });
+
+      const image = creator.createModalField({
+        name: 'image',
+        type: 'text',
+        label: 'Imagem',
+        placeholder: 'Adicione a url de uma imagem',
+        actions: {
+          input: (e, el) => console.log('digitou nome:', el.value)
+        }
+      });
+
+      const description = creator.createModalTextarea({
+        name:        'description',
+        label:       'Descrição',
+        placeholder: 'Descreva em poucas palavaras os objetivos desse caderno...',
+        rows:        6,
+        actions: {
+          input: (e, el) => console.log('Conteúdo:', el.value)
+        }
+      });
+      
+      const fields = [
+        id,
+        name,
+        image,
+        description,
+      ];
+
+      const fieldsWithoutIcon = [
+        id,
+        name,
+        image,
+        description,
+      ];
+      
+      const btnCancelar = creator.createModalButton({
+        text: 'Cancelar',
+        isOutline: true,
+        actions: { click: () => hideModal(nootebookModal) }
+      });
+      
+      
+      const btnNew = creator.createModalButton({
+        text: "Criar Caderno",
+        isPrimary: true,
+        actions: { click: () => {
+          const err = create(getFieldsValues());
+          if (err) {
+            alert(err.message)
+            return
+          }
+          hideModal(nootebookModal);
+        }}
+      });
+
+      const btnEdit = creator.createModalButton({
+        text: "Atualizar Caderno",
+        isPrimary: true,
+        actions: { click: () => {
+          const err = update(getFieldsValues());
+          if (err) {
+            alert(err.message)
+            return
+          }
+          hideModal(nootebookModal);
+        }}
+      });
+      
+      const newModalButtons = [btnCancelar, btnNew];
+      const editModalButtons = [btnCancelar, btnEdit];
+
+      // 3) Cria o próprio modal
+      const nootebookModal = creator.createModal({
+        id:            'cadastroModal',
+        title:         "Crie seu Novo Notebook",
+        bodyElements:  fields,
+        footerButtons: newModalButtons,
+      });
+
+      const getFieldsValues = () => fieldsWithoutIcon.reduce(
+        (acc, el) => ({...acc, [el.children[1].name]:el.children[1].value }),
+        {
+        });
+
+      return [nootebookModal, newModalButtons, editModalButtons];
+    }
+
+    const preview = document.getElementById("preview");
+    const events = [
+      {
+        id: "evt-001",
+        resourceIds: ["room-1"],
+        allDay: false,
+        start: "2025-06-07T09:00:00",
+        end: "2025-06-07T10:30:00",
+        title: "Reunião com equipe",
+        editable: true,
+        startEditable: true,
+        durationEditable: true,
+        display: "auto",
+        backgroundColor: "#4caf50",
+        textColor: "#ffffff",
+        classNames: ["evento-importante", "reuniao"],
+        styles: ["font-size: 16px", "border-radius: 6px"],
+        extendedProps: {
+          responsavel: "Lucas Badico",
+          prioridade: "alta",
+          description: "UMa descricao longa"
+        }
+      },
+      {
+        id: "evt-002",
+        resourceIds: ["room-2"],
+        allDay: true,
+        start: "2025-06-08",
+        end: "2025-06-09",
+        title: "Workshop - Dia inteiro",
+        display: "auto",
+        backgroundColor: "#2196f3",
+        textColor: "#ffffff",
+        classNames: ["evento-dia-inteiro"],
+        styles: ["font-weight: bold"],
+        extendedProps: {
+          tipo: "Workshop",
+          participantes: 25,
+          description: "UMa descricao longa"
+        }
+      },
+      {
+        id: "evt-003",
+        resourceIds: ["room-1", "room-3"],
+        allDay: false,
+        start: new Date("2025-06-09T13:00:00"),
+        end: new Date("2025-06-09T15:00:00"),
+        title: "Apresentação de projeto",
+        display: "auto",
+        backgroundColor: "#ff9800",
+        textColor: "#000",
+        extendedProps: {
+          observacao: "Levar projetor",
+          description: "UMa descricao longa"
+        }
+      }
+    ];
+  
+    fetch("../base-modal/modal.html")
+      .then(res => res.text())
+      .then(html => {
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = html;
+        return wrapper
+      })
+      .then(wrapper => {
+        const localCreator = {
+          [createModalButton.name]: (arg) => createModalButton(document, wrapper, arg),
+          [createModalField.name]: (arg) => createModalField(document, wrapper, arg),
+          [createModal.name]: (arg) => createModal(document, wrapper, arg),
+          [createModalTextarea.name]: (arg) => createModalTextarea(document, wrapper, arg),
+        };
+        return localCreator;
+      })
+      .then((creator)=>{
+        const modalHolder = document.getElementById("modal");
+        const createEvent = (args) => {
+          console.log("create event", args)
+        }
+        const updateEvent = (args) => {
+          console.log("update event", args)
+        }
+        const [modal, newButtons, editButtons] = createEventModal(creator, {
+          create: createEvent,
+          update: updateEvent,
+        });
+
+        modalHolder.appendChild(modal);
+
+        const onEventClick =  function (info) { 
+          console.log("EVENT", info)
+          updateModal(modal, {
+            title: "Editar Evento",
+            footerButtons: editButtons,
+            fieldValues: {
+              id: "1",
+              image: "",
+              description: info.event.extendedProps.description,
+              name: info.event.title,
+            },
+          });
+          showModal(modal);
+        }
+
+        const onEventDrop =  function (info) { 
+          console.log("DROP", info)
+        }
+
+        const onDateClick =  function (info) { 
+          console.log("DateClick", info)
+          updateModal(modal, {
+            title: "Criar Evento",
+            footerButtons: newButtons,
+            fieldValues: {
+              id: "1",
+              image: "",
+              description: "",
+              name: "",
+            },
+          });
+          showModal(modal);
+        }
+
+        const calendar = createCalendarFullPage(preview, 
+        { 
+          events,
+          onEventClick,
+          onEventDrop,
+          onDateClick,
+        });
+      })
+    
+  </script> 
+
+</body>
+
+</html>
