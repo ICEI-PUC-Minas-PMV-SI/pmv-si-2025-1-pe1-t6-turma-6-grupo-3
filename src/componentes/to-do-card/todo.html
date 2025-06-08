@@ -24,27 +24,25 @@
 
     <!-- Container das tasks -->
     <div id="container-tasks">
-        <!-- Bloco inicial de task -->
+        <!-- Primeira task com a estrutura certa -->
         <div class="task">
             <input type="checkbox" class="checkb">
-            <p>Exemplo...</p>
-            <button title="Editar" class="abrirModal">✏️</button>
-            <button title="Excluir" class="excluir">🗑️</button>
-        </div>
-    </div>
+            <p class="texto-task">Exemplo...</p>
 
-    <!-- Modal -->
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <span id="closeModal" class="close">&times;</span>
-            <h2>Editar tarefa</h2>
+            <div class="acoes-task">
+                <span class="tag" contenteditable="true">Tag</span>
 
-            <label for="inputEditar">Titulo da tarefa:</label>
-            <input type="text" id="inputEditar">
+                <select class="prioridade">
+                    <option value="">Prioridade</option>
+                    <option value="">🏳️ Nenhuma</option>
+                    <option value="baixa">🏁 Baixa</option>
+                    <option value="media">🏴 Média</option>
+                    <option value="alta">🚩 Alta</option>
+                </select>
 
-            <br><br>
-
-            <button id="salvarEdicao">Salvar</button>
+                <button title="Editar" class="abrirModal">✏️</button>
+                <button title="Excluir" class="excluir">🗑️</button>
+            </div>
         </div>
     </div>
 
