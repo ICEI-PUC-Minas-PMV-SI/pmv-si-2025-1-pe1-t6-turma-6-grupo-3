@@ -1,0 +1,79 @@
+/* Full body */
+.ec * {
+  border: none;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Title */
+h2 {
+  color: #145af1;
+  font-size: 25px;
+  font-weight: normal;
+  border-bottom: 2px solid #bdbdbd !important;
+  padding-left: 60px;
+  padding-right: 60px;
+  font-family: "Poppins", sans-serif !important;
+  font-weight: 500;
+  text-transform: capitalize !important;
+}
+
+/* Buttons  */
+.ec-button {
+  border-radius: 20px;
+  padding: 5px 20px 5px 20px;
+  color: #2c2d31;
+  border-color: #bdbdbd !important;
+  border: 1px solid #bdbdbd !important;
+}
+
+.ec-button.ec-today {
+  background-color: #145af1;
+  color: white;
+  border-color: #145af1 !important;
+}
+
+/* Days ---- Dom, Seg, Ter, Qua, Qui, Sex, Sab */
+.ec-header * {
+  font-size: 14px;
+  font-weight: 500;
+  font-family: "Poppins", sans-serif !important;
+  color: #145af1;
+  text-transform: capitalize;
+  background-color: #f7f7f7 !important;
+}
+
+/* Calendar body */
+.ec-days {
+  background-color: white !important;
+}
+
+.ec-body {
+  color: #2c2d31 !important;
+  font-family: "Poppins", sans-serif !important;
+  border: 30px solid #f7f7f7;
+  border-bottom: 2px solid #f7f7f7;
+  padding: 10px;
+  border-bottom-right-radius: 20px;
+  border-bottom-left-radius: 20px;
+  background-color: #f7f7f7;
+}
+
+.ec-day {
+  border: 2px solid #f7f7f7;
+  padding: 20px;
+  box-sizing: border-box;
+  border-radius: 4px;
+}
+
+/* Toolbar */
+.ec-toolbar {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+}
