@@ -56,7 +56,7 @@ class MockContentMetadataClient {
         notebook_id: oldContent.notebook_id,
       };
       this.items.set(key, newContent);
-      this._emit("update", [oldItem, newItem]);
+      this._emit("update", [oldContent, newContent]);
 
       return [newContent, null];
     }
