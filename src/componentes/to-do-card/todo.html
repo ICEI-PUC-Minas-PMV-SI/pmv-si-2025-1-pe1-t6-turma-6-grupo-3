@@ -24,24 +24,25 @@
 
     <!-- Container das tasks -->
     <div id="container-tasks">
-        <!-- Primeira task com a estrutura certa -->
-        <div class="task">
-            <input type="checkbox" class="checkb">
-            <p class="texto-task">Exemplo...</p>
-
-            <div class="acoes-task">
-                <span class="tag" contenteditable="true">Tag</span>
-
-                <select class="prioridade">
-                    <option value="">Prioridade</option>
-                    <option value="">🏳️ Nenhuma</option>
-                    <option value="baixa">🏁 Baixa</option>
-                    <option value="media">🏴 Média</option>
-                    <option value="alta">🚩 Alta</option>
-                </select>
-
-                <button title="Editar" class="abrirModal">✏️</button>
-                <button title="Excluir" class="excluir">🗑️</button>
+        <!-- Tarefa inicial -->
+        <div class="linha-task">
+            <button class="btnmenu">⋮⋮</button>
+            <div class="task">
+                <input type="checkbox" class="checkb">
+                <p class="texto-task">Exemplo...</p>
+                <p class="descricao-task">Descrição da tarefa...</p>
+                <div class="acoes-task">
+                    <span class="tag" contenteditable="true">Tag</span>
+                    <select class="prioridade">
+                        <option value="">Prioridade</option>
+                        <option value="">🏳️ Nenhuma</option>
+                        <option value="baixa">🏁 Baixa</option>
+                        <option value="media">🏴 Média</option>
+                        <option value="alta">🚩 Alta</option>
+                    </select>
+                    <button title="Editar" class="abrirModal">✏️</button>
+                    <button title="Excluir" class="excluir">🗑️</button>
+                </div>
             </div>
         </div>
     </div>
