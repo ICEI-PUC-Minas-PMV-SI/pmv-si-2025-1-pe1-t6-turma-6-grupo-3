@@ -18,7 +18,11 @@
   <link rel="stylesheet" href="../componentes/base-modal/modal.css">
   <link rel="stylesheet" href="../componentes/icons-selector/selector.css">
   <link rel="stylesheet" href="../componentes/tags-selector/selector.css">
+  <link rel="stylesheet" href="../componentes/grapho-view/view.css">
 
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+
+  
   <script src="../componentes/base-container/create-container.js"></script>
   <script src="../componentes/notebook-card/create-card.js"></script>
   <script src="../componentes/content-card/create-card.js"></script>
@@ -29,10 +33,11 @@
   <script src="../componentes/icons-selector/icons.js"></script>
   <script src="../componentes/tags-selector/create-selector.js"></script>
   <script src="../componentes/search-input/create-input.js"></script>
-  <script src="../componentes/content-modal/create-edit-content-modal.js"></script>
-  <script src="../componentes/content-modal/delete-content-modal.js"></script>
   <script src="../componentes/notebook-modal/create-edit-notebook-modal.js"></script>
   <script src="../componentes/notebook-modal/delete-notebook-modal.js"></script>
+  <script src="../componentes/content-modal/create-edit-content-modal.js"></script>
+  <script src="../componentes/content-modal/delete-content-modal.js"></script>
+  <script src="../componentes/grapho-view/create-graph-view.js"></script>
 
   <script src="../componentes/builder.js"></script>
 </head>
@@ -59,9 +64,6 @@
     const containerID = "notebook-content-meta-list";
     const notebookId = UrlService.getParam('notebookId');
     const notebook = notebookClient.findItem(notebookId);
-    if (!notebook) {
-      throw new Error("Caderno não encontrado");
-    }
     const newContentModalTitle = "Novo Conteúdo";
     const editContentModalTitle = "Atualize seu Conteúdo";
     const editNotebookModalTitle = "Atualize seu Caderno";
@@ -73,7 +75,6 @@
     function readContentsMeta(callback) {
       return callback(contentMetaClient.getAllFromNotebook(notebookId));
     }
-
     function createNewContent(data, cb) {
       const [created, err] = contentMetaClient.insertItem(
         notebookId,
@@ -121,6 +122,7 @@
       storageNB.save();
       callback(updated);
     }
+
     function deleteNotebook(id, callback) {
       console.log("id to be deleted:", id);
       notebookClient.deleteItem(id);
@@ -169,67 +171,72 @@
           window.location.assign(`caderno-conteudo-v2.html?notebookId=${notebookId}&contentId=${data.content_id}`);
         };
         
-        const notebookId = UrlService.getParam('notebookId');
-        const notebook = notebookClient.findItem(notebookId);
-        
+      
         const container = document.createElement('span');
         
         const pageHeader = creator.createHeader({
           id: 'cabecalho-principal',
-          "icon": `${notebook.icon}`,
+          "icon": `diagram-3`,
           actions: {
-            add: () => {
-              updateModal(contentModal, {
-                title: newContentModalTitle,
-                footerButtons: createContentModalButtons,
-                fieldValues: {
-                    id: "",
-                    tags: "",
-                    icon: "",
-                    name: "",
-                  },
-              });
-              showModal(contentModal);
-            },
-            filter: console.log,
+            // add: () => {
+            //   updateModal(contentModal, {
+            //     title: newContentModalTitle,
+            //     footerButtons: createContentModalButtons,
+            //     fieldValues: {
+            //         id: "",
+            //         tags: "",
+            //         icon: "",
+            //         name: "",
+            //       },
+            //   });
+            //   showModal(contentModal);
+            // },
+            // filter: console.log,
           },
           breadcrumbs: [{
             label: "Home",
             href: "/src/pages/caderno-lista-v2.html"
           },
           {
-            label: `${notebook.name}`,
+            label: `Gráfico`,
           }
           ],
-          title: `${notebook.name}`,
+          title: `Gráfico`,
           settingsButtons: [
-            { label: 'Editar Caderno', icon: 'pencil',  action: () => {
-              updateModal(notebookModal, {
-                title: editNotebookModalTitle,
-                footerButtons: editModalButtons,
-                fieldValues: {
-                  id: notebook.id,
-                  icon: notebook.icon,
-                  image: notebook.image,
-                  description: notebook.description,
-                  name: notebook.name,
-                },
-              });
-              showModal(notebookModal);
-            } },
-            { label: 'Excluir Caderno', icon: 'trash', action: () => {
-                console.log('exportar');
-                updateModal(notebookDeleteModal, {
-                  title: deleteNotebookModalTitle,
-                  footerButtons: deleteModalButtons,
-                  fieldValues: {
-                    id: notebook.id,
-                    name: "",
-                  },
-                });
-                showModal(notebookDeleteModal);
-              }
-            },
+            // { 
+            //   label: 'Editar Caderno', icon: 'pencil',  
+            //   action: () => {
+            //     // alterar configuracao
+            //     updateModal(notebookModal, {
+            //       title: editNotebookModalTitle,
+            //       footerButtons: editModalButtons,
+            //       fieldValues: {
+            //         id: notebook.id,
+            //         icon: notebook.icon,
+            //         image: notebook.image,
+            //         description: notebook.description,
+            //         name: notebook.name,
+            //       },
+            //     });
+            //     showModal(notebookModal);
+            //   } 
+            // },
+            // { 
+            //   label: 'Excluir Caderno', 
+            //   icon: 'trash', 
+            //   action: () => {
+            //     console.log('exportar');
+            //     updateModal(notebookDeleteModal, {
+            //       title: deleteNotebookModalTitle,
+            //       footerButtons: deleteModalButtons,
+            //       fieldValues: {
+            //         id: notebook.id,
+            //         name: "",
+            //       },
+            //     });
+            //     showModal(notebookDeleteModal);
+            //   }
+            // },
           ],
         });
         container.appendChild(pageHeader);
@@ -318,7 +325,6 @@
         
         const [
           notebookModal, 
-          _,
           editModalButtons, 
         ] = createNotebookModal(
             creator, 
@@ -367,21 +373,59 @@
           );
         container.appendChild(notebookDeleteModal);
       
-        const contentCards = readContentsMeta(allContentMeta => allContentMeta.map(
-          contentMeta => creator.createContentCard(
-            {
-              data: contentMeta, 
-              actions: {
-                view: (e) => viewContentAction(e, contentMeta),
-                edit: (e) => editContentAction(e, contentMeta),
-                remove: (e) => removeContentAction(e, contentMeta)
-              },
-            },
-          )
-        )
+        // const contentCards = readContentsMeta(allContentMeta => allContentMeta.map(
+        //   contentMeta => creator.createContentCard(
+        //     {
+        //       data: contentMeta, 
+        //       actions: {
+        //         view: (e) => viewContentAction(e, contentMeta),
+        //         edit: (e) => editContentAction(e, contentMeta),
+        //         remove: (e) => removeContentAction(e, contentMeta)
+        //       },
+        //     },
+        //   )
+        // )
+        // );
+        const notebooks = notebookClient.getAll();
+        const contentMetas = contentMetaClient.getAll();
+        const contentNodes = contentNodesClient.getAll();
+        
+        const { nodes, links } = parseToGraphNodes(notebooks, contentMetas, contentNodes);
+        const [svgNodes, actions] = createGrapho(
+          nodes, 
+          links, 
+          {
+            clickNode: console.log,
+          },
         );
+
+        const getControlsWithActions = (actions) =>  getGraphoControls({
+          onReset: actions.reset,
+          onToggleLabel: actions.toggleLabel,
+          onZoomIn: actions.zoomIn,
+          onZoomOut: actions.zoomOut,
+          onChangeFilter: (opts) => {
+              const { nodes, links } = parseToGraphNodes(notebooks, contentMetas, contentNodes, opts);
+              const [svgNodes, actions] = createGrapho(
+                nodes, 
+                links, 
+                {
+                  clickNode: console.log,
+                },
+              );
+
+              resetContainer(document, containerID, [getControlsWithActions(actions), svgNodes])
+          }
+        })
+
         const contentsRow = creator.createContainer(
-          { id: containerID, items: contentCards },
+          { 
+            id: containerID, 
+            items: [
+              getControlsWithActions(actions),
+              svgNodes,
+            ]
+          },
         );
         container.appendChild(contentsRow);
         

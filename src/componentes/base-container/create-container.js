@@ -7,10 +7,18 @@ function createContainer(document, wrapper, { id, items = [] }) {
   items.forEach(el => slot.appendChild(el));
 
   return clone;
-}
+} 
 
 function appendToContainerSlot(document, id, item) {
   const containerEl = document.querySelector(`[data-container-id="${id}"]`);
   console.log("container", containerEl);
   containerEl.appendChild(item);
+}
+
+function resetContainer(document, id, items=[]){
+  const containerEl = document.querySelector(`[data-container-id="${id}"]`);
+  containerEl.innerHTML = "";
+
+  items.forEach(el => containerEl.appendChild(el));
+
 }
