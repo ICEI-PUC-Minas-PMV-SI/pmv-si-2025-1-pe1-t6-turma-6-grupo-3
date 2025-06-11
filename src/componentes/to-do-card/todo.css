@@ -255,3 +255,30 @@ body {
     color: #666;
     padding-left: 0;
 }
+.menu-title {
+  font-size: 0.8em;
+  color: #888;
+  display: block;
+  margin-bottom: 4px;
+}
+.menu-title-small {
+  font-size: 0.75em;
+  color: #aaa;
+  display: block;
+  margin: 4px 0;
+}
+.menu-section {
+  margin-bottom: 8px;
+}
+.sub-menu-colors {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.sub-menu-colors .tag-color {
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}

@@ -1,7 +1,7 @@
 // Pega o container de tarefas
 const containerTasks = document.getElementById('container-tasks');
 
-// Função para criar uma nova task
+// Função para criar uma nova tarefa
 function criarTarefa(parent = containerTasks) {
     const linhaTask = document.createElement('div');
     linhaTask.classList.add('linha-task');
@@ -11,10 +11,8 @@ function criarTarefa(parent = containerTasks) {
         <div class="task">
             <input type="checkbox" class="checkb">
             <p class="texto-task">Nova tarefa...</p>
-
+            <p class="descricao-task">Descrição da tarefa...</p>
             <div class="acoes-task">
-                <span class="tag">Tag</span>
-
                 <select class="prioridade">
                     <option value="">Prioridade</option>
                     <option value="">🏳️ Nenhuma</option>
@@ -22,61 +20,60 @@ function criarTarefa(parent = containerTasks) {
                     <option value="media">🏴 Média</option>
                     <option value="alta">🚩 Alta</option>
                 </select>
-
                 <button title="Editar" class="abrirModal">✏️</button>
-                <button title="Excluir" class="excluir">🗑️</button> 
+                <button title="Excluir" class="excluir">🗑️</button>
+            </div>
+        </div>
+    `;
+    parent.appendChild(linhaTask);
+}
+
+// Criação de nova tarefa
+document.getElementById('btCriarTarefa').addEventListener('click', () => criarTarefa());
+
+// Fecha todos os menus
+function fecharMenus() {
+    document.querySelectorAll('.menu-opcoes').forEach(m => m.remove());
+}
+
+// Abre o menu ao lado do botão
+function abrirMenu(e) {
+    fecharMenus(); // Fecha outros menus antes de abrir o novo
+
+    const btn = e.target;
+    const task = btn.closest('.task');
+    if (!task) return;
+
+    const temTag = task.querySelector('.tag');
+    const menu = document.createElement('div');
+    menu.classList.add('menu-opcoes');
+
+    menu.innerHTML = `
+        <div class="menu-section">
+            <span class="menu-title">Tarefa</span>
+            <button class="op-adicionar-subtask">Subtarefa</button>
+        </div>
+        <hr>
+        <div class="menu-section">
+            <span class="menu-title">Tags</span>
+            <button class="op-adicionar-tag">Adicionar tag</button>
+            ${temTag ? '<button class="op-remover-tag">Remover tag</button>' : ''}
+            <div class="sub-menu-colors">
+                <span class="menu-title-small">Cor da tag:</span>
+                <button class="tag-color" data-color="#0e6eff" style="background:#0e6eff"></button>
+                <button class="tag-color" data-color="#ff4d4d" style="background:#ff4d4d"></button>
+                <button class="tag-color" data-color="#ff99cc" style="background:#ff99cc"></button>
+                <button class="tag-color" data-color="#4cd137" style="background:#4cd137"></button>
+                <button class="tag-color" data-color="#f1c40f" style="background:#f1c40f"></button>
+                <button class="tag-color" data-color="#e67e22" style="background:#e67e22"></button>
+                <button class="tag-color" data-color="#8e44ad" style="background:#8e44ad"></button>
             </div>
         </div>
     `;
 
-    parent.appendChild(linhaTask);
-}
-
-// Evento no botão de criar tarefa
-const botaoCriar = document.getElementById('btCriarTarefa');
-botaoCriar.addEventListener('click', () => criarTarefa());
-
-function abrirMenu(e) {
-    fecharMenus(); // Fecha outros menus
-    const btn = e.target;
-    
-    const menu = document.createElement('div');
-    menu.classList.add('menu-opcoes');
-    menu.innerHTML = `
-        <button class="op-excluir-tag">Excluir Tag</button>
-        <button class="op-adicionar-subp">Adicionar Subparágrafo</button>
-        <button class="op-adicionar-subtask">Adicionar Subtarefa</button>
-    `;
-
     btn.parentElement.appendChild(menu);
 
-    // Eventos do menu
-    menu.querySelector('.op-excluir-tag').addEventListener('click', () => {
-        const tag = btn.parentElement.querySelector('.tag');
-        if (tag) tag.remove();
-        fecharMenus();
-    });
-
-    menu.querySelector('.op-adicionar-subp').addEventListener('click', () => {
-        const task = btn.parentElement.querySelector('.task');
-
-    // Verifica se já existe uma descrição
-    if (!task.querySelector('.descricao-task')) {
-        const descricao = document.createElement('p');
-        descricao.classList.add('descricao-task');
-        descricao.innerText = "Descrição da tarefa...";
-        descricao.setAttribute('contenteditable', 'true');
-        task.insertBefore(descricao, task.querySelector('.acoes-task'));
-
-        // Quando sair do foco, salva o conteúdo
-        descricao.addEventListener('blur', () => {
-            if (descricao.innerText.trim() === "") {
-                descricao.remove(); // remove se estiver vazio
-            }
-        });
-    }
-    fecharMenus();
-});
+    // Subtarefa
     menu.querySelector('.op-adicionar-subtask').addEventListener('click', () => {
         const parentTask = btn.closest('.linha-task');
         const subtask = document.createElement('div');
@@ -87,9 +84,7 @@ function abrirMenu(e) {
             <div class="task">
                 <input type="checkbox" class="checkb">
                 <p class="texto-task">Subtarefa...</p>
-
                 <div class="acoes-task">
-                    <span class="tag">Tag</span>
                     <select class="prioridade">
                         <option value="">Prioridade</option>
                         <option value="">🏳️ Nenhuma</option>
@@ -98,21 +93,46 @@ function abrirMenu(e) {
                         <option value="alta">🚩 Alta</option>
                     </select>
                     <button title="Editar" class="abrirModal">✏️</button>
-                    <button title="Excluir" class="excluir">🗑️</button> 
+                    <button title="Excluir" class="excluir">🗑️</button>
                 </div>
             </div>
         `;
         parentTask.appendChild(subtask);
         fecharMenus();
     });
+
+    // Adicionar tag
+    menu.querySelector('.op-adicionar-tag').addEventListener('click', () => {
+        if (!task.querySelector('.tag')) {
+            const span = document.createElement('span');
+            span.classList.add('tag');
+            span.textContent = 'Tag';
+            task.querySelector('.acoes-task').prepend(span);
+        }
+        fecharMenus();
+    });
+
+    // Remover tag
+    const btnRemover = menu.querySelector('.op-remover-tag');
+    if (btnRemover) {
+        btnRemover.addEventListener('click', () => {
+            const tagEl = task.querySelector('.tag');
+            if (tagEl) tagEl.remove();
+            fecharMenus();
+        });
+    }
+
+    // Cor da tag
+    menu.querySelectorAll('.tag-color').forEach(b => {
+        b.addEventListener('click', () => {
+            const tagEl = task.querySelector('.tag');
+            if (tagEl) tagEl.style.backgroundColor = b.dataset.color;
+            fecharMenus();
+        });
+    });
 }
 
-// Fecha todos os menus de opções abertos
-function fecharMenus() {
-    document.querySelectorAll('.menu-opcoes').forEach(menu => menu.remove());
-}
-
-// Evento global para detectar cliques em qualquer .btnmenu
+// Evento global: clique em qualquer botão ou fora
 document.addEventListener('click', (e) => {
     if (e.target.classList.contains('btnmenu')) {
         e.stopPropagation();
@@ -121,17 +141,16 @@ document.addEventListener('click', (e) => {
         fecharMenus();
     }
 
-    // Excluir tarefa
+    // Excluir
     if (e.target.classList.contains('excluir')) {
-        const linhaTask = e.target.closest('.linha-task');
-        linhaTask.remove();
+        e.target.closest('.linha-task').remove();
     }
 
-    // Editar tarefa
+    // Editar
     if (e.target.classList.contains('abrirModal')) {
         const task = e.target.closest('.task');
         const paragrafo = task.querySelector('p.texto-task');
-        const tag = task.querySelector('.tag');
+        const descricao = task.querySelector('.descricao-task');
 
         const input = document.createElement('input');
         input.type = 'text';
@@ -140,26 +159,35 @@ document.addEventListener('click', (e) => {
         task.replaceChild(input, paragrafo);
         input.focus();
 
-        if (tag) {
-            tag.setAttribute('contenteditable', 'true');
-            tag.focus();
-            tag.addEventListener('blur', () => tag.removeAttribute('contenteditable'));
-        }
+        const inputDesc = document.createElement('input');
+        inputDesc.type = 'text';
+        inputDesc.value = descricao.innerText;
+        inputDesc.classList.add('input-edicao');
+        descricao.replaceWith(inputDesc);
 
         input.addEventListener('blur', () => finalizarEdicaoTexto(task, input));
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') input.blur();
         });
+
+        inputDesc.addEventListener('blur', () => {
+            const novoParagrafo = document.createElement('p');
+            novoParagrafo.classList.add('descricao-task');
+            novoParagrafo.textContent = inputDesc.value;
+            inputDesc.replaceWith(novoParagrafo);
+        });
+
+        inputDesc.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') inputDesc.blur();
+        });
     }
 });
 
+// Finaliza edição do título
 function finalizarEdicaoTexto(task, input) {
     const novoTexto = input.value.trim() || "Tarefa sem nome";
     const novoP = document.createElement('p');
     novoP.innerText = novoTexto;
     novoP.classList.add('texto-task');
     task.replaceChild(novoP, input);
-
-    const tag = task.querySelector('.tag');
-    if (tag) tag.removeAttribute('contenteditable');
 }
