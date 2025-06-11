@@ -109,6 +109,8 @@ function calcularMediaGeral() {
   return todasNotas.length ? soma / todasNotas.length : 0;
 }
 
+  const nodes = [];
+  const links = [];
 function atualizarGrafico() {
   const container = document.getElementById("graphContainer");
   container.innerHTML = "";
@@ -117,8 +119,7 @@ function atualizarGrafico() {
   const height = 600;
 
   const color = d3.scaleOrdinal(d3.schemeCategory10);
-  const nodes = [];
-  const links = [];
+
 
   // Agrupar notas por matéria
   const materiasMap = {};
