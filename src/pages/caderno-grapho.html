@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Cadastro de Notebooks</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="../styles/style.css">
+  <link rel="stylesheet" href="../styles/icons-selector.css">
+  <link rel="stylesheet" href="../componentes/base-layout/layout.css">
+  <link rel="stylesheet" href="../componentes/base-container/container.css">
+  <link rel="stylesheet" href="../componentes/notebook-card/card.css">
+  <link rel="stylesheet" href="../componentes/content-card/card.css">
+  <link rel="stylesheet" href="../componentes/base-modal/modal.css">
+  <link rel="stylesheet" href="../componentes/icons-selector/selector.css">
+  <link rel="stylesheet" href="../componentes/tags-selector/selector.css">
+  <link rel="stylesheet" href="../componentes/grapho-view/view.css">
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+
+  
+  <script src="../componentes/base-container/create-container.js"></script>
+  <script src="../componentes/notebook-card/create-card.js"></script>
+  <script src="../componentes/content-card/create-card.js"></script>
+  <script src="../componentes/base-layout/create-layout.js"></script>
+  <script src="../componentes/base-header/create-header.js"></script>
+  <script src="../componentes/base-modal/create-modal.js"></script>
+  <script src="../componentes/icons-selector/create-selector.js"></script>
+  <script src="../componentes/icons-selector/icons.js"></script>
+  <script src="../componentes/tags-selector/create-selector.js"></script>
+  <script src="../componentes/search-input/create-input.js"></script>
+  <script src="../componentes/notebook-modal/create-edit-notebook-modal.js"></script>
+  <script src="../componentes/notebook-modal/delete-notebook-modal.js"></script>
+  <script src="../componentes/content-modal/create-edit-content-modal.js"></script>
+  <script src="../componentes/content-modal/delete-content-modal.js"></script>
+  <script src="../componentes/grapho-view/create-graph-view.js"></script>
+
+  <script src="../componentes/builder.js"></script>
+</head>
+<body>
+  <div id="loader">
+  
+  </div>
+
+  <!-- MockClient e StorageNBManager -->
+  <script src="../app/share-engine.js"></script>
+  <script src="../app/search-client.js"></script>
+  <script src="../app/notebooks-client.js"></script>
+  <script src="../app/content-metadata-client.js"></script>
+  <script src="../app/content-nodes-client.js"></script>
+  <script src="../app/user-client.js"></script>
+  <script src="../app/storage.js"></script>
+  <script src="../app/session-manager.js"></script>
+  <script src="../app/url-service.js"></script>
+  <script src="../app/app.js"></script>
+  <script>
+    if (!session.isLogged()) {
+        window.location.href = LOGIN_URL;
+    }
+    const containerID = "notebook-content-meta-list";
+    const notebookId = UrlService.getParam('notebookId');
+    const notebook = notebookClient.findItem(notebookId);
+    const newContentModalTitle = "Novo Conteúdo";
+    const editContentModalTitle = "Atualize seu Conteúdo";
+    const editNotebookModalTitle = "Atualize seu Caderno";
+    const deleteNotebookModalTitle = "Confirme a Exclusão do seu Caderno";
+    const editNotebookSaveTitle = "Atualizar Caderno";
+    const deleteNotebookDeleteTitle = "Excluir Caderno";
+
+    // Funções CRUD usando notebookClient e storage
+    function readContentsMeta(callback) {
+      return callback(contentMetaClient.getAllFromNotebook(notebookId));
+    }
+    function createNewContent(data, cb) {
+      const [created, err] = contentMetaClient.insertItem(
+        notebookId,
+        data,
+      );
+      if (err) {
+        return [null, err]
+      }
+      storageMeta.save();
+      cb(created);
+    }
+
+    function updateContent(data, callback) {
+      const [updated, err] = contentMetaClient.updateItem(
+        data.id,
+        data,
+      );
+      if (err) {
+        alert(err.message);
+        return
+      }
+      storageMeta.save();
+      callback(updated);
+    }
+
+    function deleteContent(data, callback) {
+      console.log("id to be deleted: ",     data.id);
+      const err = contentMetaClient.deleteItem(
+        data.id
+      );
+      if (err) {
+        alert(err.message);
+        return
+      }
+      storageMeta.save();
+      callback();
+    }
+
+    function updateNotebook(data, callback) {
+      const [updated, err] = notebookClient.updateItem(data.id, data);
+      if (err) {
+        alert(err.message);
+        return
+      }
+      storageNB.save();
+      callback(updated);
+    }
+
+    function deleteNotebook(id, callback) {
+      console.log("id to be deleted:", id);
+      notebookClient.deleteItem(id);
+      storageNB.save();
+      callback();
+    }
+
+      const loader = document.getElementById('loader');
+
+      buildComponentsCreator(document,"..", "*").then(creator => {
+        const removeContentAction = (e, data) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log(`Remove CONTENT NODES: notebook[${{notebookId}}] content[${data.id}]`);
+
+          updateModal(contentDeleteModal, {
+            fieldValues: {
+              id: data.id,
+            },
+          });
+          showModal(contentDeleteModal);
+        };
+
+        const editContentAction = (e, data) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log(`EDIT CONTENT NODES: notebook[${{notebookId}}] content[${data.id}]`);
+
+          updateModal(contentModal, {
+            title: editContentModalTitle,
+            footerButtons: editContentModalButtons,
+            fieldValues: {
+              id: data.id,
+              icon: data.icon,
+              name: data.name,
+              tags: data.tags,
+            },
+          });
+          showModal(contentModal);
+        };
+        
+        const viewContentAction = (e, data) => {
+          e.preventDefault();
+          e.stopPropagation();    
+          console.log(`VIEW CONTENT NODES: notebook[${notebookId}] content[${data.id}]`);
+          window.location.assign(`caderno-conteudo-v2.html?notebookId=${notebookId}&contentId=${data.content_id}`);
+        };
+        
+      
+        const container = document.createElement('span');
+        
+        const pageHeader = creator.createHeader({
+          id: 'cabecalho-principal',
+          "icon": `diagram-3`,
+          actions: {
+            // add: () => {
+            //   updateModal(contentModal, {
+            //     title: newContentModalTitle,
+            //     footerButtons: createContentModalButtons,
+            //     fieldValues: {
+            //         id: "",
+            //         tags: "",
+            //         icon: "",
+            //         name: "",
+            //       },
+            //   });
+            //   showModal(contentModal);
+            // },
+            // filter: console.log,
+          },
+          breadcrumbs: [{
+            label: "Home",
+            href: "/src/pages/caderno-lista-v2.html"
+          },
+          {
+            label: `Gráfico`,
+          }
+          ],
+          title: `Gráfico`,
+          settingsButtons: [
+            // { 
+            //   label: 'Editar Caderno', icon: 'pencil',  
+            //   action: () => {
+            //     // alterar configuracao
+            //     updateModal(notebookModal, {
+            //       title: editNotebookModalTitle,
+            //       footerButtons: editModalButtons,
+            //       fieldValues: {
+            //         id: notebook.id,
+            //         icon: notebook.icon,
+            //         image: notebook.image,
+            //         description: notebook.description,
+            //         name: notebook.name,
+            //       },
+            //     });
+            //     showModal(notebookModal);
+            //   } 
+            // },
+            // { 
+            //   label: 'Excluir Caderno', 
+            //   icon: 'trash', 
+            //   action: () => {
+            //     console.log('exportar');
+            //     updateModal(notebookDeleteModal, {
+            //       title: deleteNotebookModalTitle,
+            //       footerButtons: deleteModalButtons,
+            //       fieldValues: {
+            //         id: notebook.id,
+            //         name: "",
+            //       },
+            //     });
+            //     showModal(notebookDeleteModal);
+            //   }
+            // },
+          ],
+        });
+        container.appendChild(pageHeader);
+        
+        const [
+          contentModal, 
+          createContentModalButtons, 
+          editContentModalButtons, 
+        ] = createContentModal(
+            creator, 
+            {
+              create: (fromModal) => {
+                console.log("Create content", fromModal)
+                createNewContent(fromModal, (fromClient) => {
+                  const card = creator.createContentCard(
+                    {
+                      data: fromClient,
+                      actions: {
+                        edit: (e) => editContentAction(e,fromClient),
+                        view: (e) => viewContentAction(e, fromClient),
+                      }
+                    },
+                  );
+                  console.log("card::", card)
+                  appendToContainerSlot(
+                    document,
+                    containerID,
+                    card,
+                  );
+                });
+              },
+              update: (fromModal) => {
+                console.log("Update content", fromModal)
+                updateContent(fromModal, (fromClient) => {
+                  const payload = {
+                    data: fromClient,
+                    actions: {
+                      view: (e) => viewContentAction(e, fromClient),
+                      edit: (e) => editContentAction(e, fromClient)
+                    }
+                  };
+                  console.log("updateContentCard.payload", payload);
+                  updateContentCard(document, payload)
+                })
+              },
+            },
+            creator.createIconSelector({
+              name:         'icon',
+              label:        'Ícone',
+              popular:      ['alarm','heart','star'],
+              allIcons,
+              customClass: ["col-md-2"],
+              actions: {
+                select: (iconName, el) => console.log('Ícone:', iconName)
+              }
+            }),
+            creator.createTagInput({
+              name: 'tags',
+              label: 'Tags',
+              placeholder: 'Digite e tecle Enter',
+              initialTags: [],
+              actions: {
+                onAdd: tag => console.log('Adicionou', tag),
+                onRemove: tag => console.log('Removeu', tag),
+                onColorChange: (tag, color) => console.log(`Cor de ${tag}:`, color)
+              },
+            })
+          );
+        container.appendChild(contentModal);
+
+        const [
+          contentDeleteModal,
+        ] = createDeleteContentModal(
+            creator, 
+            {
+              deleteFn: (fromModal) => {
+                console.log("Create content", fromModal)
+                deleteContent(fromModal, (fromClient) => {
+                  console.log("card::deleted > ", fromClient)
+                  removeGenericCard(document, `content-card-${fromModal.id}`)
+                });
+              },
+            }
+          );
+        container.appendChild(contentDeleteModal);
+        
+        const [
+          notebookModal, 
+          editModalButtons, 
+        ] = createNotebookModal(
+            creator, 
+            {
+              update: (fromModal) => updateNotebook(fromModal, (fromClient) => {
+                updateHeader(
+                  document.getElementById('cabecalho-principal'), 
+                  { title: fromClient.name, icon: fromClient.icon },
+                );
+              })
+            },
+            creator.createIconSelector({
+              name:         'icon',
+              label:        'Ícone',
+              popular:      ['alarm','heart','star'],
+              allIcons,
+              customClass: ["col-md-2"],
+              actions: {
+                select: (iconName, el) => console.log('Ícone:', iconName)
+              }
+            })
+          );
+        
+        container.appendChild(notebookModal);
+
+        const [
+          notebookDeleteModal, 
+          deleteModalButtons, 
+        ] = createDeleteNotebookModal(
+            creator, 
+            {
+              deleteFn: (fromModal) => {
+                if (fromModal.name != notebook.name) {
+                  alert("Nome do Carderno não coincide com o escrito na confirmação");
+                  return
+                }
+                deleteNotebook(fromModal.id, (errFromClient) => {
+                if (errFromClient) {
+                  alert(errFromClient.message);
+                  return
+                }
+                document.location.assign("/src/pages/caderno-lista-v2.html")
+              })
+            }
+            },
+          );
+        container.appendChild(notebookDeleteModal);
+      
+        // const contentCards = readContentsMeta(allContentMeta => allContentMeta.map(
+        //   contentMeta => creator.createContentCard(
+        //     {
+        //       data: contentMeta, 
+        //       actions: {
+        //         view: (e) => viewContentAction(e, contentMeta),
+        //         edit: (e) => editContentAction(e, contentMeta),
+        //         remove: (e) => removeContentAction(e, contentMeta)
+        //       },
+        //     },
+        //   )
+        // )
+        // );
+        const notebooks = notebookClient.getAll();
+        const contentMetas = contentMetaClient.getAll();
+        const contentNodes = contentNodesClient.getAll();
+        
+        const { nodes, links } = parseToGraphNodes(notebooks, contentMetas, contentNodes);
+        const [svgNodes, actions] = createGrapho(
+          nodes, 
+          links, 
+          {
+            clickNode: console.log,
+          },
+        );
+
+        const getControlsWithActions = (actions) =>  getGraphoControls({
+          onReset: actions.reset,
+          onToggleLabel: actions.toggleLabel,
+          onZoomIn: actions.zoomIn,
+          onZoomOut: actions.zoomOut,
+          onChangeFilter: (opts) => {
+              const { nodes, links } = parseToGraphNodes(notebooks, contentMetas, contentNodes, opts);
+              const [svgNodes, actions] = createGrapho(
+                nodes, 
+                links, 
+                {
+                  clickNode: console.log,
+                },
+              );
+
+              resetContainer(document, containerID, [getControlsWithActions(actions), svgNodes])
+          }
+        })
+
+        const contentsRow = creator.createContainer(
+          { 
+            id: containerID, 
+            items: [
+              getControlsWithActions(actions),
+              svgNodes,
+            ]
+          },
+        );
+        container.appendChild(contentsRow);
+        
+        const current = session.getCurrentUser();
+
+        loader.appendChild(creator.createLayout({ 
+          content:  container,
+          user: {
+              name: current.name,
+              logout: () => {
+                console.log("LOGOUT!"); 
+                session.signout();
+                window.location.assign("/src/pages/login-v2.html");
+              },
+          },
+          searchInput: creator.createSearchInput({
+              onSelect: (item) => {
+                if (item.type === "notebook") {
+                  window.location.assign(`/src/pages/caderno-detalhe-v2.html?notebookId=${item.localization.notebook_id}`);
+                  return
+                }
+                window.location.assign(`/src/pages/caderno-conteudo-v2.html?notebookId=${item.localization.notebook_id}&contentId=${item.localization.content_id}`);
+                return
+              },
+              search: term => search(term)
+          })
+        }));
+      });
+  </script>
+</body>
+</html>
