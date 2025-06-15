@@ -33,7 +33,7 @@ function createDeleteNotebookModal(creator, { deleteFn }) {
         actions: { click: () => hideModal(nootebookModal) }
     });
 
-    const btnDelete = creator.createModalButton({
+    const btnDelete = creator.createModalSubmitButton({
         text: deleteNotebookDeleteTitle,
         isPrimary: true,
         actions: { click: () => {

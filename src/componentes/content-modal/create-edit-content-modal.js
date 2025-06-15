@@ -44,7 +44,7 @@
         actions: { click: () => hideModal(nootebookModal) }
       });
 
-      const btnEdit = creator.createModalButton({
+      const btnEdit = creator.createModalSubmitButton({
         text: "Atualizar Conteúdo",
         isPrimary: true,
         actions: { click: () => {
@@ -57,10 +57,13 @@
         }}
       });
 
-      const btnCreate = creator.createModalButton({
+      const btnCreate = creator.createModalSubmitButton({
         text: "Criar Conteúdo",
         isPrimary: true,
-        actions: { click: () => {
+        actions: { click: (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log("...ACTION CRIAR", e)
           const err = create(getFieldsValues());
           if (err) {
             alert(err.message)

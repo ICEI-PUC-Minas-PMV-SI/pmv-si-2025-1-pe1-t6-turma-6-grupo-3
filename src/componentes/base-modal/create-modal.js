@@ -224,3 +224,26 @@ function updateModal(modalEl, {
     }
   }
 }
+
+
+// 2. Cria botões para o footer do modal
+function createModalSubmitButton(document, wrapper, {
+  text,
+  isPrimary = false,
+  isOutline = false,
+  actions = {}
+}) {
+  const tmpl = wrapper.querySelector('#modal-submit-button-template');
+  const fragment = document.importNode(tmpl.content, true);
+  const button = fragment.querySelector('[data-element-type="modal-button"]');
+
+  button.innerText = text;
+  if (isPrimary) button.classList.add('btn-primary');
+  if (isOutline) button.classList.add('btn-outline-primary');
+
+  Object.entries(actions).forEach(([eventName, handler]) => {
+    button.addEventListener(eventName, e => handler(e, button));
+  });
+
+  return button;
+}

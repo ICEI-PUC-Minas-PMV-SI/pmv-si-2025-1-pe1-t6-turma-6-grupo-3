@@ -65,7 +65,7 @@
       });
       
       
-      const btnNew = creator.createModalButton({
+      const btnNew = creator.createModalSubmitButton({
         text: "Criar Caderno",
         isPrimary: true,
         actions: { click: () => {
@@ -78,7 +78,7 @@
         }}
       });
 
-      const btnEdit = creator.createModalButton({
+      const btnEdit = creator.createModalSubmitButton({
         text: "Atualizar Caderno",
         isPrimary: true,
         actions: { click: () => {
