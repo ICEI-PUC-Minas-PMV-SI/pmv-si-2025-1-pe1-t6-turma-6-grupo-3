@@ -47,9 +47,11 @@ body {
     background-color: rgb(246, 246, 246);
     border-radius: 4px;
     width: 1110px;
-    height: 45px;
+    /* height: 45px; ❌ REMOVA ESTA LINHA */
     margin: -10px auto;
-    padding: 0 20px;
+    padding: 10px 20px; /* aumentei pra dar mais espaço vertical */
+    margin-bottom: 30px;
+    flex-wrap: wrap; /* ✅ permite quebra de linha */
 }
 
 .checkb {
@@ -139,16 +141,19 @@ body {
 }
 
 .tag {
-    padding: 4px 8px;
-    background-color: #e2e2e2;
-    border-radius: 4px;
-    font-size: 14px;
-    margin: 0 8px;
-    cursor: text;
+    display: inline-block;
+    background-color: #eee;
+    color: #333;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    margin-right: 6px;
+    margin-bottom: 4px;
 }
-
-.task .tag:focus {
-    outline: 2px solid #0e6eff;
+.tag[contenteditable]:empty::before {
+    content: attr(data-placeholder);
+    color: #999;
+    pointer-events: none;
 }
 
 /* Parágrafo com texto da tarefa */
@@ -162,28 +167,6 @@ body {
     text-overflow: ellipsis;
     text-align: left;
 }
-
-/* Agrupa tag, prioridade e botões na direita */
-.acoes-task {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-/* Tag visual */
-.tag {
-    padding: 4px 10px;
-    background-color: #e2e2e2;
-    border-radius: 12px;
-    font-size: 14px;
-    cursor: text;
-}
-
-/* Quando tag estiver em edição */
-.task .tag:focus {
-    outline: 2px solid #0e6eff;
-}
-
 /* Select de prioridade */
 .prioridade {
     padding: 2px 6px;
@@ -194,7 +177,7 @@ body {
     cursor: pointer;
 }
 .btnmenu {
-    opacity: 0;  
+    opacity: 0;
     transition: opacity 0.3s;
     border: none;
     outline: none;
@@ -202,10 +185,8 @@ body {
     cursor: pointer;
     font-size: 18px;
     padding: 6px;
-    margin-left: 105px;
-    transform: translateY(30px);
     border-radius: 6px;
-    transition: background-color 0.2s ease;
+    margin-right: 8px; /* espaço entre botão e checkbox */
 }
 
 .btnmenu:hover {
@@ -245,11 +226,14 @@ body {
 
 /* Subtarefa (indentada levemente) */
 .subtask {
-    margin-left: 20px;
+    margin-left: 60px;
+    scale: 0.90;
 }
 
 /* Descrição da tarefa (embaixo do título) */
 .descricao-task {
+    display: flex;
+    flex-direction: column;
     font-size: 13px;
     margin-top: 4px;
     color: #666;

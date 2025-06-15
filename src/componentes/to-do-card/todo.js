@@ -7,8 +7,8 @@ function criarTarefa(parent = containerTasks) {
     linhaTask.classList.add('linha-task');
 
     linhaTask.innerHTML = `
-        <button class="btnmenu" title="Menu">⋮⋮</button>
         <div class="task">
+            <button class="btnmenu" title="Menu">⋮⋮</button>
             <input type="checkbox" class="checkb">
             <p class="texto-task">Nova tarefa...</p>
             <p class="descricao-task">Descrição da tarefa...</p>
@@ -20,11 +20,11 @@ function criarTarefa(parent = containerTasks) {
                     <option value="media">🏴 Média</option>
                     <option value="alta">🚩 Alta</option>
                 </select>
-                <button title="Editar" class="abrirModal">✏️</button>
                 <button title="Excluir" class="excluir">🗑️</button>
             </div>
         </div>
     `;
+
     parent.appendChild(linhaTask);
 }
 
@@ -80,8 +80,8 @@ function abrirMenu(e) {
         subtask.classList.add('linha-task', 'subtask');
 
         subtask.innerHTML = `
-            <button class="btnmenu" title="Menu">⋮⋮</button>
             <div class="task">
+                <button class="btnmenu" title="Menu">⋮⋮</button>
                 <input type="checkbox" class="checkb">
                 <p class="texto-task">Subtarefa...</p>
                 <div class="acoes-task">
@@ -92,7 +92,6 @@ function abrirMenu(e) {
                         <option value="media">🏴 Média</option>
                         <option value="alta">🚩 Alta</option>
                     </select>
-                    <button title="Editar" class="abrirModal">✏️</button>
                     <button title="Excluir" class="excluir">🗑️</button>
                 </div>
             </div>
@@ -101,17 +100,28 @@ function abrirMenu(e) {
         fecharMenus();
     });
 
-    // Adicionar tag
-    menu.querySelector('.op-adicionar-tag').addEventListener('click', () => {
-        if (!task.querySelector('.tag')) {
-            const span = document.createElement('span');
-            span.classList.add('tag');
-            span.textContent = 'Tag';
-            task.querySelector('.acoes-task').prepend(span);
-        }
-        fecharMenus();
-    });
+// Adicionar tag
+menu.querySelector('.op-adicionar-tag').addEventListener('click', () => {
+        const span = document.createElement('span');
+        span.classList.add('tag');
+        span.setAttribute('contenteditable', 'true');
+        span.setAttribute('data-placeholder', 'Tag'); // <- define o "placeholder"
 
+        // Evita quebra de linha com Enter
+        span.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                span.blur();
+            }
+        });
+
+        span.addEventListener('click', () => {
+            span.focus();
+        });
+
+        task.querySelector('.acoes-task').prepend(span);
+    fecharMenus();
+});
     // Remover tag
     const btnRemover = menu.querySelector('.op-remover-tag');
     if (btnRemover) {
@@ -146,40 +156,59 @@ document.addEventListener('click', (e) => {
         e.target.closest('.linha-task').remove();
     }
 
-    // Editar
-    if (e.target.classList.contains('abrirModal')) {
-        const task = e.target.closest('.task');
-        const paragrafo = task.querySelector('p.texto-task');
-        const descricao = task.querySelector('.descricao-task');
+ // Permite edição direta do título e descrição ao clicar
+document.addEventListener('click', (e) => {
+    const el = e.target;
 
+    // Editar título
+    if (el.classList.contains('texto-task')) {
+        const task = el.closest('.task');
         const input = document.createElement('input');
         input.type = 'text';
-        input.value = paragrafo.innerText;
+        input.placeholder = el.innerText;
         input.classList.add('input-edicao');
-        task.replaceChild(input, paragrafo);
+        task.replaceChild(input, el);
         input.focus();
-
-        const inputDesc = document.createElement('input');
-        inputDesc.type = 'text';
-        inputDesc.value = descricao.innerText;
-        inputDesc.classList.add('input-edicao');
-        descricao.replaceWith(inputDesc);
 
         input.addEventListener('blur', () => finalizarEdicaoTexto(task, input));
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') input.blur();
         });
+    }
 
-        inputDesc.addEventListener('blur', () => {
-            const novoParagrafo = document.createElement('p');
-            novoParagrafo.classList.add('descricao-task');
-            novoParagrafo.textContent = inputDesc.value;
-            inputDesc.replaceWith(novoParagrafo);
-        });
+    // Editar descrição
+    if (el.classList.contains('descricao-task')) {
+        const task = el.closest('.task');
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.placeholder = el.innerText;
+        input.classList.add('input-edicao');
+        task.replaceChild(input, el);
+        input.focus();
 
-        inputDesc.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') inputDesc.blur();
+        input.addEventListener('blur', () => finalizarEdicaoDescricao(task, input));
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') input.blur();
         });
+    }
+});
+
+    // Finaliza edição do título
+    function finalizarEdicaoTexto(task, input) {
+        const novoTexto = input.value.trim() || "Tarefa sem nome";
+        const novoP = document.createElement('p');
+        novoP.innerText = novoTexto;
+        novoP.classList.add('texto-task');
+        task.replaceChild(novoP, input);
+    }
+
+    // Finaliza edição da descrição
+    function finalizarEdicaoDescricao(task, input) {
+        const novaDescricao = input.value.trim() || "Sem descrição";
+        const novoP = document.createElement('p');
+        novoP.innerText = novaDescricao;
+        novoP.classList.add('descricao-task');
+        task.replaceChild(novoP, input);
     }
 });
 
