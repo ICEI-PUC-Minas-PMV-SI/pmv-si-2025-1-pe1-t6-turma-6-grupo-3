@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-do</title>
+    <link rel="stylesheet" href="todo.css">
+</head>
+
+<body>
+    <!-- Container dos botões -->
+    <div class="container-botoes">
+        <button type="button" class="btcalendario">Calendário</button>
+
+        <div class="centro">
+            <button class="seta-esquerda">&lt;</button>
+            <span class="texto-central">Hoje</span>
+            <button class="seta-direita">&gt;</button>
+        </div>
+
+        <button type="button" id="btCriarTarefa" class="btaddtarefa">✛ Criar tarefa</button>
+    </div>
+
+    <!-- Container das tasks -->
+    <div id="container-tasks">
+        <!-- Tarefa inicial -->
+        <div class="linha-task">
+            <button class="btnmenu">⋮⋮</button>
+            <div class="task">
+                <input type="checkbox" class="checkb">
+                <p class="texto-task">Nova tarefa...</p>
+                <p class="descricao-task">Descrição da tarefa...</p>
+                <div class="acoes-task">
+                    <!-- <span class="tag" contenteditable="true">Tag</span> -->
+                    <select class="prioridade">
+                        <option value="">Prioridade</option>
+                        <option value="">🏳️ Nenhuma</option>
+                        <option value="baixa">🏁 Baixa</option>
+                        <option value="media">🏴 Média</option>
+                        <option value="alta">🚩 Alta</option>
+                    </select>
+                    <button title="Editar" class="abrirModal">✏️</button>
+                    <button title="Excluir" class="excluir">🗑️</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="todo.js"></script>
+</body>
+
+</html>
