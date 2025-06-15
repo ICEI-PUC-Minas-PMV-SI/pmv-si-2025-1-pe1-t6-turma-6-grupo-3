@@ -5,7 +5,7 @@ class UrlService {
      * @param {string} key - nome do parâmetro
      * @returns {string|null}
      */
-    static getParam(key) {
+    getParam(key) {
       const params = new URLSearchParams(window.location.search);
       return params.has(key) ? params.get(key) : null;
     }
@@ -14,7 +14,7 @@ class UrlService {
      * Retorna todos os parâmetros como objeto { chave: valor }
      * @returns {Object<string,string>}
      */
-    static getAllParams() {
+    getAllParams() {
       const params = new URLSearchParams(window.location.search);
       const result = {};
       for (const [k, v] of params.entries()) {

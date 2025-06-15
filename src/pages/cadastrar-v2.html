@@ -28,10 +28,10 @@
     <script src="../app/storage.js"></script>
     <script src="../app/session-manager.js"></script>
     <script src="../app/url-service.js"></script>
-    <script src="../app/app.js"></script>
+    <script src="../app/app-load_surf_book.js"></script>
     <script>
 
-        if (session.isLogged()) {
+        if (sfb_app.session.isLogged()) {
             window.location.href = HOME_URL;
         }
 
@@ -110,7 +110,7 @@
                         actions: {
                             click: (ev, el) => {
                                 ev.preventDefault();
-                                const err = session.signup({
+                                const err = sfb_app.session.signup({
                                     fullName: memory.fullName, 
                                     name: memory.name, 
                                     password: memory.password, 

@@ -36,15 +36,16 @@
   <script src="../app/storage.js"></script>
   <script src="../app/session-manager.js"></script>
   <script src="../app/url-service.js"></script>
-  <script src="../app/app.js"></script>
+  <script src="../app/app-load_surf_book.js"></script>
   <script>
 
-    if (!session.isLogged()) {
+    if (!sfb_app.session.isLogged()) {
         window.location.href = LOGIN_URL;
     }
+
     const bulk_base64 = window.location.toString().split("?bulk=")[1];
-    console.log("to string", bulk_base64)//UrlService.getParam('bulk');
-    const bulk = share.fromLink(bulk_base64);
+    const bulk = sfb_app.share.fromLink(bulk_base64);
+    
     function mountEditor(document, editor, creator) {
       const memory = {
         nodes: bulk.content.nodes,
@@ -56,15 +57,12 @@
           type: "h1", // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
           position: 0,
           customStyle: ["center-text","bigger-text", "background-paper"],
-          id: contentNodesClient._build_key(notebookId, contentId, memory._nextId),
+          id: sfb_app.contentNodesClient._build_key(notebookId, contentId, memory._nextId),
           notebook_id: notebookId,
           content_id: contentId,
           value: "Comece por aqui...",
         })
         memory._nextId = memory._nextId+1;
-        // TODO: add share items;
-        contentNodesClient.resetOfNotebookContent(bulk.notebook.id, bulk.content.meta.id, memory.nodes);
-        storageNodes.save();
       }
       const [createBlock, setCaretToEnd] = FactoryCreateBlock(document, editor, creator, false, {
             currentNotebookId: bulk.content.meta.notebook_id,
@@ -139,12 +137,13 @@
         const contentMeta = bulk.content.meta;
         const nodes = bulk.content.nodes;
         const simpleContainer = document.createElement('span');
+
         simpleContainer.appendChild(creator.createHeader({
           "icon": `${notebook.icon}`,
           actions: {
             // add: console.log,
             copy: () => {
-              const text = share.parseToMD(user, notebook, contentMeta, nodes);
+              const text = sfb_app.share.parseToMD(user, notebook, contentMeta, nodes);
               navigator.clipboard.writeText(text);
             },
           },
@@ -167,7 +166,7 @@
         const editorRow = creator.createContainer({items: [editor] });
         simpleContainer.appendChild(editorRow);
 
-        const current = session.getCurrentUser();
+        const current = sfb_app.session.getCurrentUser();
         
         loader.appendChild(
           creator.createLayout({
@@ -189,7 +188,7 @@
                 window.location.assign(`/src/pages/caderno-conteudo-v2.html?notebookId=${item.localization.notebook_id}&contentId=${item.localization.content_id}`);
                 return
               },
-              search: term => search(term)
+              search: term => sfb_app.search(term)
             })
           })
         );
