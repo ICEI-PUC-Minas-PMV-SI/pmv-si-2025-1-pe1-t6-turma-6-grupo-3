@@ -2,7 +2,7 @@ const map = {
     "base-container": [createContainer],
     "base-header": [createHeader],
     "base-layout": [createLayout],
-    "base-modal": [createModal, createModalButton, createModalField, createModalTextarea],
+    "base-modal": [createModal, createModalButton, createModalField, createModalTextarea, createModalSubmitButton],
     "content-card": [createContentCard],
     "icons-selector": [createIconSelector],
     // "login-form": [createLoginForm], // not used on pages after login

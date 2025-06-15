@@ -94,6 +94,7 @@ function createTagInput(document, wrapper, {
       colorText.value = e.target.value;
     });
     colorText.addEventListener('input', e => {
+      console.log("input text", e)
       colorInput.value = e.target.value;
     });
 

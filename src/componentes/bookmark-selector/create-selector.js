@@ -200,7 +200,7 @@ function createInternalBookmarkSelector(
       }
       notebookBlock.classList.remove("d-none");
    
-    } else if (item.type === "content") {
+    } else if (item.type === "content-meta") {
       const meta = getContentMeta(
         item.localization.notebook_id, 
         item.localization.content_id,
@@ -209,17 +209,19 @@ function createInternalBookmarkSelector(
       contentTitleEl.textContent = meta.name;
       contentTagsEl.innerHTML = "";
       appendTags(contentTagsEl, meta.tags);
-    contentBlock.classList.remove("d-none");
-    } else if (item.type === "node") {
+      contentBlock.classList.remove("d-none");
+    } else if (item.type === "content-node") {
       const {
         notebook_id,
         content_id,
-        node_id,
       } = item.localization;
+      const node_id = item.localization.node_id.split("node_").pop()
+
       const node = getContentNode(notebook_id, content_id, node_id)
       const isCurrent =
         notebook_id === currentNotebookId &&
         content_id === currentContentId;
+    
       if (isCurrent) {
         nodeCurrentValueEl.textContent = node.value;
         nodeCurrentPositionEl.textContent = node.position;

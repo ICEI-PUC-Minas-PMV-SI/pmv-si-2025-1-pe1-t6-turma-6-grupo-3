@@ -24,7 +24,7 @@
         </div>
     </template>
     <template id="modal-template">
-        <div class="modal-overlay hidden" data-element-type="overlay">
+        <form class="modal-overlay hidden" data-element-type="overlay">
             <div class="modal-box">
                 <header class="modal-header">
                     <h2 data-element-type="title"></h2>
@@ -33,7 +33,7 @@
                 <div class="modal-body row" data-element-type="body"></div>
                 <footer class="modal-footer" data-element-type="footer"></footer>
             </div>
-        </div>
+          </form>
     </template>
 
     <template id="modal-field-template">
@@ -48,6 +48,9 @@
         <button type="button" class="btn modal-btn" data-element-type="modal-button"></button>
     </template>
 
+    <template id="modal-submit-button-template">
+        <input type="submit" class="btn modal-btn" data-element-type="modal-button"></button>
+    </template>
     <button id="open-modal" type="button" class="btn btn-primary">Crie um novo caderno</button>
     <div id="preview-container"></div>
 

@@ -29,7 +29,7 @@ function createDeleteContentModal(creator, { deleteFn }) {
         actions: { click: () => hideModal(nootebookModal) }
     });
 
-    const btnDelete = creator.createModalButton({
+    const btnDelete = creator.createModalSubmitButton({
         text: "Deletar Conteúdo!",
         isPrimary: true,
         actions: { click: () => {
