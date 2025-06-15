@@ -37,20 +37,20 @@
   <script src="../app/storage.js"></script>
   <script src="../app/session-manager.js"></script>
   <script src="../app/url-service.js"></script>
-  <script src="../app/app.js"></script>
+  <script src="../app/app-load_surf_book.js"></script>
   <script>
 
-    if (!session.isLogged()) {
+    if (!sfb_app.session.isLogged()) {
         window.location.href = LOGIN_URL;
     }
-    const notebookId = UrlService.getParam('notebookId');
-    const contentId = UrlService.getParam('contentId');
+    const notebookId = sfb_app.url_service.getParam('notebookId');
+    const contentId = sfb_app.url_service.getParam('contentId');
 
     function mountEditor(document, editor, creator, search) {
-      const all = contentNodesClient.getAllFromNotebookContent(notebookId, contentId);
+      const nodes = sfb_app.contentNodesClient.getAllFromNotebookContent(notebookId, contentId);
       const memory = {
-        nodes: contentNodesClient.getAllFromNotebookContent(notebookId, contentId),
-        _nextId: all.length +1
+        nodes,
+        _nextId: nodes.length +1
       }
 
       if (!memory.nodes.length){
@@ -64,18 +64,18 @@
           value: "Comece por aqui...",
         })
         memory._nextId = memory._nextId+1;
-        contentNodesClient.resetOfNotebookContent(notebookId, contentId, memory.nodes);
+        sfb_app.contentNodesClient.resetOfNotebookContent(notebookId, contentId, memory.nodes);
         console.log("memory::getAll", contentNodesClient.getAll())
-        storageNodes.save();
+        sfb_app.storageNodes.save();
       }
       const [createBlock, setCaretToEnd] = FactoryCreateBlock(document, editor, creator, true, {
             currentNotebookId: notebookId,
             currentContentId: contentId,
-            search,
+            search: sfb_app.search,
             onGoToNode: console.log,
-            getNotebook: (id) => notebookClient.findItem(id),
-            getContentMeta: (notebook_id, content_id) => contentMetaClient.findItem(notebook_id, content_id),
-            getContentNode: (notebook_id, content_id, node_id) => contentNodesClient.findItem(notebook_id, content_id, node_id),
+            getNotebook: (id) => sfb_app.notebookClient.findItem(id),
+            getContentMeta: (notebook_id, content_id) => sfb_app.contentMetaClient.findItem(notebook_id, content_id),
+            getContentNode: (notebook_id, content_id, node_id) => sfb_app.contentNodesClient.findItem(notebook_id, content_id, node_id),
             removeNode: (id) => {
               const index = memory.nodes.findIndex(node => node.id === id);
               if (index == -1) {
@@ -85,8 +85,8 @@
               memory.nodes.forEach((n, i) => {
                 n.position = i;
               });
-              contentNodesClient.resetOfNotebookContent(notebookId, contentId, memory.nodes);
-              storageNodes.save();
+              sfb_app.contentNodesClient.resetOfNotebookContent(notebookId, contentId, memory.nodes);
+              sfb_app.storageNodes.save();
               return;
             },
             moveNode: (draggedId, targetId, after) => {
@@ -104,8 +104,8 @@
 
               memory.nodes.forEach((n, idx) => { n.position = idx; });
             
-              contentNodesClient.resetOfNotebookContent(notebookId, contentId, memory.nodes);
-              storageNodes.save();
+              sfb_app.contentNodesClient.resetOfNotebookContent(notebookId, contentId, memory.nodes);
+              sfb_app.storageNodes.save();
             },
             addNewNode: (nodeType, position=0) => {
                 console.log(`addNewNode::type[${nodeType}]::pos[${position}]`);
@@ -132,23 +132,23 @@
                 memory.nodes.forEach((n, i) => {
                     n.position = i;
                 });
-                contentNodesClient.resetOfNotebookContent(notebookId, contentId, memory.nodes);
-                storageNodes.save();
+                sfb_app.contentNodesClient.resetOfNotebookContent(notebookId, contentId, memory.nodes);
+                sfb_app.storageNodes.save();
 
                 return newNode;        
           },
             saveNodes: () => {
-              const oldNodes = contentNodesClient.getAllFromNotebookContent(notebookId, contentId);
-              contentNodesClient.resetOfNotebookContent(notebookId, contentId, memory.nodes);
+              const oldNodes = sfb_app.contentNodesClient.getAllFromNotebookContent(notebookId, contentId);
+              sfb_app.contentNodesClient.resetOfNotebookContent(notebookId, contentId, memory.nodes);
               const updates = oldNodes.map((oldData) => {
-                const newData = contentNodesClient.findItem(oldData.id);
+                const newData = sfb_app.contentNodesClient.findItem(oldData.id);
                 if (!newData) {
                   return {oldData}
                 }
                 return {oldData, newData};
               })
               
-              const newNodes = contentNodesClient.getAllFromNotebookContent(notebookId, contentId);
+              const newNodes = sfb_app.contentNodesClient.getAllFromNotebookContent(notebookId, contentId);
               if (newNodes.length > oldNodes.length) {
                 newNodes.filter(newNode => {
                   return !oldNodes.some(oldNode => newNode.id === oldNode.idx)
@@ -192,8 +192,8 @@
                 }
               });
               
-              _search.updateMany(updatesItems);
-              storageNodes.save();
+              sfb_app._search.updateMany(updatesItems);
+              sfb_app.storageNodes.save();
             }
         })
       
@@ -244,38 +244,39 @@
         }
         return localCreator;
       }).then(creator => {
-        const notebook = notebookClient.findItem(notebookId);
-
-        const contentId =  UrlService.getParam('contentId');
-        const contentMeta = contentMetaClient.findItem(notebookId, contentId);
+        const notebook = sfb_app.notebookClient.findItem(notebookId);
+        const contentMeta = sfb_app.contentMetaClient.findItem(notebookId, contentId);
         
         const simpleContainer = document.createElement('span');
         const header = creator.createHeader({
           "icon": `${notebook.icon}`,
           actions: {
             copy: () => {
-              const user = session.getCurrentUser();
-              const text = share.parseToMD(
+              const user = sfb_app.session.getCurrentUser();
+              const text = sfb_app.share.parseToMD(
                 {
                   name: user.name,
                   email: user.email,
                 },
-                notebook, contentMeta, contentNodesClient.getAllFromNotebookContent(notebookId, contentId));
+                notebook, 
+                contentMeta, 
+                sfb_app.contentNodesClient.getAllFromNotebookContent(notebookId, contentId),
+              );
               console.log("TEXT", text)
               navigator.clipboard.writeText(text);
               header.feedback("Texto Copiado para Área de transferência!")
             },
             share: () => {
-             const user = session.getCurrentUser();
+             const user = sfb_app.session.getCurrentUser();
              console.log("user", user)
-              const link = share.getLink(
+              const link = sfb_app.share.getLink(
                {
                 name: user.name,
                 email: user.email,
                },
                 notebook,
                 contentMeta,
-                contentNodesClient.getAllFromNotebookContent(notebookId, contentId),
+                sfb_app.contentNodesClient.getAllFromNotebookContent(notebookId, contentId),
               );
               navigator.clipboard.writeText(link);
               header.feedback("Link Copiado para Área de transferência!")
@@ -302,7 +303,7 @@
         const editorRow = creator.createContainer({items: [editor] });
         simpleContainer.appendChild(editorRow);
 
-        const current = session.getCurrentUser();
+        const current = sfb_app.session.getCurrentUser();
         
         loader.appendChild(
           creator.createLayout({
@@ -311,7 +312,7 @@
               name: current.name,
               logout: () => {
                 console.log("LOGOUT!"); 
-                session.signout();
+                sfb_app.session.signout();
                 window.location.assign("/src/pages/login-v2.html");
               },
             },
@@ -324,7 +325,7 @@
                 window.location.assign(`/src/pages/caderno-conteudo-v2.html?notebookId=${item.localization.notebook_id}&contentId=${item.localization.content_id}`);
                 return
               },
-              search: term => search(term)
+              search: term => sfb_app.search(term)
             })
           })
         );

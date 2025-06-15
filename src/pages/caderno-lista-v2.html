@@ -45,9 +45,9 @@
   <script src="../app/storage.js"></script>
   <script src="../app/session-manager.js"></script>
   <script src="../app/url-service.js"></script>
-  <script src="../app/app.js"></script>
+  <script src="../app/app-load_surf_book.js"></script>
   <script>
-    if (!session.isLogged()) {
+    if (!sfb_app.session.isLogged()) {
         window.location.href = LOGIN_URL;
     }
 
@@ -57,31 +57,31 @@
     const editNotebookSaveTitle = "Atualizar Caderno";
     // Funções CRUD usando notebookClient e storage
     function readNotebooks(callback) {
-      return callback(notebookClient.getAll());
+      return callback(sfb_app.notebookClient.getAll());
     }
 
     function createNewNotebook(data, cb) {
-      const [created, err] = notebookClient.insertItem(data);
+      const [created, err] = sfb_app.notebookClient.insertItem(data);
       if (err) {
         return [null, err]
       }
 
-      storageNB.save();
+      sfb_app.storageNB.save();
       cb(created);
     }
     
     function updateNotebook(data, cb) {
-      const [updated, err] = notebookClient.updateItem(data.id, data);
+      const [updated, err] = sfb_app.notebookClient.updateItem(data.id, data);
       if (err) {
         return err
       }
-      storageNB.save();
+      sfb_app.storageNB.save();
       cb(updated)
     }
 
     function deleteNotebook(id, callback) {
-      notebookClient.deleteItem(id);
-      storageNB.save();
+      sfb_app.notebookClient.deleteItem(id);
+      sfb_app.storageNB.save();
       callback();
     }
 
@@ -168,7 +168,6 @@
                     view: () => viewNotebookAction(fromClient),
                   }
                 });
-                console.log("card::", card)
                 appendToContainerSlot(
                   document,
                   containerID,
@@ -212,7 +211,7 @@
         container.appendChild(notebooksRow);
         container.appendChild(notebookModal);
 
-        const current = session.getCurrentUser();
+        const current = sfb_app.session.getCurrentUser();
       
         loader.appendChild(
           creator.createLayout({ 
@@ -221,7 +220,7 @@
               name: current.name,
               logout: () => {
                 console.log("LOGOUT!"); 
-                session.signout();
+                sfb_app.session.signout();
                 window.location.assign("/src/pages/login-v2.html");
               },
             },
@@ -234,7 +233,7 @@
                 window.location.assign(`/src/pages/caderno-conteudo-v2.html?notebookId=${item.localization.notebook_id}&contentId=${item.localization.content_id}`);
                 return
               },
-              search: term => search(term)
+              search: term => sfb_app.search(term)
             })
           }));
       });

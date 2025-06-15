@@ -56,14 +56,12 @@
   <script src="../app/storage.js"></script>
   <script src="../app/session-manager.js"></script>
   <script src="../app/url-service.js"></script>
-  <script src="../app/app.js"></script>
+  <script src="../app/app-load_surf_book.js"></script>
   <script>
-    if (!session.isLogged()) {
+    if (!sfb_app.session.isLogged()) {
         window.location.href = LOGIN_URL;
     }
     const containerID = "notebook-content-meta-list";
-    const notebookId = UrlService.getParam('notebookId');
-    const notebook = notebookClient.findItem(notebookId);
     const newContentModalTitle = "Novo Conteúdo";
     const editContentModalTitle = "Atualize seu Conteúdo";
     const editNotebookModalTitle = "Atualize seu Caderno";
@@ -73,22 +71,22 @@
 
     // Funções CRUD usando notebookClient e storage
     function readContentsMeta(callback) {
-      return callback(contentMetaClient.getAllFromNotebook(notebookId));
+      return callback(sfb_app.contentMetaClient.getAllFromNotebook(notebookId));
     }
     function createNewContent(data, cb) {
-      const [created, err] = contentMetaClient.insertItem(
+      const [created, err] = sfb_app.contentMetaClient.insertItem(
         notebookId,
         data,
       );
       if (err) {
         return [null, err]
       }
-      storageMeta.save();
+      sfb_app.storageMeta.save();
       cb(created);
     }
 
     function updateContent(data, callback) {
-      const [updated, err] = contentMetaClient.updateItem(
+      const [updated, err] = sfb_app.contentMetaClient.updateItem(
         data.id,
         data,
       );
@@ -96,37 +94,37 @@
         alert(err.message);
         return
       }
-      storageMeta.save();
+      sfb_app.storageMeta.save();
       callback(updated);
     }
 
     function deleteContent(data, callback) {
       console.log("id to be deleted: ",     data.id);
-      const err = contentMetaClient.deleteItem(
+      const err = sfb_app.contentMetaClient.deleteItem(
         data.id
       );
       if (err) {
         alert(err.message);
         return
       }
-      storageMeta.save();
+      sfb_app.storageMeta.save();
       callback();
     }
 
     function updateNotebook(data, callback) {
-      const [updated, err] = notebookClient.updateItem(data.id, data);
+      const [updated, err] = sfb_app.notebookClient.updateItem(data.id, data);
       if (err) {
         alert(err.message);
         return
       }
-      storageNB.save();
+      sfb_app.storageNB.save();
       callback(updated);
     }
 
     function deleteNotebook(id, callback) {
       console.log("id to be deleted:", id);
-      notebookClient.deleteItem(id);
-      storageNB.save();
+      sfb_app.notebookClient.deleteItem(id);
+      sfb_app.storageNB.save();
       callback();
     }
 
@@ -373,22 +371,9 @@
           );
         container.appendChild(notebookDeleteModal);
       
-        // const contentCards = readContentsMeta(allContentMeta => allContentMeta.map(
-        //   contentMeta => creator.createContentCard(
-        //     {
-        //       data: contentMeta, 
-        //       actions: {
-        //         view: (e) => viewContentAction(e, contentMeta),
-        //         edit: (e) => editContentAction(e, contentMeta),
-        //         remove: (e) => removeContentAction(e, contentMeta)
-        //       },
-        //     },
-        //   )
-        // )
-        // );
-        const notebooks = notebookClient.getAll();
-        const contentMetas = contentMetaClient.getAll();
-        const contentNodes = contentNodesClient.getAll();
+        const notebooks = sfb_app.notebookClient.getAll();
+        const contentMetas = sfb_app.contentMetaClient.getAll();
+        const contentNodes = sfb_app.contentNodesClient.getAll();
         
         const { nodes, links } = parseToGraphNodes(notebooks, contentMetas, contentNodes);
         const [svgNodes, actions] = createGrapho(
@@ -399,7 +384,7 @@
           },
         );
 
-        const getControlsWithActions = (actions) =>  getGraphoControls({
+        const getControlsWithActions = (actions) => getGraphoControls({
           onReset: actions.reset,
           onToggleLabel: actions.toggleLabel,
           onZoomIn: actions.zoomIn,
@@ -429,7 +414,7 @@
         );
         container.appendChild(contentsRow);
         
-        const current = session.getCurrentUser();
+        const current = sfb_app.session.getCurrentUser();
 
         loader.appendChild(creator.createLayout({ 
           content:  container,
@@ -437,7 +422,7 @@
               name: current.name,
               logout: () => {
                 console.log("LOGOUT!"); 
-                session.signout();
+                sfb_app.session.signout();
                 window.location.assign("/src/pages/login-v2.html");
               },
           },
@@ -450,7 +435,7 @@
                 window.location.assign(`/src/pages/caderno-conteudo-v2.html?notebookId=${item.localization.notebook_id}&contentId=${item.localization.content_id}`);
                 return
               },
-              search: term => search(term)
+              search: term => sfb_app.search(term)
           })
         }));
       });

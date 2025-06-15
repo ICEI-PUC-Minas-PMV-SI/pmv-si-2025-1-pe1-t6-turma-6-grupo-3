@@ -4,10 +4,7 @@
 
   (function(global) {
     'use strict';
-
-    if (window.TagSelectorFactory) {
-      TagSelectorFactory(global);
-    }
+    const sfb_app = {};
 
     const initial = {
       users: [
@@ -79,86 +76,90 @@
       ],
       contents: [],
   };
-    global.share = new ShareEngine(window.location.origin + "/src/pages/caderno-shared.html");
+    sfb_app.share = new ShareEngine(window.location.origin + "/src/pages/caderno-shared.html");
+    
+    sfb_app.url_service = new UrlService();
+    
+    sfb_app._search = new SearchClient({ bloomSizeBits: 50000 });
+    sfb_app.search = (term) => sfb_app._search.search(term);
+   
+    sfb_app.notebookClient = new MockNotebookClient(initial.notebooks);
+    sfb_app.contentMetaClient = new MockContentMetadataClient();
+    sfb_app.contentNodesClient = new MockContentNodesClient();
+    sfb_app.userClient = new MockUserClient(initial.users);
 
-    global._search = new SearchClient({ bloomSizeBits: 50000 });
-    global.search = (term) => global._search.search(term);
-    global.notebookClient = new MockNotebookClient(initial.notebooks);
+    sfb_app.storageUser = new StorageManager(sfb_app.userClient, USER_LIST_KEY);
 
-    global.contentMetaClient = new MockContentMetadataClient();
-    global.contentNodesClient = new MockContentNodesClient();
-    global.userClient = new MockUserClient(initial.users);
-    global.storageUser = new StorageManager(global.userClient, USER_LIST_KEY);
-    global.session = new SessionManager(userClient, storageUser);
+    sfb_app.session = new SessionManager(sfb_app.userClient, sfb_app.storageUser);
 
     function loadNotebooksForCurrentUser(user) {
         if (!user) {
           return
         }
-        if (global.storageNB) {
-          global.storageNB.save();
+        if (sfb_app.storageNB) {
+          sfb_app.storageNB.save();
         }
 
-        if (global.storageMeta) {
-          global.storageMeta.save();
+        if (sfb_app.storageMeta) {
+          sfb_app.storageMeta.save();
         }
 
-        if (global.storageNode) {
-          global.storageNode.save();
+        if (sfb_app.storageNode) {
+          sfb_app.storageNode.save();
         }
         const notebookKey = 'notebooks_of_' + user.id;
-        global.storageNB = new StorageManager(global.notebookClient, notebookKey);
-        global.storageNB.load();
+        sfb_app.storageNB = new StorageManager(sfb_app.notebookClient, notebookKey);
+        sfb_app.storageNB.load();
 
         const metaKey = 'contents_meta_of_user_' + user.id ;
-        global.storageMeta = new StorageManager(global.contentMetaClient, metaKey);
-        global.storageMeta.load();
+        sfb_app.storageMeta = new StorageManager(sfb_app.contentMetaClient, metaKey);
+        sfb_app.storageMeta.load();
 
         const nodeKey = 'contents_nodes_of_user_' + user.id
-        global.storageNodes = new StorageManager(global.contentNodesClient, nodeKey);
-        global.storageNodes.load()
+        sfb_app.storageNodes = new StorageManager(sfb_app.contentNodesClient, nodeKey);
+        sfb_app.storageNodes.load()
 
         ///////////////////// SEARCH INDEX
         //////////////////// NOTEBOOK
-        global.notebookClient.getAll().forEach(notebook => {
+        sfb_app.notebookClient.getAll().forEach(notebook => {
             const newItem = {
               type: "notebook",
               label: notebook.name,
               localization: { notebook_id: notebook.id },
               terms: extractTerms(`${notebook.icon} ${notebook.name} ${notebook.description}`),
             };
-            global._search.addItem(newItem);
+            sfb_app._search.addItem(newItem);
         })
 
 
-        global.notebookClient.on("remove", oldData => {
+        sfb_app.notebookClient.on("remove", oldData => {
             const toRemoveItem = {
               type: "notebook",
               label: oldData.name,
               localization: { notebook_id: oldData.id },
               terms: extractTerms(`${oldData.icon} ${oldData.name} ${oldData.description}`),
             };
-            global._search.removeItem(toRemoveItem);
+            sfb_app._search.removeItem(toRemoveItem);
         });
 
-        global.contentMetaClient.on("insert", newData => {
+        sfb_app.contentMetaClient.on("insert", newData => {
             const newItem = {
               type: "notebook",
               label: newData.name,
               localization: { notebook_id: newData.id },
               terms: extractTerms(`${newData.icon} ${newData.name} ${newData.description}`),
             };
-            global._search.addItem(newItem);
+            sfb_app._search.addItem(newItem);
         });
 
-        global.contentMetaClient.on("update", ([oldData, newData]) => {
+        sfb_app.contentMetaClient.on("update", ([oldData, newData]) => {
             const toRemoveItem = {
               type: "notebook",
               label: oldData.name,
               localization: { notebook_id: oldData.id },
               terms: extractTerms(`${oldData.icon} ${oldData.name} ${oldData.description}`),
             };
-            global._search.removeItem(toRemoveItem);
+            sfb_app._search.removeItem(toRemoveItem);
 
             const newItem = {
               type: "notebook",
@@ -166,48 +167,48 @@
               localization: { notebook_id: newData.id },
               terms: extractTerms(`${newData.icon} ${newData.name} ${newData.description}`),
             };
-            global._search.addItem(newItem);
+            sfb_app._search.addItem(newItem);
         });
 
         //////////////////////////// META
-        global.contentMetaClient.getAll().forEach(meta => {
+        sfb_app.contentMetaClient.getAll().forEach(meta => {
             const newItem = {
               type: "content-meta",
               label: meta.name,
               localization: { notebook_id: meta.notebook_id, content_id: meta.content_id },
               terms: extractTerms(`${meta.icon} ${meta.name} ${meta.tags.map(({name}) => name).join(" ")}`),
             };
-            global._search.addItem(newItem);
+            sfb_app._search.addItem(newItem);
         });
 
-        global.contentMetaClient.on("remove", oldData => {
+        sfb_app.contentMetaClient.on("remove", oldData => {
             const toRemoveItem = {
               type: "content-meta",
               label: oldData.name,
               localization: { notebook_id: oldData.notebook_id, content_id: oldData.content_id },
               terms: extractTerms(`${oldData.icon} ${oldData.name} ${oldData.tags.map(({name}) => name).join(" ")}`),
             };
-            global._search.removeItem(toRemoveItem);
+            sfb_app._search.removeItem(toRemoveItem);
         });
 
-        global.contentMetaClient.on("insert", newData => {
+        sfb_app.contentMetaClient.on("insert", newData => {
            const newItem = {
               type: "content-meta",
               label: newData.name,
               localization: { notebook_id: newData.notebook_id, content_id: newData.content_id },
               terms: extractTerms(`${newData.icon} ${newData.name} ${newData.tags.map(({name}) => name).join(" ")}`),
             };
-            global._search.addItem(newItem);
+            sfb_app._search.addItem(newItem);
         });
 
-        global.contentMetaClient.on("update", ([oldData, newData]) => {
+        sfb_app.contentMetaClient.on("update", ([oldData, newData]) => {
             const toRemoveItem = {
               type: "content-meta",
               label: oldData.name,
               localization: { notebook_id: oldData.notebook_id, content_id: oldData.content_id },
               terms: extractTerms(`${oldData.icon} ${oldData.name} ${oldData.tags.map(({name}) => name).join(" ")}`),
             };
-            global._search.removeItem(toRemoveItem);
+            sfb_app._search.removeItem(toRemoveItem);
 
             const newItem = {
               type: "content-meta",
@@ -215,47 +216,47 @@
               localization: { notebook_id: newData.notebook_id, content_id: newData.content_id },
               terms: extractTerms(`${newData.icon} ${newData.name} ${newData.tags.map(({name}) => name).join(" ")}`),
             };
-            global._search.addItem(newItem);
+            sfb_app._search.addItem(newItem);
         });
         
         ////////////////////////// NODES
-        global.contentNodesClient.getAll().forEach(node => {
+        sfb_app.contentNodesClient.getAll().forEach(node => {
             const newItem = {
               type: "content-node",
               label: `${node.type} | ${node.value}`,
               localization: { notebook_id: node.notebook_id, content_id: node.content_id, node_id: node.id  },
               terms: extractTerms(`${node.value}}`),
             };
-            global._search.addItem(newItem);
+            sfb_app._search.addItem(newItem);
         });
-        global.contentNodesClient.on("remove", oldData => {
+        sfb_app.contentNodesClient.on("remove", oldData => {
             const toRemoveItem = {
               type: "content-node",
               label: `${oldData.type} | ${oldData.value}`,
               localization: { notebook_id: oldData.notebook_id, content_id: oldData.content_id, node_id: oldData.id },
               terms: extractTerms(`${oldData.value}`),
             };
-            global._search.removeItem(toRemoveItem);
+            sfb_app._search.removeItem(toRemoveItem);
         });
 
-        global.contentNodesClient.on("insert", newData => {
+        sfb_app.contentNodesClient.on("insert", newData => {
            const newItem = {
               type: "content-node",
               label: `${newData.type} | ${newData.value}`,
               localization: { notebook_id: newData.notebook_id, content_id: newData.content_id, node_id: newData.id },
               terms: extractTerms(`${newData.value}`),
             };
-            global._search.addItem(newItem);
+            sfb_app._search.addItem(newItem);
         });
 
-        global.contentNodesClient.on("update", ([oldData, newData]) => {
+        sfb_app.contentNodesClient.on("update", ([oldData, newData]) => {
             const toRemoveItem = {
               type: "content-node",
               label: `${oldData.type} | ${oldData.value}`,
               localization: { notebook_id: oldData.notebook_id, content_id: oldData.content_id, node_id: oldData.id },
               terms: extractTerms(`${oldData.value}`),
             };
-            global._search.removeItem(toRemoveItem);
+            sfb_app._search.removeItem(toRemoveItem);
 
             const newItem = {
               type: "content-node",
@@ -263,11 +264,12 @@
               localization: { notebook_id: newData.notebook_id, content_id: newData.content_id, node_id: newData.id },
               terms: extractTerms(`${newData.value}`),
             };
-            global._search.addItem(newItem);
+            sfb_app._search.addItem(newItem);
         });
     }
 
-    global.session.onChangeUser(loadNotebooksForCurrentUser);
-    loadNotebooksForCurrentUser(session.getCurrentUser());
+    sfb_app.session.onChangeUser(loadNotebooksForCurrentUser);
+    loadNotebooksForCurrentUser(sfb_app.session.getCurrentUser());
+    global.sfb_app = sfb_app;
   })(window);
   
