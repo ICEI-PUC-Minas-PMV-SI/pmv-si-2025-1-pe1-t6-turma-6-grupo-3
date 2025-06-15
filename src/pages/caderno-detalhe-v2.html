@@ -380,8 +380,17 @@
           )
         )
         );
+
+            const emptyMessage = document.createElement('div');
+      emptyMessage.className = 'empty-message';
+      emptyMessage.innerHTML = `
+      <img src='https://cdn-icons-png.freepik.com/512/14675/14675615.png?uid=R156599778&ga=GA1.1.117031546.1749681552' width=220 alt="happy-face" class="" <img/>
+    <h1>Seu caderno está pronto</h1>
+    <p>Agora só falta o conteúdo</p>
+`;
+
         const contentsRow = creator.createContainer(
-          { id: containerID, items: contentCards },
+          { id: containerID, items: [...contentCards, emptyMessage] },
         );
         container.appendChild(contentsRow);
         
