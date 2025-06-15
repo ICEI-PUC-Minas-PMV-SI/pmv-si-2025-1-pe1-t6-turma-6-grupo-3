@@ -175,7 +175,7 @@
               name: current.name,
               logout: () => {
                 console.log("LOGOUT!"); 
-                session.signout();
+                sfb_app.session.signout();
                 window.location.assign("/src/pages/login-v2.html");
               },
             },

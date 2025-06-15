@@ -76,32 +76,21 @@
       ],
       contents: [],
   };
-    global.share = new ShareEngine(window.location.origin + "/src/pages/caderno-shared.html");
-    sfb_app.share = global.share;
+    sfb_app.share = new ShareEngine(window.location.origin + "/src/pages/caderno-shared.html");
+    
     sfb_app.url_service = new UrlService();
-    global._search = new SearchClient({ bloomSizeBits: 50000 });
-    sfb_app._search = global._search;
+    
+    sfb_app._search = new SearchClient({ bloomSizeBits: 50000 });
+    sfb_app.search = (term) => sfb_app._search.search(term);
+   
+    sfb_app.notebookClient = new MockNotebookClient(initial.notebooks);
+    sfb_app.contentMetaClient = new MockContentMetadataClient();
+    sfb_app.contentNodesClient = new MockContentNodesClient();
+    sfb_app.userClient = new MockUserClient(initial.users);
 
-    global.search = (term) => global._search.search(term);
-    sfb_app.search = global.search;
+    sfb_app.storageUser = new StorageManager(sfb_app.userClient, USER_LIST_KEY);
 
-    global.notebookClient = new MockNotebookClient(initial.notebooks);
-    sfb_app.notebookClient = global.notebookClient;
-
-    global.contentMetaClient = new MockContentMetadataClient();
-    sfb_app.contentMetaClient = global.contentMetaClient;
-
-    global.contentNodesClient = new MockContentNodesClient();
-    sfb_app.contentNodesClient = global.contentNodesClient;
-
-    global.userClient = new MockUserClient(initial.users);
-    sfb_app.userClient = global.userClient;
-
-    global.storageUser = new StorageManager(global.userClient, USER_LIST_KEY);
-    sfb_app.storageUser = global.storageUser;
-
-    global.session = new SessionManager(userClient, storageUser);
-    sfb_app.session = global.session;
+    sfb_app.session = new SessionManager(sfb_app.userClient, sfb_app.storageUser);
 
     function loadNotebooksForCurrentUser(user) {
         if (!user) {
@@ -119,19 +108,16 @@
           sfb_app.storageNode.save();
         }
         const notebookKey = 'notebooks_of_' + user.id;
-        global.storageNB = new StorageManager(global.notebookClient, notebookKey);
-        sfb_app.storageNB = global.storageNB;
+        sfb_app.storageNB = new StorageManager(sfb_app.notebookClient, notebookKey);
         sfb_app.storageNB.load();
 
         const metaKey = 'contents_meta_of_user_' + user.id ;
-        global.storageMeta = new StorageManager(global.contentMetaClient, metaKey);
-        sfb_app.storageMeta = global.storageMeta;
+        sfb_app.storageMeta = new StorageManager(sfb_app.contentMetaClient, metaKey);
         sfb_app.storageMeta.load();
 
         const nodeKey = 'contents_nodes_of_user_' + user.id
-        global.storageNodes = new StorageManager(global.contentNodesClient, nodeKey);
-        sfb_app.storageNodes = global.storageNodes;
-        global.storageNodes.load()
+        sfb_app.storageNodes = new StorageManager(sfb_app.contentNodesClient, nodeKey);
+        sfb_app.storageNodes.load()
 
         ///////////////////// SEARCH INDEX
         //////////////////// NOTEBOOK
@@ -284,6 +270,6 @@
 
     sfb_app.session.onChangeUser(loadNotebooksForCurrentUser);
     loadNotebooksForCurrentUser(sfb_app.session.getCurrentUser());
-    window.sfb_app = sfb_app;
+    global.sfb_app = sfb_app;
   })(window);
   
