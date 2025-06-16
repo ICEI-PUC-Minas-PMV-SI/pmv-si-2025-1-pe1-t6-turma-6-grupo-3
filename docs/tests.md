@@ -1,57 +1,57 @@
 ﻿![](img/Aspose.Words.84f02760-74a3-46a4-9351-e4f033d99ac6.001.png)
 
-**Projeto SurfBook \
+# Projeto SurfBook
 Manual de Testes SurfBook
 
-**Product:  SurfBook** 
+## Product:  SurfBook
 
-**Object:  Version *1.0* **
+Object:  Version 1.0
 
-1. **Sobre o Documento**
+1. Sobre o Documento
 
-Este documento tem como objetivo passar as informações básicas sobre como é o funcionamento do sistema surfbook. Apresentando de uma forma simples e didática o sistema Surf Book e suas funcionalidades desenvolvidas. 
+Este documento tem como objetivo apresentar as informações básicas e funcionalidades desenvolvidas sobre o funcionamento da aplicação web Surfbook. 
 
-2. **CT 01: Cadastro de usuário.**
+2. CT 01: Cadastro de usuário
 
-Para acessar o sistema SurfBook, basta clicar no link: [SurfBook](https://surfbook.netlify.app/src/pages/login-v2.html). Esse link te redirecionar para a tela de login do sistema. Onde teremos dois botões principais, ‘Entrar’ e ‘Cadastrar’. 
+Para acessar o sistema SurfBook, basta clicar no link: [SurfBook](https://surfbook.netlify.app/src/pages/login-v2.html). O usuário será redirecionado para a tela de login, onde teremos as opções: ‘Entrar’ e ‘Cadastrar’. 
 
 ![](img/Aspose.Words.84f02760-74a3-46a4-9351-e4f033d99ac6.005.jpeg)
 
-Entretanto, de início iremos começar pelo botão ‘Cadastrar’.
+Começemos por: ‘Cadastrar’.
 
 ![](img/Aspose.Words.84f02760-74a3-46a4-9351-e4f033d99ac6.006.jpeg)
 
-Ao clicar no botão ‘Cadastrar' ele vai te direcionar para a tela de cadastro de usuário, em que, o mesmo terá que fornecer seus dados básicos para poder criar sua conta. 
-
-Insira seu nome, sobrenome, email, senha e confirmação da senha.  
+Ao clicar no botão "Cadastrar", o usuário será direcionado para a tela de cadastro, onde deverá fornecer seu nome completo, endereço de email, senha e confirmar a senha para criar uma nova conta.
 
 ![](img/Aspose.Words.84f02760-74a3-46a4-9351-e4f033d99ac6.007.jpeg)
 
-Ao clicar em cadastrar o sistema irá te redirecionar para o menu principal do sistema com seu usuário criado logado. 
+Ao clicar em "Cadastrar", o sistema irá redirecioná-lo para o menu principal, já com seu usuário criado e logado.
 
-3. **CT 02: Tela de login do sistema.**
+3. CT 02: Tela de login do sistema
 
-Na tela de Login com seu usuário cadastrado, nos campos ‘email’ e ‘senha’, basta inserir seus dados cadastrados e clicar no botão ‘Entrar’. 
+Na tela de login, insira o email e a senha cadastrados nos respectivos campos e clique no botão "Entrar" para acessar o sistema.
 
 ![](img/Aspose.Words.84f02760-74a3-46a4-9351-e4f033d99ac6.009.jpeg)
 
-Ao clicar em entrar o sistema irá te redirecionar para a tela ‘Home’ do sistema ou tela principal. 
+Ao clicar em "Entrar", o sistema o redirecionará para a tela "Home", ou tela principal do sistema.
 
-4. **CT 03: Cadastro de caderno.**
+4. CT 03: Cadastro de caderno
 
-Ao entrar com seu usuário no sistema, ele já te redirecionará para a home, onde é feito todo o cadastro de cadernos no sistema. 
+Ao acessar o sistema com seu usuário, você será redirecionado automaticamente para a tela "Home", onde é realizado o cadastro dos cadernos.
 
 ![](img/Aspose.Words.84f02760-74a3-46a4-9351-e4f033d99ac6.011.jpeg)
 
-O sistema ao apresentar cadernos cadastrados terá essa visualização, com cada caderno tendo seu próprio card. 
+Ao exibir os cadernos cadastrados, o sistema apresentará cada um em seu respectivo card.
 
-Para criar um caderno, basta clicar no botão ‘+Adicionar’. 
+Para criar um novo caderno, basta clicar no botão "+ Adicionar".
 
 ![](img/Aspose.Words.84f02760-74a3-46a4-9351-e4f033d99ac6.012.jpeg)
 
-Ao clicar no botão, o sistema abrirá um modal de cadastro de caderno, onde será possível fazer a “personalização” do jeito que desejar do seu caderno online. 
+Ao clicar no botão, o sistema abrirá um modal de cadastro de caderno, onde será possível personalizar seu caderno online da forma que desejar.
 
-Para criar um, basta clicar no botão ícone e selecionar um, posteriormente selecionando um Título para seu caderno, preenchendo com a descrição que deseja colocar para esse e também sendo possível cadastrar uma imagem para representar seu caderno. Para cadastrar uma imagem no seu caderno, basta selecionar o link de alguma imagem no google, copiar o link dessa e colar no campo do sistema. 
+Para criar um caderno, clique no botão de ícone e selecione um. Em seguida, escolha um título, insira uma descrição e, se desejar, cadastre uma imagem para representar seu caderno.
+
+Para adicionar uma imagem, copie o link de uma imagem da internet e cole-o no campo correspondente do sistema.
 
 ![](img/Aspose.Words.84f02760-74a3-46a4-9351-e4f033d99ac6.013.jpeg)
 
@@ -59,92 +59,95 @@ Ao preencher os campos, basta clicar em enviar e seu caderno será criado.
 
 ![ref3]
 
-Ao criar o caderno, card dele no sistema ficará assim. 
+Após a criação do caderno, o card correspondente será exibido no sistema desta forma.
 
-5. **CT 04: Edição do caderno.**
+5. CT 04: Edição do caderno
 
-No card do caderno, basta clicar no botão do ‘lápis’ que o sistema irá abrir o modal de edição do caderno. 
+No card do caderno, basta clicar no ícone de lápis para que o sistema abra o modal de edição.
 
 ![ref3]
 
-Ao Clicar o sistema irá abrir o modal de edição, em que será possível alterar os mesmos campos na hora em que foi feito o cadastro. Para validar a edição basta clicar no botão ‘Enviar’. 
+Ao clicar, o sistema abrirá o modal de edição, onde será possível alterar os mesmos campos preenchidos durante o cadastro. Para confirmar as alterações, basta clicar no botão "Enviar".
 
 ![](img/Aspose.Words.84f02760-74a3-46a4-9351-e4f033d99ac6.016.jpeg)
 
-6. **CT 05: Listagem pela pesquisa.**
+6. CT 05: Listagem pela pesquisa
 
-Na tela ‘Home’, pode visualizar no canto superior esquerdo o campo de ‘Pesquisa’. Nele, se digitar algo correlacionado com o preenchimento de dados de caderno e conteúdo, o sistema irá trazer para o usuário o caderno em que ele está pesquisando.  
+Na tela "Home", você pode visualizar, no canto superior esquerdo, o campo de "Pesquisa". Ao digitar um termo relacionado aos dados de caderno ou conteúdo, o sistema exibirá o caderno correspondente à sua busca.
 
 ![](img/Aspose.Words.84f02760-74a3-46a4-9351-e4f033d99ac6.018.jpeg)
 
-Para entrar no conteúdo que deseja, basta clicar no que está procurando. 
+Para acessar o conteúdo desejado, basta clicar no item correspondente à sua busca.
 
-7. **CT 06: Cadastro de um conteúdo.**
+7. CT 06: Cadastro de um conteúdo
 
-No card do caderno, clique em 'Acesse material', o sistema irá te redirecionar a tela do caderno, onde será possível criar um novo conteúdo, clique em '+Adicionar'.  
+No card do caderno, clique em "Acesse material". O sistema irá redirecioná-lo para a tela do caderno, onde será possível criar um novo conteúdo. Para isso, clique em "+ Adicionar".
 
 ![](img/Aspose.Words.84f02760-74a3-46a4-9351-e4f033d99ac6.019.jpeg)
 
-Preencha os campos 'Ícone', 'Título' e 'Tags'. Preenchido clique em 'Enviar'. 
+Preencha os campos "Ícone", "Título" e "Tags". Após preencher, clique em "Enviar".
 
-Essas Tags, para, basta preencher com o nome que deseja e apertar o botão ‘Enter’ do teclado. 
+Para adicionar as tags, digite o nome desejado e pressione a tecla Enter do teclado.
 
 ![](img/Aspose.Words.84f02760-74a3-46a4-9351-e4f033d99ac6.020.jpeg)
 
-Ao criar o conteúdo, ele será mostrado dessa maneira. 
+Após criar o conteúdo, ele será exibido da seguinte forma.
 
 ![](img/Aspose.Words.84f02760-74a3-46a4-9351-e4f033d99ac6.021.jpeg)
 
-8. **CT 07: Edição de um conteúdo.**
+8. CT 07: Edição de um conteúdo.
 
-Para editar as informações de cadastro de um conteúdo, basta clicar no botão ‘Editar’ pertencente a cada conteúdo. 
+Para editar as informações de um conteúdo cadastrado, basta clicar no botão "Editar" correspondente a ele.
 
 ![](img/Aspose.Words.84f02760-74a3-46a4-9351-e4f033d99ac6.022.jpeg)
 
-Ao clicar no botão editar, o sistema irá abrir o modal de edição de conteúdo, podendo alterar todos os itens que foram adicionados em seu cadastro. Para confirmar a edição, basta clicar no botão enviar. 
+Ao clicar no botão "Editar", o sistema abrirá o modal de edição do conteúdo, permitindo alterar todos os itens adicionados no cadastro. Para confirmar as alterações, basta clicar no botão "Enviar".
 
-9. **CT 08: Pesquisa de conteúdo. **
+9. CT 08: Pesquisa de conteúdo
 
-No campo pesquisa no canto esquerdo da tela, você pode pesquisar pelo conteúdo em que deseja. Utilizando suas Tags e pelo seu título. 
+No campo de pesquisa, localizado no canto esquerdo da tela, você pode buscar o conteúdo desejado utilizando as tags ou o título.
 
 ![](img/Aspose.Words.84f02760-74a3-46a4-9351-e4f033d99ac6.023.jpeg)
 
-Para pesquisar, digite o que deseja no campo 'Pesquisa' e ao aparecer o que você está procurando clique no mesmo que o sistema irá te redirecionar para começar a escrever/visualizar sobre o conteúdo selecionado. 
+Para pesquisar, digite o que deseja no campo "Pesquisa" e, ao aparecer o item correspondente, clique nele. O sistema irá redirecioná-lo para começar a escrever ou visualizar o conteúdo selecionado.
 
-10. **CT 16: Link entre conteúdos.**
+10. CT 16: Link entre conteúdos
 
-Para fazer o link entre dois conteúdos, o usuário no cadastro de um ou mais conteúdos, precisa cadastrar uma mesma ‘Tag’ entre eles para esse link ocorrer. 
+Para criar um link entre dois conteúdos, o usuário precisa cadastrar a mesma tag em ambos durante o cadastro ou edição dos conteúdos.
 
-Então primeiro entre no primeiro conteúdo em que deseja fazer o link preencha com as tags que deseja. 
+Primeiro, acesse o primeiro conteúdo no qual deseja fazer o link e preencha as tags desejadas.
 
 ![](img/Aspose.Words.84f02760-74a3-46a4-9351-e4f033d99ac6.024.jpeg)
 
-Logo após, para o segundo conteúdo, repita uma das tags cadastradas no primeiro conteúdo. 
+Em seguida, no segundo conteúdo, insira uma das tags cadastradas no primeiro conteúdo.
 
 ![](img/Aspose.Words.84f02760-74a3-46a4-9351-e4f033d99ac6.025.jpeg)
 
-Feito isso, o link entre os conteúdos fica ativo, podendo ver essa visualização na tela de Gráficos. !
+Após isso, o link entre os conteúdos ficará ativo, podendo ser visualizado na tela de Gráficos.
 
 ![](img/Aspose.Words.84f02760-74a3-46a4-9351-e4f033d99ac6.026.jpeg)
 
-11. **CT 17: Visualização Gráfica.**
+11. CT 17: Visualização Gráfica.
 
-No menu lateral esquerdo, podemos clicar no botão ‘Gráficos’. Ao clicar nele, o sistema irá te redirecionar para uma tela em que será possível ver a visualização dos cadernos de forma gráfica. 
+No menu lateral esquerdo, clique no botão "Gráficos". Ao fazer isso, o sistema o redirecionará para uma tela onde será possível visualizar os cadernos de forma gráfica.
 
 ![](img/Aspose.Words.84f02760-74a3-46a4-9351-e4f033d99ac6.027.jpeg)
 
-Esse gráfico pode mudar sua visualização a partir do que o usuário desejar enxergar. Para fazer essa alteração, basta clicar no botão ‘filtro’ acima do gráfico. 
+A visualização do gráfico pode ser alterada conforme a preferência do usuário. Para fazer essa alteração, basta clicar no botão "Filtro" localizado acima do gráfico.
 
 ![](img/Aspose.Words.84f02760-74a3-46a4-9351-e4f033d99ac6.028.jpeg)
 
-Pode alternar em visualizar, Tags, Notebooks e Conteúdos juntos, separados, ou da forma que o usuário preferir a visualização. ![ref1]
+É possível alternar entre diferentes visualizações, mostrando Tags, Notebooks e Conteúdos juntos, separados, ou da forma que o usuário preferir.
 
-![](img/Aspose.Words.84f02760-74a3-46a4-9351-e4f033d99ac6.029.jpeg)O sistema permite tambem ver o link entre conteúdos cadastrados pelo usuário, em que a visualização das ‘Bolinhas’ com link entre elas é dada por um traço que ligam-as.
+![ref1]
+
+![](img/Aspose.Words.84f02760-74a3-46a4-9351-e4f033d99ac6.029.jpeg)
+
+O sistema também permite visualizar os links entre conteúdos cadastrados pelo usuário, representados por nós conectados por traços que indicam as ligações entre elas.
 
 ![](img/Aspose.Words.84f02760-74a3-46a4-9351-e4f033d99ac6.030.jpeg)
 
-Além disso, é possível fazer o manuseio dos itens e também dar zoom e retirar o zoom no gráfico.Para fazer a movimentação dos itens, basta clicar na ‘Bolinha’/Conteúdo/Tag/Caderno e movimentar o mouse para ver as mesmas se movendo no espaço.E Para utilizar o zoom, basta usar o scroll de seu mouse, com scroll para cima você dá zoom e para baixo ele retira. 
-
+Além disso, é possível manipular os itens do gráfico, assim como aplicar zoom ou diminuir o zoom. Para mover um item, basta clicar no nó (Conteúdo, Tag ou Caderno) e arrastar com o mouse para posicioná-lo no espaço. Para usar o zoom, utilize a roda do mouse: ao girar para cima, o zoom aumenta; ao girar para baixo, o zoom diminui.
 
 [ref1]: img/Aspose.Words.84f02760-74a3-46a4-9351-e4f033d99ac6.002.png
 [ref2]: img/Aspose.Words.84f02760-74a3-46a4-9351-e4f033d99ac6.004.png
