@@ -9,7 +9,7 @@ Object:  Version 1.0
 
 1. Sobre o Documento
 
-Este documento tem como objetivo apresentar as informações básicas e funcionalidades desenvolvidas sobre o funcionamento da aplicação web Surfbook. 
+Este documento tem como objetivo apresentar as informações básicas e funcionalidades desenvolvidas sobre a aplicação web Surfbook. 
 
 2. CT 01: Cadastro de usuário
 
