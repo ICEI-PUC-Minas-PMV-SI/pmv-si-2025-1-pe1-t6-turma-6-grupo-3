@@ -1,4 +1,4 @@
-function createCalendarFullPage(el, { events, onEventClick, onEventDrop, onDateClick }) {
+function createFullPageCalendar(el, { events, onEventClick, onEventDrop, onDateClick }) {
   const calendar = EventCalendar.create(el, {
     view: "dayGridMonth",
     locale: "pt-BR",
