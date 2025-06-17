@@ -60,12 +60,6 @@ body {
     cursor: pointer;
     margin-left: -10px;
 }
-
-.abriModal{
-    border: none;
-    outline: none;
-    cursor: pointer;
-}
 .excluir {
     border: none;
     outline: none;
@@ -124,8 +118,10 @@ body {
 }
 
 .input-edicao {
+    border: none;
+    outline: none;
     font-size: 16px;
-    padding: 4px;
+    padding: 2px;
     flex-grow: 1;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -182,7 +178,7 @@ body {
     border: none;
     outline: none;
     background: transparent;
-    cursor: pointer;
+    cursor: grab;
     font-size: 18px;
     padding: 6px;
     border-radius: 6px;
@@ -229,8 +225,6 @@ body {
     margin-left: 60px;
     scale: 0.90;
 }
-
-/* Descrição da tarefa (embaixo do título) */
 .descricao-task {
     display: flex;
     flex-direction: column;
@@ -265,4 +259,17 @@ body {
   border: none;
   border-radius: 50%;
   cursor: pointer;
+}
+.conteudo-task{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+.linha-task {
+    user-select: none;
+    cursor: pointer;
+}
+
+.linha-task.dragging {
+    opacity: 0.5;
 }

@@ -10,8 +10,10 @@ function criarTarefa(parent = containerTasks) {
         <div class="task">
             <button class="btnmenu" title="Menu">⋮⋮</button>
             <input type="checkbox" class="checkb">
-            <p class="texto-task">Nova tarefa...</p>
-            <p class="descricao-task">Descrição da tarefa...</p>
+            <div class="conteudo-task">
+                <p class="texto-task">Nova tarefa...</p>
+                <p class="descricao-task">Descrição da tarefa...</p>
+            </div>    
             <div class="acoes-task">
                 <select class="prioridade">
                     <option value="">Prioridade</option>
@@ -142,81 +144,122 @@ menu.querySelector('.op-adicionar-tag').addEventListener('click', () => {
     });
 }
 
-// Evento global: clique em qualquer botão ou fora
-document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('btnmenu')) {
-        e.stopPropagation();
-        abrirMenu(e);
-    } else {
-        fecharMenus();
-    }
-
-    // Excluir
-    if (e.target.classList.contains('excluir')) {
-        e.target.closest('.linha-task').remove();
-    }
-
- // Permite edição direta do título e descrição ao clicar
+// Evento global: clique para menu, excluir e edição
 document.addEventListener('click', (e) => {
     const el = e.target;
+
+    // Menu
+    if (el.classList.contains('btnmenu')) {
+        e.stopPropagation();
+        abrirMenu(e);
+        return;
+    }
+
+    // Fechar menus ao clicar fora
+    fecharMenus();
+
+    // Excluir tarefa
+    if (el.classList.contains('excluir')) {
+        el.closest('.linha-task').remove();
+        return;
+    }
 
     // Editar título
     if (el.classList.contains('texto-task')) {
         const task = el.closest('.task');
+        const container = el.parentElement; // .conteudo-task
         const input = document.createElement('input');
         input.type = 'text';
         input.placeholder = el.innerText;
         input.classList.add('input-edicao');
-        task.replaceChild(input, el);
+
+        container.replaceChild(input, el);
         input.focus();
 
-        input.addEventListener('blur', () => finalizarEdicaoTexto(task, input));
+        input.addEventListener('blur', () => finalizarEdicaoTexto(container, input));
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') input.blur();
         });
+        return;
     }
 
     // Editar descrição
     if (el.classList.contains('descricao-task')) {
         const task = el.closest('.task');
+        const container = el.parentElement; // .conteudo-task
         const input = document.createElement('input');
         input.type = 'text';
         input.placeholder = el.innerText;
         input.classList.add('input-edicao');
-        task.replaceChild(input, el);
+
+        container.replaceChild(input, el);
         input.focus();
 
-        input.addEventListener('blur', () => finalizarEdicaoDescricao(task, input));
+        input.addEventListener('blur', () => finalizarEdicaoDescricao(container, input));
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') input.blur();
         });
-    }
-});
-
-    // Finaliza edição do título
-    function finalizarEdicaoTexto(task, input) {
-        const novoTexto = input.value.trim() || "Tarefa sem nome";
-        const novoP = document.createElement('p');
-        novoP.innerText = novoTexto;
-        novoP.classList.add('texto-task');
-        task.replaceChild(novoP, input);
-    }
-
-    // Finaliza edição da descrição
-    function finalizarEdicaoDescricao(task, input) {
-        const novaDescricao = input.value.trim() || "Sem descrição";
-        const novoP = document.createElement('p');
-        novoP.innerText = novaDescricao;
-        novoP.classList.add('descricao-task');
-        task.replaceChild(novoP, input);
+        return;
     }
 });
 
 // Finaliza edição do título
-function finalizarEdicaoTexto(task, input) {
+function finalizarEdicaoTexto(container, input) {
     const novoTexto = input.value.trim() || "Tarefa sem nome";
     const novoP = document.createElement('p');
     novoP.innerText = novoTexto;
     novoP.classList.add('texto-task');
-    task.replaceChild(novoP, input);
+    container.replaceChild(novoP, input);
+}
+
+// Finaliza edição da descrição
+function finalizarEdicaoDescricao(container, input) {
+    const novaDescricao = input.value.trim() || "Sem descrição";
+    const novoP = document.createElement('p');
+    novoP.innerText = novaDescricao;
+    novoP.classList.add('descricao-task');
+    container.replaceChild(novoP, input);
+}
+
+//mover task
+let draggedTask = null;
+
+document.addEventListener('mousedown', (e) => {
+    if (e.target.classList.contains('btnmenu')) {
+        const task = e.target.closest('.linha-task');
+        draggedTask = task;
+        task.classList.add('dragging');
+    }
+});
+
+document.addEventListener('mouseup', () => {
+    if (draggedTask) {
+        draggedTask.classList.remove('dragging');
+        draggedTask = null;
+    }
+});
+
+document.addEventListener('dragstart', (e) => {
+    e.preventDefault(); // Impede comportamento padrão de arrastar
+});
+
+document.addEventListener('mousemove', (e) => {
+    if (!draggedTask) return;
+
+    const afterElement = getTaskAfterMouse(e.clientY);
+    const container = document.getElementById('container-tasks');
+
+    if (afterElement == null) {
+        container.appendChild(draggedTask);
+    } else {
+        container.insertBefore(draggedTask, afterElement);
+    }
+});
+
+function getTaskAfterMouse(y) {
+    const tasks = [...document.querySelectorAll('.linha-task:not(.dragging)')];
+    return tasks.find(task => {
+        const box = task.getBoundingClientRect();
+        return y < box.top + box.height / 2;
+    }) || null;
 }
