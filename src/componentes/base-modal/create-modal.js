@@ -242,7 +242,10 @@ function createModalSubmitButton(document, wrapper, {
   if (isOutline) button.classList.add('btn-outline-primary');
 
   Object.entries(actions).forEach(([eventName, handler]) => {
-    button.addEventListener(eventName, e => handler(e, button));
+    button.addEventListener(eventName, e => { 
+      e.preventDefault();
+      handler(e, button)
+    });
   });
 
   return button;
