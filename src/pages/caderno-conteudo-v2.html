@@ -58,14 +58,14 @@
           type: "h1", // "title", "paragraph", "ordered_list", "unordered_list", "action_list", "image", "link_bookmark"
           position: 0,
           customStyle: ["center-text","bigger-text", "background-paper"],
-          id: contentNodesClient._build_key(notebookId, contentId, memory._nextId),
+          id: sfb_app.contentNodesClient._build_key(notebookId, contentId, memory._nextId),
           notebook_id: notebookId,
           content_id: contentId,
           value: "Comece por aqui...",
         })
         memory._nextId = memory._nextId+1;
         sfb_app.contentNodesClient.resetOfNotebookContent(notebookId, contentId, memory.nodes);
-        console.log("memory::getAll", contentNodesClient.getAll())
+        console.log("memory::getAll", sfb_app.contentNodesClient.getAll())
         sfb_app.storageNodes.save();
       }
       const [createBlock, setCaretToEnd] = FactoryCreateBlock(document, editor, creator, true, {
@@ -115,7 +115,7 @@
                     type: nodeType,
                     position: position,       // vai ser ajustado abaixo
                     customStyle: "",
-                    id: contentNodesClient._build_key(notebookId, contentId, memory._nextId),
+                    id: sfb_app.contentNodesClient._build_key(notebookId, contentId, memory._nextId),
                     value: "",
                     notebook_id: notebookId,
                     content_id: contentId,
