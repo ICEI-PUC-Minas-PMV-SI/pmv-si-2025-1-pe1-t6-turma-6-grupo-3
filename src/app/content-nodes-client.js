@@ -102,9 +102,8 @@ class MockContentNodesClient {
      * @returns {boolean} true se removido, false caso não exista
      */
     deleteItem(id) {
-      const oldItem = this.findItem(id);
-      
-      this.items.delete(key);
+      const oldItem = this.items.get(id);
+      this.items.delete(id);
       this._emit("remove", oldItem);
     }
 
