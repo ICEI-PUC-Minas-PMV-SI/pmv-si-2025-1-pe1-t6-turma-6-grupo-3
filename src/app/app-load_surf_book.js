@@ -133,6 +133,7 @@
 
 
         sfb_app.notebookClient.on("remove", oldData => {
+            console.log("notebook client removed", oldData);
             const toRemoveItem = {
               type: "notebook",
               label: oldData.name,
@@ -140,6 +141,13 @@
               terms: extractTerms(`${oldData.icon} ${oldData.name} ${oldData.description}`),
             };
             sfb_app._search.removeItem(toRemoveItem);
+
+           const allMetaToBeRemoved = sfb_app.contentMetaClient.getAllFromNotebook(oldData.id);
+           allMetaToBeRemoved.forEach(meta => {
+            console.log("meta to be removed", meta)
+            sfb_app.contentMetaClient.deleteItem(meta.id)
+          });
+          sfb_app.storageMeta.save();
         });
 
         sfb_app.contentMetaClient.on("insert", newData => {
@@ -189,6 +197,12 @@
               terms: extractTerms(`${oldData.icon} ${oldData.name} ${oldData.tags.map(({name}) => name).join(" ")}`),
             };
             sfb_app._search.removeItem(toRemoveItem);
+
+            const allNodesToBeRemoved = sfb_app.contentNodesClient.getAllFromNotebookContent(oldData.notebook_id, oldData.content_id);
+            allNodesToBeRemoved.forEach(node => {
+              sfb_app.contentNodesClient.deleteItem(node.id);
+            });
+            sfb_app.storageNodes.save();
         });
 
         sfb_app.contentMetaClient.on("insert", newData => {
