@@ -19,9 +19,11 @@
   <link rel="stylesheet" href="../componentes/icons-selector/selector.css">
   <link rel="stylesheet" href="../componentes/tags-selector/selector.css">
   <link rel="stylesheet" href="../componentes/grapho-view/view.css">
-  <link rel="stylesheet" href="../componentes/full-page-calendar/calendar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@event-calendar/build@4.3.0/dist/event-calendar.min.css" />
 
+  
   <script src="https://cdn.jsdelivr.net/npm/@event-calendar/build@4.3.0/dist/event-calendar.min.js"></script>
+  <link rel="stylesheet" href="../componentes/fullpage-calendar/calendar.css">
 
 
   
@@ -35,12 +37,14 @@
   <script src="../componentes/icons-selector/icons.js"></script>
   <script src="../componentes/tags-selector/create-selector.js"></script>
   <script src="../componentes/search-input/create-input.js"></script>
-  <script src="../componentes/notebook-modal/create-edit-notebook-modal.js"></script>
-  <script src="../componentes/notebook-modal/delete-notebook-modal.js"></script>
+  <script src="../componentes/event-modal/create-edit-modal.js"></script>
+  <script src="../componentes/event-modal/delete-modal.js"></script>
+
   <script src="../componentes/content-modal/create-edit-content-modal.js"></script>
-  <script src="../componentes/content-modal/delete-content-modal.js"></script>
+  <script src="../componentes/notebook-modal/create-edit-notebook-modal.js"></script>
+
   <script src="../componentes/grapho-view/create-graph-view.js"></script>
-  <script src="../componentes/full-page-calendar/create-calendar.js"></script>
+  <script src="../componentes/fullpage-calendar/create-calendar.js"></script>
 
   <script src="../componentes/builder.js"></script>
 </head>
@@ -53,6 +57,7 @@
   <script src="../app/share-engine.js"></script>
   <script src="../app/search-client.js"></script>
   <script src="../app/notebooks-client.js"></script>
+  <script src="../app/events-client.js"></script>
   <script src="../app/content-metadata-client.js"></script>
   <script src="../app/content-nodes-client.js"></script>
   <script src="../app/user-client.js"></script>
@@ -132,115 +137,39 @@
       callback();
     }
 
-    function createEventModal(creator, { create, update }) {
-      const id = creator.createModalField({
-        name: 'id',
-        type: 'text',
-        label: 'id',
-        customClass: ["hidden"],
-        placeholder: 'Dê um nome claro ao seu Caderno',
-        actions: {
-          input: (e, el) => console.log('digitou nome:', el.value)
-        }
-      });
+    function readEvents(callback) {
+      return callback(sfb_app.eventClient.getAll())
+    }
 
-      const name = creator.createModalField({
-        name: 'name',
-        type: 'text',
-        customClass: ["col-md-10"],
-        label: 'Título',
-        placeholder: 'Dê um nome claro ao seu Caderno',
-        actions: {
-          input: (e, el) => console.log('digitou nome:', el.value)
-        }
-      });
-
-      const image = creator.createModalField({
-        name: 'image',
-        type: 'text',
-        label: 'Imagem',
-        placeholder: 'Adicione a url de uma imagem',
-        actions: {
-          input: (e, el) => console.log('digitou nome:', el.value)
-        }
-      });
-
-      const description = creator.createModalTextarea({
-        name:        'description',
-        label:       'Descrição',
-        placeholder: 'Descreva em poucas palavaras os objetivos desse caderno...',
-        rows:        6,
-        actions: {
-          input: (e, el) => console.log('Conteúdo:', el.value)
-        }
-      });
-      
-      const fields = [
-        id,
-        name,
-        image,
-        description,
-      ];
-
-      const fieldsWithoutIcon = [
-        id,
-        name,
-        image,
-        description,
-      ];
-      
-      const btnCancelar = creator.createModalButton({
-        text: 'Cancelar',
-        isOutline: true,
-        actions: { click: () => hideModal(nootebookModal) }
-      });
-      
-      
-      const btnNew = creator.createModalButton({
-        text: "Criar Caderno",
-        isPrimary: true,
-        actions: { click: () => {
-          const err = create(getFieldsValues());
-          if (err) {
-            alert(err.message)
-            return
-          }
-          hideModal(nootebookModal);
-        }}
-      });
-
-      const btnEdit = creator.createModalButton({
-        text: "Atualizar Caderno",
-        isPrimary: true,
-        actions: { click: () => {
-          const err = update(getFieldsValues());
-          if (err) {
-            alert(err.message)
-            return
-          }
-          hideModal(nootebookModal);
-        }}
-      });
-      
-      const newModalButtons = [btnCancelar, btnNew];
-      const editModalButtons = [btnCancelar, btnEdit];
-
-      // 3) Cria o próprio modal
-      const nootebookModal = creator.createModal({
-        id:            'cadastroModal',
-        title:         "Crie seu Novo Notebook",
-        bodyElements:  fields,
-        footerButtons: newModalButtons,
-      });
-
-      const getFieldsValues = () => fieldsWithoutIcon.reduce(
-        (acc, el) => ({...acc, [el.children[1].name]:el.children[1].value }),
-        {
-        });
-
-        return [nootebookModal, newModalButtons, editModalButtons];
+    function createNewEvent(data, callback){
+      const [created, err] = sfb_app.eventClient.insertItem(
+        data,
+      );
+      if (err) {
+        return [null, err]
       }
+      sfb_app.storageEvents.save();
+      cb(created);
+    }
 
+    function updateEvent(data, callback) {
+      const [updated, err] = sfb_app.eventClient.updateItem(data.id, data);
+      if (err) {
+        alert(err.message);
+        return
+      }
+      sfb_app.storageEvents.save();
+      callback(updated);
+    }
+
+    function deleteEvent(id, callback) {
+      console.log("id to be deleted:", id);
+      sfb_app.eventClient.deleteItem(id);
+      sfb_app.storageEvents.save();
+      callback();
+    }
+
+   
     const loader = document.getElementById('loader');
 
     buildComponentsCreator(document,"..", "*")
@@ -282,7 +211,6 @@
           console.log(`VIEW CONTENT NODES: notebook[${notebookId}] content[${data.id}]`);
           window.location.assign(`caderno-conteudo-v2.html?notebookId=${notebookId}&contentId=${data.content_id}`);
         };
-        
       
         const container = document.createElement('span');
         
@@ -352,60 +280,92 @@
           ],
         });
         container.appendChild(pageHeader);
+
+        const events = sfb_app.eventClient.getAll();
+
+        const createEvent = (args) => {
+          console.log("create event", args)
+        }
+        const updateEvent = (args) => {
+          console.log("update event", args)
+        }
         
         const [
+          eventModal, 
+          eventModalNewButtons, 
+          eventModalEditButtons,
+        ] = createEventModal(
+          creator, 
+          { 
+            create: (fromModal) => {
+               console.log("Create event", fromModal);
+               createNewEvent(fromModal, (fromClient) => {
+
+               });
+            },
+            update: (fromModal) => {
+               console.log("Update event", fromModal);
+               updateEvent(fromModal, (fromClient) => {
+
+               });
+            },
+          },
+        );
+        container.appendChild(eventModal);
+
+        const [
           contentModal, 
-          createContentModalButtons, 
+          __, 
           editContentModalButtons, 
         ] = createContentModal(
-            creator, 
-            {
-              create: (fromModal) => {
-                console.log("Create content", fromModal)
-                createNewContent(fromModal, (fromClient) => {
-                  const card = creator.createContentCard(
-                    {
-                      data: fromClient,
-                      actions: {
-                        edit: (e) => editContentAction(e,fromClient),
-                        view: (e) => viewContentAction(e, fromClient),
-                      }
-                    },
-                  );
-                  console.log("card::", card)
-                  appendToContainerSlot(
-                    document,
-                    containerID,
-                    card,
-                  );
-                });
-              },
-              update: (fromModal) => {
-                console.log("Update content", fromModal)
-                updateContent(fromModal, (fromClient) => {
-                  const payload = {
-                    data: fromClient,
-                    actions: {
-                      view: (e) => viewContentAction(e, fromClient),
-                      edit: (e) => editContentAction(e, fromClient)
-                    }
-                  };
-                  console.log("updateContentCard.payload", payload);
-                  updateContentCard(document, payload)
-                })
-              },
+          creator, 
+          {
+            create: (fromModal) => {
+              console.log("Create content", fromModal)
+              createNewContent(fromModal, (fromClient) => {
+                // const card = creator.createContentCard(
+                //   {
+                //     data: fromClient,
+                //     actions: {
+                //       edit: (e) => editContentAction(e,fromClient),
+                //       view: (e) => viewContentAction(e, fromClient),
+                //     }
+                //   },
+                // );
+                // console.log("card::", card)
+                // appendToContainerSlot(
+                //   document,
+                //   containerID,
+                //   card,
+                // );
+              });
             },
-            creator.createIconSelector({
-              name:         'icon',
-              label:        'Ícone',
-              popular:      ['alarm','heart','star'],
-              allIcons,
-              customClass: ["col-md-2"],
-              actions: {
-                select: (iconName, el) => console.log('Ícone:', iconName)
-              }
-            }),
-            creator.createTagInput({
+            update: (fromModal) => {
+              console.log("Update content", fromModal)
+              updateContent(fromModal, (fromClient) => {
+                const payload = {
+                  data: fromClient,
+                  actions: {
+                    view: (e) => viewContentAction(e, fromClient),
+                    edit: (e) => editContentAction(e, fromClient)
+                  }
+                };
+                console.log("updateContentCard.payload", payload);
+                // updateContentCard(document, payload)
+              })
+            },
+          },
+          creator.createIconSelector({
+            name:         'icon',
+            label:        'Ícone',
+            popular:      ['alarm','heart','star'],
+            allIcons,
+            customClass: ["col-md-2"],
+            actions: {
+              select: (iconName, el) => console.log('Ícone:', iconName)
+            }
+          }),
+          creator.createTagInput({
               name: 'tags',
               label: 'Tags',
               placeholder: 'Digite e tecle Enter',
@@ -416,27 +376,12 @@
                 onColorChange: (tag, color) => console.log(`Cor de ${tag}:`, color)
               },
             })
-          );
+        );
         container.appendChild(contentModal);
 
         const [
-          contentDeleteModal,
-        ] = createDeleteContentModal(
-            creator, 
-            {
-              deleteFn: (fromModal) => {
-                console.log("Create content", fromModal)
-                deleteContent(fromModal, (fromClient) => {
-                  console.log("card::deleted > ", fromClient)
-                  removeGenericCard(document, `content-card-${fromModal.id}`)
-                });
-              },
-            }
-          );
-        container.appendChild(contentDeleteModal);
-        
-        const [
           notebookModal, 
+          _,
           editModalButtons, 
         ] = createNotebookModal(
             creator, 
@@ -459,121 +404,63 @@
               }
             })
           );
-        
         container.appendChild(notebookModal);
-
-        const [
-          notebookDeleteModal, 
-          deleteModalButtons, 
-        ] = createDeleteNotebookModal(
-            creator, 
-            {
-              deleteFn: (fromModal) => {
-                if (fromModal.name != notebook.name) {
-                  alert("Nome do Carderno não coincide com o escrito na confirmação");
-                  return
-                }
-                deleteNotebook(fromModal.id, (errFromClient) => {
-                if (errFromClient) {
-                  alert(errFromClient.message);
-                  return
-                }
-                document.location.assign("/src/pages/caderno-lista-v2.html")
-              })
-            }
-            },
-          );
-        container.appendChild(notebookDeleteModal);
-      
-
-        const events = [
-          {
-            id: "evt-001",
-            resourceIds: ["room-1"],
-            allDay: false,
-            start: "2025-06-07T09:00:00",
-            end: "2025-06-07T10:30:00",
-            title: "Reunião com equipe",
-            editable: true,
-            startEditable: true,
-            durationEditable: true,
-            display: "auto",
-            backgroundColor: "#4caf50",
-            textColor: "#ffffff",
-            classNames: ["evento-importante", "reuniao"],
-            styles: ["font-size: 16px", "border-radius: 6px"],
-            extendedProps: {
-              responsavel: "Lucas Badico",
-              prioridade: "alta",
-              description: "UMa descricao longa"
-            }
-          },
-          {
-            id: "evt-002",
-            resourceIds: ["room-2"],
-            allDay: true,
-            start: "2025-06-08",
-            end: "2025-06-09",
-            title: "Workshop - Dia inteiro",
-            display: "auto",
-            backgroundColor: "#2196f3",
-            textColor: "#ffffff",
-            classNames: ["evento-dia-inteiro"],
-            styles: ["font-weight: bold"],
-            extendedProps: {
-              tipo: "Workshop",
-              participantes: 25,
-              description: "UMa descricao longa"
-            }
-          },
-          {
-            id: "evt-003",
-            resourceIds: ["room-1", "room-3"],
-            allDay: false,
-            start: new Date("2025-06-09T13:00:00"),
-            end: new Date("2025-06-09T15:00:00"),
-            title: "Apresentação de projeto",
-            display: "auto",
-            backgroundColor: "#ff9800",
-            textColor: "#000",
-            extendedProps: {
-              observacao: "Levar projetor",
-              description: "UMa descricao longa"
-            }
-          }
-        ];
-
-        const createEvent = (args) => {
-          console.log("create event", args)
-        }
-        const updateEvent = (args) => {
-          console.log("update event", args)
-        }
-        
-        const [
-          eventModal, 
-          eventModalNewButtons, 
-          eventModalEditButtons,
-        ] = createEventModal(
-          creator, 
-          { create: createEvent, update: updateEvent },
-        );
-        
-        container.appendChild(eventModal);
 
         const onEventClick =  function (info) { 
           console.log("EVENT", info)
-          updateModal(modal, {
+
+          if (info.event.extendedProps.parent_type === "content") {
+            
+            const { notebook_id, content_id }= info.event.extendedProps.parent_location;
+            const data = sfb_app.contentMetaClient.findItem(notebook_id, content_id);
+
+            updateModal(contentModal, {
+              title: editContentModalTitle,
+              footerButtons: editContentModalButtons,
+              fieldValues: {
+                id: data.id,
+                icon: data.icon,
+                name: data.name,
+                due_date: data.due_date,
+                tags: data.tags,
+              },
+            });
+            showModal(contentModal);
+            return
+          }
+
+          if (info.event.extendedProps.parent_type === "notebook") {
+            
+            const {notebook_id} = info.event.extendedProps.parent_location;
+            const notebook = sfb_app.notebookClient.findItem(notebook_id);
+
+            updateModal(notebookModal, {
+                title: editNotebookModalTitle,
+                footerButtons: editModalButtons,
+                fieldValues: {
+                  id: notebook.id,
+                  icon: notebook.icon,
+                  image: notebook.image,
+                  description: notebook.description,
+                  name: notebook.name,
+                  due_date: notebook.due_date,
+                },
+              });
+            showModal(notebookModal);
+            return
+          }
+          updateModal(eventModal, {
             title: "Editar Evento",
-            footerButtons: editButtons,
+            footerButtons: eventModalEditButtons,
             fieldValues: {
-              id: "1",
-              image: "",
+              id: info.event.id,
+              start_date: info.event.start,
+              end_date: info.event.end,
               description: info.event.extendedProps.description,
               name: info.event.title,
             },
           });
-          showModal(modal);
+          showModal(eventModal);
         }
 
         const onEventDrop =  function (info) { 
@@ -582,9 +469,9 @@
 
         const onDateClick =  function (info) { 
           console.log("DateClick", info)
-          updateModal(modal, {
+          updateModal(eventModal, {
             title: "Criar Evento",
-            footerButtons: newButtons,
+            footerButtons: eventModalNewButtons,
             fieldValues: {
               id: "1",
               image: "",
@@ -592,7 +479,7 @@
               name: "",
             },
           });
-          showModal(modal);
+          showModal(eventModal);
         }
 
         const calendarHolder = document.createElement('span');
@@ -612,7 +499,8 @@
           { 
             id: containerID, 
             items: [
-              calendarHolder
+              calendarHolder,
+              createCalendarLegend(["notebook", "content", "task", "raw"].map(getLegendByType))
             ]
           },
         );
