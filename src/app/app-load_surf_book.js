@@ -87,6 +87,7 @@
     sfb_app.contentMetaClient = new MockContentMetadataClient();
     sfb_app.contentNodesClient = new MockContentNodesClient();
     sfb_app.userClient = new MockUserClient(initial.users);
+    sfb_app.eventClient = new MockEventsClient();
 
     sfb_app.storageUser = new StorageManager(sfb_app.userClient, USER_LIST_KEY);
 
@@ -104,12 +105,22 @@
           sfb_app.storageMeta.save();
         }
 
-        if (sfb_app.storageNode) {
-          sfb_app.storageNode.save();
+        if (sfb_app.storageNodes) {
+          sfb_app.storageNodes.save();
         }
+
+         if (sfb_app.storageEvents) {
+          sfb_app.storageEvents.save();
+        }
+
+        const eventKey = 'events_of_' + user.id;
+        sfb_app.storageEvents = new StorageManager(sfb_app.eventClient, eventKey);
+        sfb_app.storageEvents.load();
+
         const notebookKey = 'notebooks_of_' + user.id;
         sfb_app.storageNB = new StorageManager(sfb_app.notebookClient, notebookKey);
         sfb_app.storageNB.load();
+
 
         const metaKey = 'contents_meta_of_user_' + user.id ;
         sfb_app.storageMeta = new StorageManager(sfb_app.contentMetaClient, metaKey);
@@ -129,28 +140,42 @@
               terms: extractTerms(`${notebook.icon} ${notebook.name} ${notebook.description}`),
             };
             sfb_app._search.addItem(newItem);
+
+            if (notebook.due_date) {
+              console.log('=========== sfb_app.notebookClient.getAll()');
+              const event = sfb_app.eventClient.eventFromNotebook(notebook);
+              sfb_app.eventClient.upinsertItem(event);
+              sfb_app.storageEvents.save();
+            }
         })
 
 
         sfb_app.notebookClient.on("remove", oldData => {
-            console.log("notebook client removed", oldData);
-            const toRemoveItem = {
+          console.log("notebook client removed", oldData);
+          const toRemoveItem = {
               type: "notebook",
               label: oldData.name,
               localization: { notebook_id: oldData.id },
               terms: extractTerms(`${oldData.icon} ${oldData.name} ${oldData.description}`),
-            };
-            sfb_app._search.removeItem(toRemoveItem);
+          };
+          sfb_app._search.removeItem(toRemoveItem);
 
-           const allMetaToBeRemoved = sfb_app.contentMetaClient.getAllFromNotebook(oldData.id);
-           allMetaToBeRemoved.forEach(meta => {
-            console.log("meta to be removed", meta)
-            sfb_app.contentMetaClient.deleteItem(meta.id)
+          const allMetaToBeRemoved = sfb_app.contentMetaClient.getAllFromNotebook(oldData.id);
+          allMetaToBeRemoved.forEach(meta => {
+            console.log("meta to be removed", meta);
+            sfb_app.contentMetaClient.deleteItem(meta.id);
           });
           sfb_app.storageMeta.save();
+
+          const event = sfb_app.eventClient.findItem(`notebook_${oldData.id}`);
+          if (event) {
+            sfb_app.eventClient.deleteItem(`notebook_${oldData.id}`);
+            sfb_app.storageEvents.save();
+          }
+
         });
 
-        sfb_app.contentMetaClient.on("insert", newData => {
+        sfb_app.notebookClient.on("insert", newData => {
             const newItem = {
               type: "notebook",
               label: newData.name,
@@ -158,9 +183,15 @@
               terms: extractTerms(`${newData.icon} ${newData.name} ${newData.description}`),
             };
             sfb_app._search.addItem(newItem);
+
+            if (newData.due_date) {
+              const event = sfb_app.eventClient.eventFromNotebook(newData);
+              sfb_app.eventClient.upinsertItem(event);
+              sfb_app.storageEvents.save();
+            }
         });
 
-        sfb_app.contentMetaClient.on("update", ([oldData, newData]) => {
+        sfb_app.notebookClient.on("update", ([oldData, newData]) => {
             const toRemoveItem = {
               type: "notebook",
               label: oldData.name,
@@ -176,6 +207,20 @@
               terms: extractTerms(`${newData.icon} ${newData.name} ${newData.description}`),
             };
             sfb_app._search.addItem(newItem);
+
+            if (newData.due_date) {
+              const event = sfb_app.eventClient.eventFromNotebook(newData);
+              sfb_app.eventClient.upinsertItem(event);
+              sfb_app.storageEvents.save();
+            }
+
+            if (!newData.due_date && oldData.due_date) {
+              const event = sfb_app.eventClient.findItem(`notebook_${oldData.id}`);
+              if (event) {
+                sfb_app.eventClient.deleteItem(`notebook_${oldData.id}`);
+                sfb_app.storageEvents.save();
+              }
+            }
         });
 
         //////////////////////////// META
@@ -187,6 +232,13 @@
               terms: extractTerms(`${meta.icon} ${meta.name} ${meta.tags.map(({name}) => name).join(" ")}`),
             };
             sfb_app._search.addItem(newItem);
+
+            if (meta.due_date) {
+              const event = sfb_app.eventClient.eventFromContentMeta(meta);
+              sfb_app.eventClient.upinsertItem(event);
+              sfb_app.storageEvents.save();
+            }
+
         });
 
         sfb_app.contentMetaClient.on("remove", oldData => {
@@ -203,6 +255,12 @@
               sfb_app.contentNodesClient.deleteItem(node.id);
             });
             sfb_app.storageNodes.save();
+
+            const event = sfb_app.eventClient.findItem(oldData.id);
+            if (event) {
+              sfb_app.eventClient.deleteItem(oldData.id);
+              sfb_app.storageEvents.save();
+            }
         });
 
         sfb_app.contentMetaClient.on("insert", newData => {
@@ -213,6 +271,12 @@
               terms: extractTerms(`${newData.icon} ${newData.name} ${newData.tags.map(({name}) => name).join(" ")}`),
             };
             sfb_app._search.addItem(newItem);
+
+            if (newData.due_date) {
+              const event = sfb_app.eventClient.eventFromContentMeta(newData);
+              sfb_app.eventClient.upinsertItem(event);
+              sfb_app.storageEvents.save();
+            }
         });
 
         sfb_app.contentMetaClient.on("update", ([oldData, newData]) => {
@@ -231,6 +295,20 @@
               terms: extractTerms(`${newData.icon} ${newData.name} ${newData.tags.map(({name}) => name).join(" ")}`),
             };
             sfb_app._search.addItem(newItem);
+
+            if (newData.due_date) {
+              const event = sfb_app.eventClient.eventFromContentMeta(newData);
+              sfb_app.eventClient.upinsertItem(event);
+              sfb_app.storageEvents.save();
+            }
+
+            if (!newData.due_date && oldData.due_date) {
+              const event = sfb_app.eventClient.findItem(oldData.id);
+              if (event) {
+                sfb_app.eventClient.deleteItem(oldData.id);
+                sfb_app.storageEvents.save();
+              }
+            }
         });
         
         ////////////////////////// NODES
