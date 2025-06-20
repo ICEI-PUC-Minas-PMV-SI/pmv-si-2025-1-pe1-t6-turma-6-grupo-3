@@ -24,18 +24,28 @@
       });
       
       const tags = tagsField;
-      
-      
+      const due_date = creator.createModalField({
+        name: 'due_date',
+        type: 'date',
+        customClass: ["col-md-2"],
+        label: 'Prazo',
+        placeholder: 'Dê um prazo para o seu Conteúdo',
+        actions: {
+          input: (e, el) => console.log('digitou prazo:', el.value)
+        }
+      });
       const fields = [
         id,
         icon,
         name,
         tags,
+        due_date,
       ];
 
       const fieldsWithoutIcon = [
         id,
         name,
+        due_date,
       ];
       
       const btnCancelar = creator.createModalButton({

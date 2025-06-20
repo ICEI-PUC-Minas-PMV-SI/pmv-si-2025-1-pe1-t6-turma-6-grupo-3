@@ -157,6 +157,7 @@
               id: data.id,
               icon: data.icon,
               name: data.name,
+              due_date: data.due_date,
               tags: data.tags,
             },
           });
@@ -188,6 +189,7 @@
                     tags: "",
                     icon: "",
                     name: "",
+                    due_date: "",
                   },
               });
               showModal(contentModal);
@@ -214,6 +216,7 @@
                   image: notebook.image,
                   description: notebook.description,
                   name: notebook.name,
+                  due_date: notebook.due_date,
                 },
               });
               showModal(notebookModal);
