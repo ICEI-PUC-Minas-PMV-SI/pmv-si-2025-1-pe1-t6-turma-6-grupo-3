@@ -8,7 +8,7 @@ const map = {
     "notebook-card": [createNotebookCard],
     "tags-selector": [createTagInput],
     "search-input": [createSearchInput],
-    "full-page-calendar": [createFullPageCalendar]
+    "fullpage-calendar": [createFullPageCalendar]
 };
 
 function buildComponentsCreator(
