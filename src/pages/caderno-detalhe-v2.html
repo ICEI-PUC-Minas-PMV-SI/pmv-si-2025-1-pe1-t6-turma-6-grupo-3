@@ -33,6 +33,7 @@
   <script src="../componentes/content-modal/delete-content-modal.js"></script>
   <script src="../componentes/notebook-modal/create-edit-notebook-modal.js"></script>
   <script src="../componentes/notebook-modal/delete-notebook-modal.js"></script>
+  <script src="../componentes/fullpage-calendar/create-calendar.js"></script>
 
   <script src="../componentes/builder.js"></script>
 </head>
@@ -45,6 +46,7 @@
   <script src="../app/share-engine.js"></script>
   <script src="../app/search-client.js"></script>
   <script src="../app/notebooks-client.js"></script>
+  <script src="../app/events-client.js"></script>
   <script src="../app/content-metadata-client.js"></script>
   <script src="../app/content-nodes-client.js"></script>
   <script src="../app/user-client.js"></script>
@@ -156,6 +158,7 @@
               id: data.id,
               icon: data.icon,
               name: data.name,
+              due_date: data.due_date,
               tags: data.tags,
             },
           });
@@ -187,6 +190,7 @@
                     tags: "",
                     icon: "",
                     name: "",
+                    due_date: "",
                   },
               });
               showModal(contentModal);
@@ -213,6 +217,7 @@
                   image: notebook.image,
                   description: notebook.description,
                   name: notebook.name,
+                  due_date: notebook.due_date,
                 },
               });
               showModal(notebookModal);

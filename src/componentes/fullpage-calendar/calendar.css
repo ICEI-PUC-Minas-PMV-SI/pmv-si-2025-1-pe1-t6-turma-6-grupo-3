@@ -98,3 +98,7 @@ div.ec-today {
   padding: 0px 10px;
   display: inline-block;
 }
+
+h4.ec-event-title {
+  font-size: calc(0.775rem + .3vw);;
+}

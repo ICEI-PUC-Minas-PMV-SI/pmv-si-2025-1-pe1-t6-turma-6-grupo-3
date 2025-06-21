@@ -5,10 +5,10 @@ const map = {
     "base-modal": [createModal, createModalButton, createModalField, createModalTextarea, createModalSubmitButton],
     "content-card": [createContentCard],
     "icons-selector": [createIconSelector],
-    // "login-form": [createLoginForm], // not used on pages after login
     "notebook-card": [createNotebookCard],
     "tags-selector": [createTagInput],
     "search-input": [createSearchInput],
+    "fullpage-calendar": [createFullPageCalendar]
 };
 
 function buildComponentsCreator(

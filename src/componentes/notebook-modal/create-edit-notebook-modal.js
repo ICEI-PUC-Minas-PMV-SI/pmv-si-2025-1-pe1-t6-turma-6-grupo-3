@@ -23,10 +23,22 @@
         }
       });
 
+      const due_date = creator.createModalField({
+        name: 'due_date',
+        type: 'date',
+        customClass: ["col-md-2"],
+        label: 'Prazo',
+        placeholder: 'Dê um prazo para o seu Caderno',
+        actions: {
+          input: (e, el) => console.log('digitou prazo:', el.value)
+        }
+      });
+
       const image = creator.createModalField({
         name: 'image',
         type: 'text',
         label: 'Imagem',
+        customClass: ["col-md-10"],
         placeholder: 'Adicione a url de uma imagem',
         actions: {
           input: (e, el) => console.log('digitou nome:', el.value)
@@ -48,12 +60,14 @@
         icon,
         name,
         image,
+        due_date,
         description,
       ];
 
       const fieldsWithoutIcon = [
         id,
         name,
+        due_date,
         image,
         description,
       ];
@@ -105,6 +119,7 @@
       const getFieldsValues = () => fieldsWithoutIcon.reduce(
         (acc, el) => ({...acc, [el.children[1].name]:el.children[1].value }),
         {
+          // due_date: duedate.children[1].value,
           icon: iconField.children[1].children[1].value,
         });
 

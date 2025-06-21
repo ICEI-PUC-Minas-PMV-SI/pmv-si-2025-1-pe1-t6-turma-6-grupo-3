@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
@@ -19,8 +19,12 @@
   <link rel="stylesheet" href="../componentes/icons-selector/selector.css">
   <link rel="stylesheet" href="../componentes/tags-selector/selector.css">
   <link rel="stylesheet" href="../componentes/grapho-view/view.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@event-calendar/build@4.3.0/dist/event-calendar.min.css" />
 
-  <script src="https://d3js.org/d3.v7.min.js"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/@event-calendar/build@4.3.0/dist/event-calendar.min.js"></script>
+  <link rel="stylesheet" href="../componentes/fullpage-calendar/calendar.css">
+
 
   
   <script src="../componentes/base-container/create-container.js"></script>
@@ -33,10 +37,12 @@
   <script src="../componentes/icons-selector/icons.js"></script>
   <script src="../componentes/tags-selector/create-selector.js"></script>
   <script src="../componentes/search-input/create-input.js"></script>
-  <script src="../componentes/notebook-modal/create-edit-notebook-modal.js"></script>
-  <script src="../componentes/notebook-modal/delete-notebook-modal.js"></script>
+  <script src="../componentes/event-modal/create-edit-modal.js"></script>
+  <script src="../componentes/event-modal/delete-modal.js"></script>
+
   <script src="../componentes/content-modal/create-edit-content-modal.js"></script>
-  <script src="../componentes/content-modal/delete-content-modal.js"></script>
+  <script src="../componentes/notebook-modal/create-edit-notebook-modal.js"></script>
+
   <script src="../componentes/grapho-view/create-graph-view.js"></script>
   <script src="../componentes/fullpage-calendar/create-calendar.js"></script>
 
@@ -75,6 +81,7 @@
     function readContentsMeta(callback) {
       return callback(sfb_app.contentMetaClient.getAllFromNotebook(notebookId));
     }
+
     function createNewContent(data, cb) {
       const [created, err] = sfb_app.contentMetaClient.insertItem(
         notebookId,
@@ -130,9 +137,43 @@
       callback();
     }
 
-      const loader = document.getElementById('loader');
+    function readEvents(callback) {
+      return callback(sfb_app.eventClient.getAll())
+    }
 
-      buildComponentsCreator(document,"..", "*").then(creator => {
+    function createNewEvent(data, callback){
+      const [created, err] = sfb_app.eventClient.insertItem(
+        data,
+      );
+      if (err) {
+        return [null, err]
+      }
+      sfb_app.storageEvents.save();
+      callback(created);
+    }
+
+    function updateEvent(data, callback) {
+      const [updated, err] = sfb_app.eventClient.updateItem(data.id, data);
+      if (err) {
+        alert(err.message);
+        return
+      }
+      sfb_app.storageEvents.save();
+      callback(updated);
+    }
+
+    function deleteEvent(id, callback) {
+      console.log("id to be deleted:", id);
+      sfb_app.eventClient.deleteItem(id);
+      sfb_app.storageEvents.save();
+      callback();
+    }
+
+   
+    const loader = document.getElementById('loader');
+
+    buildComponentsCreator(document,"..", "*")
+      .then(creator => {
         const removeContentAction = (e, data) => {
           e.preventDefault();
           e.stopPropagation();
@@ -170,13 +211,12 @@
           console.log(`VIEW CONTENT NODES: notebook[${notebookId}] content[${data.id}]`);
           window.location.assign(`caderno-conteudo-v2.html?notebookId=${notebookId}&contentId=${data.content_id}`);
         };
-        
       
         const container = document.createElement('span');
         
         const pageHeader = creator.createHeader({
           id: 'cabecalho-principal',
-          "icon": `diagram-3`,
+          "icon": `calendar`,
           actions: {
             // add: () => {
             //   updateModal(contentModal, {
@@ -198,10 +238,10 @@
             href: "/src/pages/caderno-lista-v2.html"
           },
           {
-            label: `Gráfico`,
+            label: `Calendário`,
           }
           ],
-          title: `Gráfico`,
+          title: `Calendário`,
           settingsButtons: [
             // { 
             //   label: 'Editar Caderno', icon: 'pencil',  
@@ -240,60 +280,71 @@
           ],
         });
         container.appendChild(pageHeader);
+
+        const events = sfb_app.eventClient.getAll();
         
         const [
+          eventModal, 
+          eventModalNewButtons, 
+          eventModalEditButtons,
+        ] = createEventModal(
+          creator, 
+          { 
+            create: (fromModal) => {
+               console.log("Create event", fromModal);
+               createNewEvent(fromModal, (fromClient) => {
+                  createCalendarEvent(calendar, fromClient);
+               });
+            },
+            update: (fromModal) => {
+              console.log("Update event", fromModal);
+              updateEvent(fromModal, (fromClient) => {
+                updateCalendarEvent(calendar, fromClient);
+              });
+            },
+            deleteMe: (fromModal) => {
+              console.log("Delete event", fromModal);
+              deleteEvent(fromModal, () => {
+                deleteCalendarEvent(calendar, fromModal);
+              })
+            }
+          },
+        );
+        container.appendChild(eventModal);
+
+        const [
           contentModal, 
-          createContentModalButtons, 
+          __, 
           editContentModalButtons, 
         ] = createContentModal(
-            creator, 
-            {
-              create: (fromModal) => {
-                console.log("Create content", fromModal)
-                createNewContent(fromModal, (fromClient) => {
-                  const card = creator.createContentCard(
-                    {
-                      data: fromClient,
-                      actions: {
-                        edit: (e) => editContentAction(e,fromClient),
-                        view: (e) => viewContentAction(e, fromClient),
-                      }
-                    },
-                  );
-                  console.log("card::", card)
-                  appendToContainerSlot(
-                    document,
-                    containerID,
-                    card,
-                  );
-                });
-              },
-              update: (fromModal) => {
-                console.log("Update content", fromModal)
-                updateContent(fromModal, (fromClient) => {
-                  const payload = {
-                    data: fromClient,
-                    actions: {
-                      view: (e) => viewContentAction(e, fromClient),
-                      edit: (e) => editContentAction(e, fromClient)
-                    }
-                  };
-                  console.log("updateContentCard.payload", payload);
-                  updateContentCard(document, payload)
-                })
-              },
+          creator, 
+          {
+            create: console.log,
+            update: (fromModal) => {
+              console.log("Update content", fromModal)
+              updateContent(fromModal, (fromClient) => {
+                if (fromClient.due_date) {
+                  const eventToBeUpdated = sfb_app.eventClient.eventFromContentMeta(fromClient);
+                  console.log("eventToBeUpdated::::", eventToBeUpdated);
+                  updateCalendarEvent(calendar, eventToBeUpdated);
+                  return
+                }
+                const eventToBeDeleted = sfb_app.eventClient.eventFromContentMeta(fromClient)
+                deleteCalendarEvent(calendar, eventToBeDeleted);
+              })
             },
-            creator.createIconSelector({
-              name:         'icon',
-              label:        'Ícone',
-              popular:      ['alarm','heart','star'],
-              allIcons,
-              customClass: ["col-md-2"],
-              actions: {
-                select: (iconName, el) => console.log('Ícone:', iconName)
-              }
-            }),
-            creator.createTagInput({
+          },
+          creator.createIconSelector({
+            name:         'icon',
+            label:        'Ícone',
+            popular:      ['alarm','heart','star'],
+            allIcons,
+            customClass: ["col-md-2"],
+            actions: {
+              select: (iconName, el) => console.log('Ícone:', iconName)
+            }
+          }),
+          creator.createTagInput({
               name: 'tags',
               label: 'Tags',
               placeholder: 'Digite e tecle Enter',
@@ -304,36 +355,25 @@
                 onColorChange: (tag, color) => console.log(`Cor de ${tag}:`, color)
               },
             })
-          );
+        );
         container.appendChild(contentModal);
 
         const [
-          contentDeleteModal,
-        ] = createDeleteContentModal(
-            creator, 
-            {
-              deleteFn: (fromModal) => {
-                console.log("Create content", fromModal)
-                deleteContent(fromModal, (fromClient) => {
-                  console.log("card::deleted > ", fromClient)
-                  removeGenericCard(document, `content-card-${fromModal.id}`)
-                });
-              },
-            }
-          );
-        container.appendChild(contentDeleteModal);
-        
-        const [
           notebookModal, 
+          _,
           editModalButtons, 
         ] = createNotebookModal(
             creator, 
             {
               update: (fromModal) => updateNotebook(fromModal, (fromClient) => {
-                updateHeader(
-                  document.getElementById('cabecalho-principal'), 
-                  { title: fromClient.name, icon: fromClient.icon },
-                );
+                if (fromClient.due_date) {
+                  const eventToBeUpdated = sfb_app.eventClient.eventFromNotebook(fromClient);
+                  console.log("eventToBeUpdated::::", eventToBeUpdated);
+                  updateCalendarEvent(calendar, eventToBeUpdated);
+                  return
+                }
+                const eventToBeDeleted = sfb_app.eventClient.eventFromNotebook(fromClient)
+                deleteCalendarEvent(calendar, eventToBeDeleted);
               })
             },
             creator.createIconSelector({
@@ -347,70 +387,105 @@
               }
             })
           );
-        
         container.appendChild(notebookModal);
 
-        const [
-          notebookDeleteModal, 
-          deleteModalButtons, 
-        ] = createDeleteNotebookModal(
-            creator, 
-            {
-              deleteFn: (fromModal) => {
-                if (fromModal.name != notebook.name) {
-                  alert("Nome do Carderno não coincide com o escrito na confirmação");
-                  return
-                }
-                deleteNotebook(fromModal.id, (errFromClient) => {
-                if (errFromClient) {
-                  alert(errFromClient.message);
-                  return
-                }
-                document.location.assign("/src/pages/caderno-lista-v2.html")
-              })
-            }
+        const onEventClick =  function (info) { 
+          console.log("EVENT", info)
+
+          if (info.event.extendedProps.parent_type === "content") {
+            
+            const { notebook_id, content_id }= info.event.extendedProps.parent_location;
+            const data = sfb_app.contentMetaClient.findItem(notebook_id, content_id);
+
+            updateModal(contentModal, {
+              title: editContentModalTitle,
+              footerButtons: editContentModalButtons,
+              fieldValues: {
+                id: data.id,
+                icon: data.icon,
+                name: data.name,
+                due_date: data.due_date,
+                tags: data.tags,
+              },
+            });
+            showModal(contentModal);
+            return
+          }
+
+          if (info.event.extendedProps.parent_type === "notebook") {
+            
+            const {notebook_id} = info.event.extendedProps.parent_location;
+            const notebook = sfb_app.notebookClient.findItem(notebook_id);
+
+            updateModal(notebookModal, {
+                title: editNotebookModalTitle,
+                footerButtons: editModalButtons,
+                fieldValues: {
+                  id: notebook.id,
+                  icon: notebook.icon,
+                  image: notebook.image,
+                  description: notebook.description,
+                  name: notebook.name,
+                  due_date: notebook.due_date,
+                },
+              });
+            showModal(notebookModal);
+            return
+          }
+          updateModal(eventModal, {
+            title: "Editar Evento",
+            footerButtons: eventModalEditButtons,
+            fieldValues: {
+              id: info.event.id,
+              start_date: formatDateToInputValue(info.event.start),
+              end_date: formatDateToInputValue(info.event.end),
+              description: info.event.extendedProps.description,
+              name: info.event.title,
             },
-          );
-        container.appendChild(notebookDeleteModal);
-      
-        const notebooks = sfb_app.notebookClient.getAll();
-        const contentMetas = sfb_app.contentMetaClient.getAll();
-        const contentNodes = sfb_app.contentNodesClient.getAll();
-        
-        const { nodes, links } = parseToGraphNodes(notebooks, contentMetas, contentNodes);
-        const [svgNodes, actions] = createGrapho(
-          nodes, 
-          links, 
-          {
-            clickNode: console.log,
+          });
+          showModal(eventModal);
+        }
+
+        const onEventDrop =  function (info) { 
+          console.log("DROP", info)
+        }
+
+        const onDateClick =  function (info) { 
+          console.log("DateClick", info)
+          const [start, end] = createStartEndBasedOnCurrentTime(info.date);
+          updateModal(eventModal, {
+            title: "Criar Evento",
+            footerButtons: eventModalNewButtons,
+            fieldValues: {
+              id: "_",
+              description: "",
+              name: "",
+              start_date: formatDateToInputValue(start) ,
+              end_date: formatDateToInputValue(end),
+            },
+          });
+          showModal(eventModal);
+        }
+
+        const calendarHolder = document.createElement('span');
+
+
+        const calendar = createFullPageCalendar(calendarHolder, 
+          { 
+            events,
+            onEventClick,
+            onEventDrop,
+            onDateClick,
           },
         );
-
-        const getControlsWithActions = (actions) => getGraphoControls({
-          onReset: actions.reset,
-          onToggleLabel: actions.toggleLabel,
-          onZoomIn: actions.zoomIn,
-          onZoomOut: actions.zoomOut,
-          onChangeFilter: (opts) => {
-              const { nodes, links } = parseToGraphNodes(notebooks, contentMetas, contentNodes, opts);
-              const [svgNodes, actions] = createGrapho(
-                nodes, 
-                links, 
-                {
-                  clickNode: console.log,
-                },
-              );
-
-              resetContainer(document, containerID, [getControlsWithActions(actions), svgNodes])
-          }
-        })
-
+        
+      
         const contentsRow = creator.createContainer(
           { 
             id: containerID, 
             items: [
-              getControlsWithActions(actions),
-              svgNodes,
+              calendarHolder,
+              createCalendarLegend(["notebook", "content", "task", "raw"].map(getLegendByType))
             ]
           },
         );
