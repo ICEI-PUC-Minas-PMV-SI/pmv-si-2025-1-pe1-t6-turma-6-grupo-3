@@ -26,6 +26,22 @@ function createFullPageCalendar(el, { events, onEventClick, onEventDrop, onDateC
   return calendar;
 }
 
+function createCalendarEvent(calendar, eventDomain) {
+   const event = convertEventDomainToLibEvent(eventDomain);
+   calendar.addEvent(event);
+}
+
+function updateCalendarEvent(calendar, eventDomain) {
+  const {id, ...data} = convertEventDomainToLibEvent(eventDomain);
+  const event = calendar.getEventById(id);
+  Object.assign(event, { ...data, start: new Date(data.start), end: new Date(data.end) });
+  calendar.updateEvent(event);
+}
+
+function deleteCalendarEvent(calendar, eventDomain) {
+  const { id } = convertEventDomainToLibEvent(eventDomain);
+  calendar.removeEventById(id);
+}
 
 // If you later need to destroy the calendar then use
 //EventCalendar.destroy(ec);
