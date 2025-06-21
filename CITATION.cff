@@ -1,33 +1,38 @@
-# This CITATION.cff file was generated with cffinit.
-# Visit https://bit.ly/cffinit to generate yours today!
+title: Surfbook
 
-cff-version: 1.2.0
-title: Web Application Template
-message: >-
-  Repositório padrão para o Eixo 1 - Projeto 1: Aplicações
-  Web da PUC Minas.
-type: software
 authors:
-  - given-names: Aluno 1
-    family-names: Nome Completo
-    email: aluno@pucminas.br
+
+  - family-names: Rocha Sanches
+    given-names: Alice Cecília
+
+  - family-names: Assunção Corrêa
+    given-names: André Luiz
+
+  - family-names: Nascimento Siqueira
+    given-names: Eric
+
+  - family-names: Moreira Júnior
+    given-names: José Carlos
+
+  - family-names: Inacio dos Santos
+    given-names: Kauan Guilherme
+
+  - family-names: Gomes de Santana
+    given-names: Lucas
+
+  - name-suffix: Professor
     affiliation: PUC Minas
-  - given-names: Hugo
-    name-particle: 'B '
-    family-names: de Paula
-    name-suffix: Prof.
-    email: hugo@pucminas.br
-    affiliation: PUC Minas
-    orcid: 'https://orcid.org/0000-0002-6193-3205'
-repository-code: >-
-  https://github.com/ICEI-PUC-Minas-PMV-SI/WebApplicationProject-Template
-abstract: >-
-  Descrever resumidamente, em um ou dois parágrafos, o
-  projeto que foi desenvolvido.
+    family-names: Tavares
+    given-names: Clóvis Lemos
+
 keywords:
-  - Desenvolvimento Web
-  - HTML
-  - CSS
-  - JavaScript
-  - Template
-date-released: '2024-06-23'
+
+  - aplicação web
+  - organização de estudos
+  - HTML, CSS e JavaScript
+
+repository-code: https://github.com/ICEI-PUC-Minas-PMV-SI/pmv-si-2025-1-pe1-t6-turma-6-grupo-3
+
+version: 1.0.0
+
+date-released: 2025-06-21
