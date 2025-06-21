@@ -1,0 +1,275 @@
+body {
+    background-color: rgb(255, 255, 255);
+    font-family: sans-serif;
+    font-size: medium;
+}
+
+.btaddtarefa {
+    border: none;
+    outline: none;
+    background: #0e6eff;
+    border-radius: 8px;
+    width: 120px;
+    height: 30px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btaddtarefa:hover{
+    background-color: #0057da;;
+    /* leve efeito no hover */
+}
+
+
+.btcalendario {
+    border: none;
+    outline: none;
+    background: rgb(246, 246, 246);
+    border-radius: 8px;
+    box-shadow: 0 3px rgb(216, 216, 216);
+    width: 120px;
+    height: 30px;
+    color: rgb(0, 0, 0);
+    cursor: pointer;
+    font-size: medium;
+}
+.btcalendario:hover{
+    background-color: #e9e9e9;
+}
+
+
+.task {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background-color: rgb(246, 246, 246);
+    border-radius: 4px;
+    width: 1110px;
+    /* height: 45px; ❌ REMOVA ESTA LINHA */
+    margin: -10px auto;
+    padding: 10px 20px; /* aumentei pra dar mais espaço vertical */
+    margin-bottom: 30px;
+    flex-wrap: wrap; /* ✅ permite quebra de linha */
+}
+
+.checkb {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    margin-left: -10px;
+}
+.excluir {
+    border: none;
+    outline: none;
+    cursor: pointer;
+    border-radius: 8px;
+    box-shadow: 0 3px rgb(216, 216, 216);
+}
+.excluir:hover{
+    background-color: #f0e4e4;
+}
+
+.container-botoes {
+    position: relative;
+    /* base de referência para o elemento absoluto */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* alinha verticalmente */
+    width: 1110px;
+    margin: 40px auto;
+}
+
+/* Esse é o elemento centralizado */
+.centro {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: bold;
+    /* só pra destacar */
+    font-style: oblique;
+}
+
+.seta-esquerda,
+.seta-direita {
+    background-color: rgb(246, 246, 246);
+    /* mesma cor do botão de calendário */
+    border: none;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* volume sutil */
+    font-size: 18px;
+    cursor: pointer;
+    padding: 6px 12px;
+    transition: background-color 0.2s ease;
+}
+
+.seta-esquerda:hover,
+.seta-direita:hover {
+    background-color: rgb(230, 230, 230);
+    /* leve efeito no hover */
+}
+
+.texto-central {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.input-edicao {
+    border: none;
+    outline: none;
+    font-size: 16px;
+    padding: 2px;
+    flex-grow: 1;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.prioridade {
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.tag {
+    display: inline-block;
+    background-color: #eee;
+    color: #333;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    margin-right: 6px;
+    margin-bottom: 4px;
+}
+.tag[contenteditable]:empty::before {
+    content: attr(data-placeholder);
+    color: #999;
+    pointer-events: none;
+}
+
+/* Parágrafo com texto da tarefa */
+.texto-task {
+    flex-grow: 1;
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+}
+/* Select de prioridade */
+.prioridade {
+    padding: 2px 6px;
+    font-size: 13px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+    cursor: pointer;
+}
+.btnmenu {
+    opacity: 0;
+    transition: opacity 0.3s;
+    border: none;
+    outline: none;
+    background: transparent;
+    cursor: grab;
+    font-size: 18px;
+    padding: 6px;
+    border-radius: 6px;
+    margin-right: 8px; /* espaço entre botão e checkbox */
+}
+
+.btnmenu:hover {
+    opacity: 1;  
+    background-color: #e0e0e0;
+}
+.linha-task:hover .btnmenu {
+    opacity: 1;
+}
+.menu-opcoes {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 999;
+    margin-top: 10px;
+}
+
+.menu-opcoes button {
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 4px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.menu-opcoes button:hover {
+    background-color: #f0f0f0;
+}
+
+/* Subtarefa (indentada levemente) */
+.subtask {
+    margin-left: 60px;
+    scale: 0.90;
+}
+.descricao-task {
+    display: flex;
+    flex-direction: column;
+    font-size: 13px;
+    margin-top: 4px;
+    color: #666;
+    padding-left: 0;
+}
+.menu-title {
+  font-size: 0.8em;
+  color: #888;
+  display: block;
+  margin-bottom: 4px;
+}
+.menu-title-small {
+  font-size: 0.75em;
+  color: #aaa;
+  display: block;
+  margin: 4px 0;
+}
+.menu-section {
+  margin-bottom: 8px;
+}
+.sub-menu-colors {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.sub-menu-colors .tag-color {
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.conteudo-task{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+.linha-task {
+    user-select: none;
+    cursor: pointer;
+}
+
+.linha-task.dragging {
+    opacity: 0.5;
+}
