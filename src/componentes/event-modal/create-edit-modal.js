@@ -117,3 +117,32 @@
 
       return [nootebookModal, createModalButtons, editModalButtons];
     }
+
+function formatDateToInputValue(date) {
+  const pad = (n) => n.toString().padStart(2, '0');
+
+  const year = date.getFullYear();
+  const month = pad(date.getMonth() + 1); // mês começa do zero
+  const day = pad(date.getDate());
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
+function createStartEndBasedOnCurrentTime(baseDate) {
+  const now = new Date();
+
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+
+  // First date: base date + current time
+  const startDate = new Date(baseDate);
+  startDate.setHours(currentHour, currentMinute, 0, 0);
+
+  // Second date: one hour after
+  const endDate = new Date(startDate);
+  endDate.setHours(startDate.getHours() + 1);
+
+  return [startDate, endDate];
+}
