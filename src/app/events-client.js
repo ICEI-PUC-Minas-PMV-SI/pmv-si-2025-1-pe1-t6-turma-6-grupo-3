@@ -39,7 +39,6 @@
 
   
     eventFromContentMeta(meta) {
-      console.log("===========eventFromContentMeta", meta);
       return { 
         name: meta.name, // event title
         // description: "", // open description
@@ -56,7 +55,6 @@
     }
 
     eventFromNotebook(notebook) {
-      console.log("===========eventFromNotebook", notebook)
       return { 
               name: notebook.name, // event title
               // description: "", // open description
