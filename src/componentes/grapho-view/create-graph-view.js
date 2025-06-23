@@ -76,13 +76,16 @@ function parseToGraphNodes(notebooks, contents, contentNodes, options) {
     if (showTags) {
       for (const tag of content.tags || []) {
         const tagId = `tag-${tag.name.toLowerCase()}`;
-        const ref = tagReferences.get(tagId) || {
+        const refExist = tagReferences.get(tagId);
+        const ref =  refExist || {
           name: tag.name,
           color: tag.color,
           sources: []
         };
         ref.sources.push(contentId);
-        tagReferences.set(tagId, ref);
+        if (!refExist) {
+          tagReferences.set(tagId, ref);
+        }
       }
     }
   }
@@ -121,7 +124,7 @@ function parseToGraphNodes(notebooks, contents, contentNodes, options) {
       let targetId = null;
       if (node.value.type === "notebook" && showNotebooks) {
         targetId = `notebook-${loc.notebook_id}`;
-      } else if (node.value.type === "content" && loc.content_id) {
+      } else if (showContents) {
         targetId = `content-${loc.notebook_id}-${loc.content_id}`;
       }
 
