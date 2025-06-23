@@ -284,11 +284,12 @@
         container.appendChild(pageHeader);
         
         // Pegue todas as tasks da sua fonte centralizada:
-        const initialTasks = sfb_app.taskClient.getAll();
+        const tasks = sfb_app.taskClient.getAll();
 
         // Monte o Task Board. 
         // O `createTaskBoard` pode ser adaptado para aceitar callbacks se quiser lidar com eventos customizados.
         const boardHolder = document.createElement('span');
+        const initialTasks = tasks.map(toBoardTask);
         console.log("initial tasks", initialTasks);
         const [
           boardEl,
@@ -297,18 +298,18 @@
         ] = creator.createTaskBoard({
           initialTasks,
           // CALLBACKS: Redirecione os eventos para o client correto!
-          onCreateTask: (task) => {       
+          onCreateTask: (boardTask) => {       
+            const task = toServerTask(boardTask);
             // Task "comum", salve normalmente no tasksClient
             sfb_app.taskClient.upinsertItem(task);
             sfb_app.storageTasks.save();
         
           },
-          onUpdateTask: (task) => {
+          onUpdateTask: (boardTask) => {
+             const task = toServerTask(boardTask);
             // Mesmo esquema: se for notebook ou conteúdo, atualize neles
             if (task.parent_type === "notebook") {
-              console.log("task",task)
               const nb = sfb_app.notebookClient.findItem(task.parent_location.notebook_id);
-              console.log("task->notebook", nb)
               if (nb) {
                 const updated = sfb_app.taskClient.notebookFromTask(task);
                 sfb_app.notebookClient.updateItem(nb.id, updated);

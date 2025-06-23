@@ -772,3 +772,24 @@ function createTaskBoard(document, wrapper, {
 
   return [board, store.tasks, { el: board, store, renderTasks, createAndAddTask }];
 }
+
+
+
+function toBoardTask(serverTask) {
+  return {
+    ...serverTask,
+    due_date: serverTask.due_date,
+    completed_at: serverTask.completed_at,
+    parentTask: null, // você vai setar depois
+    parent_location: serverTask.parent_location || null,
+    // outros campos: converta conforme necessário
+  };
+}
+
+function toServerTask(boardTask) {
+  const clone = { ...boardTask };
+  // Remova/elimine campos que causam referência circular       // Remove referência ao elemento DOM
+  delete clone.parentTask;
+  delete clone.el;
+  return clone
+}
