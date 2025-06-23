@@ -45,6 +45,7 @@
 
   <script src="../componentes/grapho-view/create-graph-view.js"></script>
   <script src="../componentes/fullpage-calendar/create-calendar.js"></script>
+  <script src="../componentes/task-board/create-task-board.js"></script>
 
   <script src="../componentes/builder.js"></script>
 </head>
@@ -58,6 +59,7 @@
   <script src="../app/search-client.js"></script>
   <script src="../app/notebooks-client.js"></script>
   <script src="../app/events-client.js"></script>
+  <script src="../app/task-client.js"></script>
   <script src="../app/content-metadata-client.js"></script>
   <script src="../app/content-nodes-client.js"></script>
   <script src="../app/user-client.js"></script>
@@ -280,8 +282,6 @@
           ],
         });
         container.appendChild(pageHeader);
-
-        const events = sfb_app.eventClient.getAll();
         
         const [
           eventModal, 
@@ -389,6 +389,8 @@
           );
         container.appendChild(notebookModal);
 
+        const events = sfb_app.eventClient.getAll();
+        
         const onEventClick =  function (info) { 
           console.log("EVENT", info)
 
