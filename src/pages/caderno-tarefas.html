@@ -1,0 +1,396 @@
+  <!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Cadastro de Notebooks</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="../styles/style.css">
+  <link rel="stylesheet" href="../styles/icons-selector.css">
+  <link rel="stylesheet" href="../componentes/base-layout/layout.css">
+  <link rel="stylesheet" href="../componentes/base-container/container.css">
+  <link rel="stylesheet" href="../componentes/notebook-card/card.css">
+  <link rel="stylesheet" href="../componentes/content-card/card.css">
+  <link rel="stylesheet" href="../componentes/base-modal/modal.css">
+  <link rel="stylesheet" href="../componentes/icons-selector/selector.css">
+  <link rel="stylesheet" href="../componentes/tags-selector/selector.css">
+  <link rel="stylesheet" href="../componentes/task-board/board.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@event-calendar/build@4.3.0/dist/event-calendar.min.css" />
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/@event-calendar/build@4.3.0/dist/event-calendar.min.js"></script>
+  <link rel="stylesheet" href="../componentes/fullpage-calendar/calendar.css">
+
+
+  
+  <script src="../componentes/base-container/create-container.js"></script>
+  <script src="../componentes/notebook-card/create-card.js"></script>
+  <script src="../componentes/content-card/create-card.js"></script>
+  <script src="../componentes/base-layout/create-layout.js"></script>
+  <script src="../componentes/base-header/create-header.js"></script>
+  <script src="../componentes/base-modal/create-modal.js"></script>
+  <script src="../componentes/icons-selector/create-selector.js"></script>
+  <script src="../componentes/icons-selector/icons.js"></script>
+  <script src="../componentes/tags-selector/create-selector.js"></script>
+  <script src="../componentes/search-input/create-input.js"></script>
+  <script src="../componentes/event-modal/create-edit-modal.js"></script>
+  <script src="../componentes/event-modal/delete-modal.js"></script>
+
+  <script src="../componentes/content-modal/create-edit-content-modal.js"></script>
+  <script src="../componentes/notebook-modal/create-edit-notebook-modal.js"></script>
+
+  <script src="../componentes/grapho-view/create-graph-view.js"></script>
+  <script src="../componentes/fullpage-calendar/create-calendar.js"></script>
+  <script src="../componentes/task-board/create-task-board.js"></script>
+
+  <script src="../componentes/builder.js"></script>
+</head>
+<body>
+  <div id="loader">
+  
+  </div>
+
+  <!-- MockClient e StorageNBManager -->
+  <script src="../app/share-engine.js"></script>
+  <script src="../app/search-client.js"></script>
+  <script src="../app/notebooks-client.js"></script>
+  <script src="../app/events-client.js"></script>
+  <script src="../app/task-client.js"></script>
+  <script src="../app/content-metadata-client.js"></script>
+  <script src="../app/content-nodes-client.js"></script>
+  <script src="../app/user-client.js"></script>
+  <script src="../app/storage.js"></script>
+  <script src="../app/session-manager.js"></script>
+  <script src="../app/url-service.js"></script>
+  <script src="../app/app-load_surf_book.js"></script>
+  <script>
+    if (!sfb_app.session.isLogged()) {
+        window.location.href = LOGIN_URL;
+    }
+    const containerID = "notebook-content-meta-list";
+    const newContentModalTitle = "Novo Conteúdo";
+    const editContentModalTitle = "Atualize seu Conteúdo";
+    const editNotebookModalTitle = "Atualize seu Caderno";
+    const deleteNotebookModalTitle = "Confirme a Exclusão do seu Caderno";
+    const editNotebookSaveTitle = "Atualizar Caderno";
+    const deleteNotebookDeleteTitle = "Excluir Caderno";
+
+    // Funções CRUD usando notebookClient e storage
+    function readContentsMeta(callback) {
+      return callback(sfb_app.contentMetaClient.getAllFromNotebook(notebookId));
+    }
+
+    function createNewContent(data, cb) {
+      const [created, err] = sfb_app.contentMetaClient.insertItem(
+        notebookId,
+        data,
+      );
+      if (err) {
+        return [null, err]
+      }
+      sfb_app.storageMeta.save();
+      cb(created);
+    }
+
+    function updateContent(data, callback) {
+      const [updated, err] = sfb_app.contentMetaClient.updateItem(
+        data.id,
+        data,
+      );
+      if (err) {
+        alert(err.message);
+        return
+      }
+      sfb_app.storageMeta.save();
+      callback(updated);
+    }
+
+    function deleteContent(data, callback) {
+      console.log("id to be deleted: ",     data.id);
+      const err = sfb_app.contentMetaClient.deleteItem(
+        data.id
+      );
+      if (err) {
+        alert(err.message);
+        return
+      }
+      sfb_app.storageMeta.save();
+      callback();
+    }
+
+    function updateNotebook(data, callback) {
+      const [updated, err] = sfb_app.notebookClient.updateItem(data.id, data);
+      if (err) {
+        alert(err.message);
+        return
+      }
+      sfb_app.storageNB.save();
+      callback(updated);
+    }
+
+    function deleteNotebook(id, callback) {
+      console.log("id to be deleted:", id);
+      sfb_app.notebookClient.deleteItem(id);
+      sfb_app.storageNB.save();
+      callback();
+    }
+
+    function readEvents(callback) {
+      return callback(sfb_app.eventClient.getAll())
+    }
+
+    function createNewEvent(data, callback){
+      const [created, err] = sfb_app.eventClient.insertItem(
+        data,
+      );
+      if (err) {
+        return [null, err]
+      }
+      sfb_app.storageEvents.save();
+      callback(created);
+    }
+
+    function updateEvent(data, callback) {
+      const [updated, err] = sfb_app.eventClient.updateItem(data.id, data);
+      if (err) {
+        alert(err.message);
+        return
+      }
+      sfb_app.storageEvents.save();
+      callback(updated);
+    }
+
+    function deleteEvent(id, callback) {
+      console.log("id to be deleted:", id);
+      sfb_app.eventClient.deleteItem(id);
+      sfb_app.storageEvents.save();
+      callback();
+    }
+
+   
+    const loader = document.getElementById('loader');
+
+    buildComponentsCreator(document,"..", "*")
+      .then(creator => {
+        const removeContentAction = (e, data) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log(`Remove CONTENT NODES: notebook[${{notebookId}}] content[${data.id}]`);
+
+          updateModal(contentDeleteModal, {
+            fieldValues: {
+              id: data.id,
+            },
+          });
+          showModal(contentDeleteModal);
+        };
+
+        const editContentAction = (e, data) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log(`EDIT CONTENT NODES: notebook[${{notebookId}}] content[${data.id}]`);
+
+          updateModal(contentModal, {
+            title: editContentModalTitle,
+            footerButtons: editContentModalButtons,
+            fieldValues: {
+              id: data.id,
+              icon: data.icon,
+              name: data.name,
+              tags: data.tags,
+            },
+          });
+          showModal(contentModal);
+        };
+        
+        const viewContentAction = (e, data) => {
+          e.preventDefault();
+          e.stopPropagation();    
+          console.log(`VIEW CONTENT NODES: notebook[${notebookId}] content[${data.id}]`);
+          window.location.assign(`caderno-conteudo-v2.html?notebookId=${notebookId}&contentId=${data.content_id}`);
+        };
+      
+        const container = document.createElement('span');
+        
+        const pageHeader = creator.createHeader({
+          id: 'cabecalho-principal',
+          "icon": `list-task`,
+          actions: {
+            // add: () => {
+            //   updateModal(contentModal, {
+            //     title: newContentModalTitle,
+            //     footerButtons: createContentModalButtons,
+            //     fieldValues: {
+            //         id: "",
+            //         tags: "",
+            //         icon: "",
+            //         name: "",
+            //       },
+            //   });
+            //   showModal(contentModal);
+            // },
+            // filter: console.log,
+          },
+          breadcrumbs: [{
+            label: "Home",
+            href: "/src/pages/caderno-lista-v2.html"
+          },
+          {
+            label: `Tarefas`,
+          }
+          ],
+          title: `Tarefas`,
+          settingsButtons: [
+            // { 
+            //   label: 'Editar Caderno', icon: 'pencil',  
+            //   action: () => {
+            //     // alterar configuracao
+            //     updateModal(notebookModal, {
+            //       title: editNotebookModalTitle,
+            //       footerButtons: editModalButtons,
+            //       fieldValues: {
+            //         id: notebook.id,
+            //         icon: notebook.icon,
+            //         image: notebook.image,
+            //         description: notebook.description,
+            //         name: notebook.name,
+            //       },
+            //     });
+            //     showModal(notebookModal);
+            //   } 
+            // },
+            // { 
+            //   label: 'Excluir Caderno', 
+            //   icon: 'trash', 
+            //   action: () => {
+            //     console.log('exportar');
+            //     updateModal(notebookDeleteModal, {
+            //       title: deleteNotebookModalTitle,
+            //       footerButtons: deleteModalButtons,
+            //       fieldValues: {
+            //         id: notebook.id,
+            //         name: "",
+            //       },
+            //     });
+            //     showModal(notebookDeleteModal);
+            //   }
+            // },
+          ],
+        });
+        container.appendChild(pageHeader);
+        
+        // Pegue todas as tasks da sua fonte centralizada:
+        const initialTasks = sfb_app.taskClient.getAll();
+
+        // Monte o Task Board. 
+        // O `createTaskBoard` pode ser adaptado para aceitar callbacks se quiser lidar com eventos customizados.
+        const boardHolder = document.createElement('span');
+        console.log("initial tasks", initialTasks);
+        const [
+          boardEl,
+          boardTasks,
+          boardApi // { el, store, renderTasks, createAndAddTask }
+        ] = creator.createTaskBoard({
+          initialTasks,
+          // CALLBACKS: Redirecione os eventos para o client correto!
+          onCreateTask: (task) => {       
+            // Task "comum", salve normalmente no tasksClient
+            sfb_app.taskClient.upinsertItem(task);
+            sfb_app.storageTasks.save();
+        
+          },
+          onUpdateTask: (task) => {
+            // Mesmo esquema: se for notebook ou conteúdo, atualize neles
+            if (task.parent_type === "notebook") {
+              console.log("task",task)
+              const nb = sfb_app.notebookClient.findItem(task.parent_location.notebook_id);
+              console.log("task->notebook", nb)
+              if (nb) {
+                const updated = sfb_app.taskClient.notebookFromTask(task);
+                sfb_app.notebookClient.updateItem(nb.id, updated);
+                sfb_app.storageNB.save();
+              }
+            } else if (task.parent_type === "content") {
+              const meta = sfb_app.contentMetaClient.findItem(
+                task.parent_location.notebook_id,
+                task.parent_location.content_id
+              );
+              if (meta) {
+                const updated = sfb_app.taskClient.contentMetaFromTask(task);
+                sfb_app.contentMetaClient.updateItem(meta.id, updated);
+                sfb_app.storageMeta.save();
+              }
+            } else {
+              console.log("update task", task)
+              sfb_app.taskClient.updateItem(task.id, task);
+              sfb_app.storageTasks.save();
+            }
+          },
+          onDeleteTask: (task) => {
+            if (task.parent_type === "notebook") {
+              const nb = sfb_app.notebookClient.findItem(task.parent_location.notebook_id);
+              if (nb) {
+                sfb_app.notebookClient.deleteItem(nb.id);
+                sfb_app.storageNB.save();
+              }
+            } else if (task.parent_type === "content") {
+              const meta = sfb_app.contentMetaClient.findItem(
+                task.parent_location.notebook_id,
+                task.parent_location.content_id
+              );
+              if (meta) {
+                sfb_app.contentMetaClient.deleteItem(meta.id,);
+                sfb_app.storageMeta.save();
+              }
+            } else {
+              sfb_app.taskClient.deleteItem(task.id);
+              sfb_app.storageTasks && sfb_app.storageTasks.save();
+            }
+          },
+        });
+
+        boardHolder.appendChild(boardEl);
+        
+      
+        const contentsRow = creator.createContainer(
+          { 
+            id: containerID, 
+            items: [
+              boardHolder,
+            ]
+          },
+        );
+        container.appendChild(contentsRow);
+        
+        const current = sfb_app.session.getCurrentUser();
+
+        loader.appendChild(creator.createLayout({ 
+          content:  container,
+          user: {
+              name: current.name,
+              logout: () => {
+                console.log("LOGOUT!"); 
+                sfb_app.session.signout();
+                window.location.assign("/src/pages/login-v2.html");
+              },
+          },
+          searchInput: creator.createSearchInput({
+              onSelect: (item) => {
+                if (item.type === "notebook") {
+                  window.location.assign(`/src/pages/caderno-detalhe-v2.html?notebookId=${item.localization.notebook_id}`);
+                  return
+                }
+                window.location.assign(`/src/pages/caderno-conteudo-v2.html?notebookId=${item.localization.notebook_id}&contentId=${item.localization.content_id}`);
+                return
+              },
+              search: term => sfb_app.search(term)
+          })
+        }));
+      });
+  </script>
+</body>
+</html>
